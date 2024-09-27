@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leitor de Arquivo AFD</title>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            padding: 20px;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .input-group {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .input-group input, .input-group select {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .input-group button {
+            padding: 10px 20px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .input-group button:hover {
+            background-color: #2980b9;
+        }
+        #output {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .registro {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        .registro h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .data-registro {
+            font-weight: bold;
+            margin-top: 10px;
+            color: #34495e;
+        }
+        .horarios {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        .horario {
+            background-color: #3498db;
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.9em;
+        }
+        .erro {
+            color: #e74c3c;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body onload="brython()">
+    <div class="container">
+        <h1>Leitor de Arquivo AFD</h1>
+        <div class="input-group">
+            <input type="file" id="file-input" accept=".txt">
+            <select id="file-type">
+                <option value="1510">1510</option>
+                <option value="671">671</option>
+            </select>
+            <button id="process-btn">Processar Arquivo</button>
+        </div>
+        <div id="output"></div>
+    </div>
+
+<script type="text/python">
+from browser import document, window, alert, html
+
+def process_file(event):
+    file_input = document['file-input']
+    if not file_input.files:
+        alert("Por favor, selecione um arquivo.")
+        return
+
+    file = file_input.files[0]
+    file_type = int(document['file-type'].value)
+
+    reader = window.FileReader.new()
+    reader.onload = lambda e: execute_code(e.target.result, file_type)
+    reader.readAsText(file)
+
+def execute_code(file_content, numero):
+    output = html.DIV()
+    output <= html.P("Copyright ©2024 | Delean Mafra, todos os direitos reservados.")
+
+    if numero == 1510:
+        output <= process_1510(file_content)
+    elif numero == 671:
+        output <= process_671(file_content)
+    else:
+        output <= html.P("Número não reconhecido. Por favor, selecione 1510 ou 671.")
+
+    document['output'].clear()
+    document['output'] <= output
+
+def process_1510(file_content):
+    output = html.DIV()
+    linhas = file_content.split('\n')
+    registros = {}
+    linhas_invalidas = []
+
+    for i, linha in enumerate(linhas):
+        if len(linha) < 34:
+            continue
+        tipo_registro = linha[9]
+        data = linha[10:18]
+        horario = linha[18:22]
+        numero_documento = linha[23:34]
+
+        if tipo_registro == '3':
+            erros = []
+
+            if not (34 <= len(linha.strip()) <= 35):
+                erros.append("Tamanho do registro inválido")
+
+            try:
+                dia, mes, ano = int(data[0:2]), int(data[2:4]), int(data[4:])
+                if not (1 <= dia <= 31 and 1 <= mes <= 12):
+                    erros.append("Data inválida")
+            except ValueError:
+                erros.append("Data inválida")
+
+            try:
+                hora, minuto = int(horario[0:2]), int(horario[2:])
+                if not (0 <= hora < 24 and 0 <= minuto < 60):
+                    erros.append("Hora inválida")
+            except ValueError:
+                erros.append("Hora inválida")
+
+            if not numero_documento.isdigit():
+                erros.append("Número do documento inválido")
+
+            if erros:
+                linhas_invalidas.append({
+                    'linha': i + 1,
+                    'conteudo': linha.strip(),
+                    'erros': erros
+                })
+            else:
+                if numero_documento not in registros:
+                    registros[numero_documento] = {}
+                if data not in registros[numero_documento]:
+                    registros[numero_documento][data] = []
+                registros[numero_documento][data].append(horario)
+
+    for numero_documento, registros_documento in registros.items():
+        registro_div = html.DIV(Class="registro")
+        registro_div <= html.H3(f"Documento: {numero_documento}")
+        for data, horarios in sorted(registros_documento.items()):
+            data_formatada = f"{data[0:2]}/{data[2:4]}/{data[4:]}"
+            registro_div <= html.P(data_formatada, Class="data-registro")
+            horarios_div = html.DIV(Class="horarios")
+            for horario in sorted(horarios):
+                horarios_div <= html.SPAN(f"{horario[0:2]}:{horario[2:]}", Class="horario")
+            registro_div <= horarios_div
+        output <= registro_div
+
+    if linhas_invalidas:
+        output <= html.H3("Linhas inválidas encontradas:")
+        for linha_invalida in linhas_invalidas:
+            erro_div = html.DIV(Class="erro")
+            erro_div <= html.P(f"Linha {linha_invalida['linha']} possui registro do tipo 3 inválido com os seguintes erros:")
+            for erro in linha_invalida['erros']:
+                erro_div <= html.P(f"- {erro}")
+            erro_div <= html.P(f"Conteúdo: {linha_invalida['conteudo']}")
+            output <= erro_div
+        output <= html.P(f"Total de erros: {len(linhas_invalidas)}")
+
+    primeira_linha = linhas[0] if linhas else ""
+    if primeira_linha and primeira_linha[9] == '1':
+        valor = primeira_linha[187:203]
+        output <= html.P(f"Número de fabricação do REP é: {valor}")
+    else:
+        output <= html.P("Número de fabricação do REP não localizado provavelmente o arquivo não tem cabeçalho")
+
+    return output
+
+def process_671(file_content):
+    output = html.DIV()
+    linhas = file_content.split('\n')
+    registros = {}
+    tipos_rep = {}
+
+    for linha in linhas:
+        if len(linha) < 46:
+            continue
+        tipo_registro = linha[9]
+        
+        if tipo_registro == '7':
+            numero_documento = linha[35:46]
+            ano = linha[10:14]
+            mes = linha[15:17]
+            dia = linha[18:20]
+            hora = linha[21:23]
+            minuto = linha[24:26]
+            
+            data_formatada = f"{dia}/{mes}/{ano}"
+            hora_formatada = f"{hora}:{minuto}"
+            
+            if numero_documento not in registros:
+                registros[numero_documento] = {}
+            if data_formatada not in registros[numero_documento]:
+                registros[numero_documento][data_formatada] = []
+            registros[numero_documento][data_formatada].append(hora_formatada)
+            tipos_rep[numero_documento] = "REP-P"
+        
+        elif tipo_registro == '3':
+            if len(linha.strip()) != 50:
+                output <= html.P(f"Linha inválida (tipo 3): {linha.strip()}", Class="erro")
+                continue
+
+            ano = linha[10:14]
+            mes = linha[15:17]
+            dia = linha[18:20]
+            hora = linha[21:23]
+            minuto = linha[24:26]
+            numero_documento = linha[35:46]
+
+            data_formatada = f"{dia}/{mes}/{ano}"
+            hora_formatada = f"{hora}:{minuto}"
+
+            if numero_documento not in registros:
+                registros[numero_documento] = {}
+            if data_formatada not in registros[numero_documento]:
+                registros[numero_documento][data_formatada] = []
+            registros[numero_documento][data_formatada].append(hora_formatada)
+            tipos_rep[numero_documento] = "REP-C ou REP-A"
+
+    for numero_documento, registros_documento in registros.items():
+        registro_div = html.DIV(Class="registro")
+        registro_div <= html.H3(f"Documento: {numero_documento}")
+        registro_div <= html.P(f"Registrado realizado via {tipos_rep[numero_documento]}")
+        for data, horarios in sorted(registros_documento.items()):
+            registro_div <= html.P(data, Class="data-registro")
+            horarios_div = html.DIV(Class="horarios")
+            for horario in sorted(horarios):
+                horarios_div <= html.SPAN(horario, Class="horario")
+            registro_div <= horarios_div
+        output <= registro_div
+
+    return output
+
+document['process-btn'].bind('click', process_file)
+</script>
+  <script>
+    // Desabilita o clique direito do mouse
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+    });
+
+    // Detecta a tecla F12 pressionada
+    document.onkeydown = function(e) {
+      if (e.keyCode == 123) {
+        return false;
+      }
+      // Detecta Ctrl+S
+      if ((e.ctrlKey || e.metaKey) && e.keyCode == 83) {
+        e.preventDefault();        
+      }
+    }
+  </script>
+</body>
+</html>
