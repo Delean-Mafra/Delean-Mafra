@@ -201,7 +201,7 @@ def process_1510(file_content):
             erro_div <= html.P(f"Linha {linha_invalida['linha']} possui registro do tipo 3 inválido com os seguintes erros:")
             for erro in linha_invalida['erros']:
                 erro_div <= html.P(f"- {erro}")
-            erro_div <= html.P(f"Conteúdo: {linha_invalida['conteudo']}")
+            erro_div <= html.P(f"Conteúdo do AFD esta corrompido: {linha_invalida['conteudo']}")
             output <= erro_div
         output <= html.P(f"Total de erros: {len(linhas_invalidas)}")
 
@@ -282,21 +282,21 @@ def process_671(file_content):
 document['process-btn'].bind('click', process_file)
 </script>
   <script>
-    // Desabilita o clique direito do mouse
-    document.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-    });
+  // Desabilita o clique direito do mouse
+  document.addEventListener('contextmenu', function(e) {
+    e.preventDefault();
+  });
 
-    // Detecta a tecla F12 pressionada
-    document.onkeydown = function(e) {
-      if (e.keyCode == 123) {
-        return false;
-      }
-      // Detecta Ctrl+S
-      if ((e.ctrlKey || e.metaKey) && e.keyCode == 83) {
-        e.preventDefault();        
-      }
+  // Detecta a tecla F12 pressionada e Ctrl+S
+  window.addEventListener('keydown', function(e) {
+    if (e.keyCode == 123) {
+      e.preventDefault();
     }
-  </script>
+    if ((e.ctrlKey || e.metaKey) && e.keyCode == 83) {
+      e.preventDefault();
+    }
+  });
+</script>
+
 </body>
 </html>
