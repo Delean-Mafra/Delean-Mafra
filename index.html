@@ -281,22 +281,24 @@ def process_671(file_content):
 
 document['process-btn'].bind('click', process_file)
 </script>
-  <script>
-  // Desabilita o clique direito do mouse
-  document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
-  });
+  <script type="text/python">
+from browser import document, window
 
-  // Detecta a tecla F12 pressionada e Ctrl+S
-  window.addEventListener('keydown', function(e) {
-    if (e.keyCode == 123) {
-      e.preventDefault();
-    }
-    if ((e.ctrlKey || e.metaKey) && e.keyCode == 83) {
-      e.preventDefault();
-    }
-  });
+def disable_right_click(event):
+    event.preventDefault()
+
+document.bind('contextmenu', disable_right_click)
+
+
+def disable_keys(event):
+    if event.keyCode == 123:  
+        event.preventDefault()
+    if (event.ctrlKey or event.metaKey) and event.keyCode == 83:  
+        event.preventDefault()
+
+window.bind('keydown', disable_keys)
 </script>
+
 
 </body>
 </html>
