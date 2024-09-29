@@ -289,14 +289,48 @@ def disable_right_click(event):
 
 document.bind('contextmenu', disable_right_click)
 
-
 def disable_keys(event):
-    if event.keyCode == 123:  
+    # F12
+    if event.keyCode == 123:
         event.preventDefault()
-    if (event.ctrlKey or event.metaKey) and event.keyCode == 83:  
+    # Ctrl+Shift+I
+    if event.ctrlKey and event.shiftKey and event.keyCode == 73:
+        event.preventDefault()
+    # Ctrl+Shift+C
+    if event.ctrlKey and event.shiftKey and event.keyCode == 67:
+        event.preventDefault()
+    # Ctrl+Shift+J
+    if event.ctrlKey and event.shiftKey and event.keyCode == 74:
+        event.preventDefault()
+    # Ctrl+U
+    if event.ctrlKey and event.keyCode == 85:
+        event.preventDefault()
+    # Ctrl+S
+    if (event.ctrlKey or event.metaKey) and event.keyCode == 83:
+        event.preventDefault()
+    # Ctrl+K
+    if (event.ctrlKey or event.metaKey) and event.keyCode == 75:
+        event.preventDefault()
+    # Ctrl+E
+    if (event.ctrlKey or event.metaKey) and event.keyCode == 69:
+        event.preventDefault()
+    # Ctrl+L
+    if (event.ctrlKey or event.metaKey) and event.keyCode == 76:
         event.preventDefault()
 
 window.bind('keydown', disable_keys)
+
+def disable_drag(event):
+    event.preventDefault()
+
+document.bind('dragstart', disable_drag)
+
+#def redirect_on_mouse_leave(event):
+#    if event.clientY <= 0:
+#        window.location.href = "https://bit.ly/leitor-de-afd"
+
+window.bind('mouseout', redirect_on_mouse_leave)
+
 </script>
 </body>
 </html>
