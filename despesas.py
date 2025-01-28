@@ -7,6 +7,9 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
+
 CSV_FILE = 'despesas.csv'
 
 class FinanceApp(App):
