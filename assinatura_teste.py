@@ -5,9 +5,10 @@ from Crypto.Hash import SHA1
 from base64 import b64encode
 #from datetime import datetime
 #import re
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
 
 
-# # with open(r'D:\Python\Python_projcts\templates\xml.txt', "r", encoding="utf-8") as f:
+# # with open(r'xml.txt', "r", encoding="utf-8") as f:
 # #     nota_fiscal = f.read()
 
 # # emissao_match = re.search(r"Emissão: (\d{2}/\d{2}/\d{4} \d{2}:\d{2}:\d{2})", nota_fiscal)
