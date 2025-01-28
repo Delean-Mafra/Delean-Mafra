@@ -1,5 +1,6 @@
 import difflib
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
 
 def responder_pergunta(pergunta):
     perguntas_validas = [
