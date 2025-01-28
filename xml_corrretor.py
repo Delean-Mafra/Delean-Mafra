@@ -1,5 +1,8 @@
 import xml.etree.ElementTree as ET
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
+
 # Função para ler o XML e retornar a árvore e a raiz
 def read_xml(file_path):
     tree = ET.parse(file_path)
@@ -36,7 +39,7 @@ def remove_namespace(tree):
 
 # Função principal
 def main():
-    file_path = r'D:\Python\Python_projcts\templates\xml_nfe_teste.xml'  # Substitua pelo caminho do seu arquivo XML
+    file_path = r'\teste.xml'  # Substitua pelo caminho do seu arquivo XML
     tree, root = read_xml(file_path)
 
     ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
