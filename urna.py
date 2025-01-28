@@ -3,14 +3,16 @@ import json
 import os
 from valida_cpf import isCpfValid
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 app = Flask(__name__)
 
 # Caminho base do projeto
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
 # Caminhos absolutos dos arquivos JSON
-VOTOS_FILE = os.path.join(BASE_DIR, r'D:\Python\Python_projcts\templates\votos.json')
-CPFS_FILE = os.path.join(BASE_DIR, r'D:\Python\Python_projcts\templates\cpfs.json')
+VOTOS_FILE = os.path.join(BASE_DIR, r'\1.json')
+CPFS_FILE = os.path.join(BASE_DIR, r'\2.json')
 
 def ler_json(arquivo):
     if not os.path.exists(arquivo):
@@ -62,10 +64,10 @@ def votacao():
     if not candidato_encontrado:
         nome_candidato = {
             '00': 'Nulo/Em branco',
-            '22': 'Delean',
-            '17': 'Joze',
-            '13': 'Julia',
-            '15': 'Pricila'
+            '22': 'D',
+            '17': 'J',
+            '13': 'L',
+            '15': 'P'
         }.get(candidato, 'Nulo/Em branco')
         
         votos.append({
