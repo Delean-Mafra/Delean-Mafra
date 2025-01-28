@@ -1,6 +1,8 @@
 import json
 import re
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 # Função para limpar caracteres de controle
 def limpar_caracteres(texto):
     return re.sub(r'[\x00-\x1F\x7F]', '', texto)
@@ -18,7 +20,7 @@ def imprimir_respostas(json_file):
             print(f"Erro ao decodificar JSON: {e}")
 
 # Nome do arquivo JSON
-arquivo_json = r'D:\Python\Python_projcts\templates\Novo Documento de Texto.json'
+arquivo_json = r'\Novo Documento de Texto.json'
 
 # Chama a função para imprimir as respostas
 imprimir_respostas(arquivo_json)
