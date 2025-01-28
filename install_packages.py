@@ -1,6 +1,8 @@
 import subprocess
 import sys
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 def install_package(package):
     try:
         subprocess.check_call([sys.executable, "-m", "pip", "install", package])
