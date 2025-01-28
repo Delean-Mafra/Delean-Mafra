@@ -1,3 +1,6 @@
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
+
 def calcular_dv(chave43):
     """
     Calcula o dígito verificador (DV) para os 43 primeiros dígitos da chave de acesso.
