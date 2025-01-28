@@ -3,6 +3,8 @@ import string
 import tkinter as tk
 from tkinter import ttk
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 class PasswordGenerator:
     def __init__(self, root):
         self.root = root
