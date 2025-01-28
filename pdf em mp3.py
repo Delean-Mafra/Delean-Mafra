@@ -1,6 +1,9 @@
 from gtts import gTTS
 from PyPDF2 import PdfReader
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
+
 def pdf_to_text(pdf_file):
     text = ""
     with open(pdf_file, 'rb') as f:
