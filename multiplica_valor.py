@@ -1,3 +1,5 @@
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 def dobrar_valor(valor, vezes):
     acumulado = valor
     for _ in range(vezes - 1):
