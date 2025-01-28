@@ -15,5 +15,5 @@ def deletar_arquivos_e_pastas(caminho):
         except PermissionError:
             print(f"Permissão negada para {subcaminho}. Continuando com o próximo.")
 
-caminho = r"C:\Users\Acer\AppData\Local\Microsoft\Windows\INetCache\IE\KVGBJOP1"
+caminho = r"\pasta"
 deletar_arquivos_e_pastas(caminho)
