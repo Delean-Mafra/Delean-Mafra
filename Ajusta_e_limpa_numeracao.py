@@ -1,6 +1,6 @@
 import pyperclip
 
-print("Copyright ©2024 | Delean Mafra, todos os direitos reservados.")
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
 
 
 def limpar_string(string):
