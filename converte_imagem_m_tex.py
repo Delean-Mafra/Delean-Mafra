@@ -11,7 +11,7 @@ def image_to_text(image_path):
     text = txm.image_to_string(img, lang='por')
     return text
 
-imagem = r'D:\Python\Python_projcts\templates\uploaded-image1.png'
+imagem = r'\uploaded-image1.png'
 
 # Call the function to convert the uploaded image to text
 text = image_to_text(imagem)
