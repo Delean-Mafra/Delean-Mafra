@@ -87,4 +87,6 @@ def votacao():
     return jsonify({'status': 'success', 'message': 'Voto registrado com sucesso!'}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # Use a variável de ambiente FLASK_DEBUG para controlar o modo debug
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
+    app.run(debug=debug_mode)
