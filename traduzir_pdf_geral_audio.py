@@ -2,6 +2,9 @@ import PyPDF2 as deleanpdf
 from googletrans import Translator as deleantradutor
 from gtts import gTTS as deleangs
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
+
 # Função para extrair texto do PDF
 def extrair_texto_pdf(caminho_pdf):
     leitor_pdf = deleanpdf.PdfFileReader(caminho_pdf)
