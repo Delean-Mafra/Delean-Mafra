@@ -1,6 +1,9 @@
 import pikepdf
 import os
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
+
 def desbloquear_pdf(input_pdf, output_pdf):
     # Abrir o arquivo PDF de entrada
     with pikepdf.open(input_pdf) as pdf:
@@ -10,12 +13,12 @@ def desbloquear_pdf(input_pdf, output_pdf):
 # Exemplo de uso
 
 nome = input('Informe o nome do boleto: ')  # Corrigido o nome de "booleto" para "boleto"
-input_caminho_pdf = r'C:\Users\Acer\Downloads\pdf'
+input_caminho_pdf = r'\pdf'
 
 # Corrigindo a montagem do caminho do arquivo
 input_pdf = os.path.join(input_caminho_pdf, nome + '.pdf')
 
-output_pdf = r'C:\Users\Acer\Downloads\pdf\boleto_desbloqueado.pdf'
+output_pdf = r'\pdf\boleto_desbloqueado.pdf'
 
 # Verificar se o arquivo existe antes de tentar desbloqueá-lo
 if os.path.exists(input_pdf):
@@ -27,22 +30,3 @@ else:
 
 print('PDF desbloqueado com sucesso!')
 
-
-
-
-
-
-
-
-# # import pikepdf
-
-# # def desbloquear_pdf(input_pdf, output_pdf):
-# #     # Abrir o arquivo PDF de entrada
-# #     with pikepdf.open(input_pdf) as pdf:
-# #         # Salvar o novo PDF desbloqueado
-# #         pdf.save(output_pdf)
-
-# # # Exemplo de uso
-# # input_pdf = r'C:\Users\Acer\Downloads\pdf\Boleto910478.pdf'
-# # output_pdf = r'C:\Users\Acer\Downloads\pdf\boleto_desbloqueado.pdf'
-# # desbloquear_pdf(input_pdf, output_pdf)
