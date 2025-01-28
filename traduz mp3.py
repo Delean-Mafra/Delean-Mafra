@@ -3,9 +3,11 @@ from deep_translator import GoogleTranslator
 from gtts import gTTS
 import os
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 # Transcrição do áudio
 wav_file = pt.to_valid_wav("audio.mp3", "audio_novo.wav")
-transcript = pt.transcribe(wav_file, model="D:/Python/Python_projcts/vosk-model-en-us-aspire-0.2")
+transcript = pt.transcribe(wav_file, model="/vosk-model-en-us-aspire-0.2")
 
 # Verificar se a transcrição foi bem-sucedida
 if not transcript.text:
