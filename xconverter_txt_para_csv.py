@@ -1,6 +1,8 @@
 import re
 import pandas as pd
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 def parse_nfce_txt(file_path):
     # 
     # Analisa o arquivo de texto de uma Nota Fiscal de Consumidor Eletrônica (NFC-e)
@@ -72,7 +74,7 @@ def salvar_arquivo(df, caminho_original, formato='xlsx'):
 
 def main():
     # Caminho do arquivo de texto
-    caminho_arquivo = r"D:\Python\Python_projcts\templates\xml.txt"
+    caminho_arquivo = r"\xml.txt"
     
     try:
         # Converte o texto para DataFrame
