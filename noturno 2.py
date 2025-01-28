@@ -22,7 +22,7 @@
 # print(f"{int(horas)} horas e {int(minutos)} minutos")
 # """
 import math
-print("Copyright © 2024 | Delean Mafra, todos os direitos reservados.")
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
 
 def tempo_para_decimal(tempo):
     horas, minutos = map(int, tempo.split(':'))
