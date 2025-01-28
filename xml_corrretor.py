@@ -12,13 +12,13 @@ def read_xml(file_path):
 # Função para calcular a soma dos descontos dos itens
 def calculate_total_item_discount(root, ns):
     total_item_discount = 0.0
-    for item in root.findall('.//nfe:det/nfe:prod/nfe:vDesc', ns):
+    for item in root.findall('.//deleanmafra:det/deleanmafra:prod/deleanmafra:vDesc', ns):
         total_item_discount += float(item.text)
     return total_item_discount
 
 # Função para redistribuir o desconto total entre os itens
 def redistribute_discount(root, total_discount, ns):
-    items = root.findall('.//nfe:det/nfe:prod/nfe:vDesc', ns)
+    items = root.findall('.//deleanmafra:det/deleanmafra:prod/deleanmafra:vDesc', ns)
     num_items = len(items)
     new_discount = round(total_discount / num_items, 2)
     total_new_discount = new_discount * num_items
@@ -42,14 +42,14 @@ def main():
     file_path = r'\teste.xml'  # Substitua pelo caminho do seu arquivo XML
     tree, root = read_xml(file_path)
 
-    ns = {'nfe': 'http://www.portalfiscal.inf.br/nfe'}
-    total_discount = float(root.find('.//nfe:total/nfe:ICMSTot/nfe:vDesc', ns).text)
+    ns = {'deleanmafra': 'http://www.portalfiscal.inf.br/deleanmafra'}
+    total_discount = float(root.find('.//deleanmafra:total/deleanmafra:ICMSTot/deleanmafra:vDesc', ns).text)
     total_item_discount = calculate_total_item_discount(root, ns)
 
     if total_discount != total_item_discount:
         redistribute_discount(root, total_discount, ns)
         remove_namespace(tree)
-        tree.write('xml_nfe_teste_corrigido.xml', encoding='utf-8', xml_declaration=True)  # Salva o XML corrigido
+        tree.write('xml_deleanmafra_teste_corrigido.xml', encoding='utf-8', xml_declaration=True)  # Salva o XML corrigido
 
 if __name__ == '__main__':
     main()
