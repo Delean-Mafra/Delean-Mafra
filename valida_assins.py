@@ -4,6 +4,8 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 import base64
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 def carregar_chave_publica():
     """
     Carrega a chave pública gerada, geralmente a chave pública correspondente à chave privada usada para assinar.
@@ -12,13 +14,13 @@ def carregar_chave_publica():
     # A chave pública em Base64 (sem os delimitadores PEM)
     # Removidas as quebras de linha (\n) do meio da string
     public_key_base64 = (
-        "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAzWn1HhzF4oG3hknbEshGz"
-        "VoLQ+4qMvHZ8rzZ9lwCx1NlrL2a1f9tD5Tr1CK9ZmA7JhU3zR+SlyeyEmzLoJrxg"
-        "j6xh1FkWdfglqekS6t00dzg9MPF6gNO7w7m4/wnv4qfo58yf9zBQL1alNSdyIBYw"
-        "y9y2mi9hnw4v9y7phg0qHZm88pyMwSm7wlt+ffq9Dgg7kVbF8wqGHxv6H/8Bx9ks"
-        "4vGVlOogUQChw8k+gOl28l94HW3pZiwjAAMOZjZXjJhZf8ZxrtZTTof7Y6H6RjTC"
-        "lHZhnsMQn0L4LlLsDmtF3WyhZ2rW0HRE2q4yKlcE1vgeE1kGoPYyPZmC7Jj9rcE8"
-        "D9bYmy6yIwIDAQAB"
+        "SUA CHAVE MD5-1"
+        "SUA CHAVE MD5-2"
+        "SUA CHAVE MD5-3"
+        "SUA CHAVE MD5-4"
+        "SUA CHAVE MD5-6"
+        "SUA CHAVE MD5-7"
+        "SUA CHAVE MD5-8"
     )
 
     # Remover possíveis espaços em branco e juntar a string
@@ -77,8 +79,7 @@ if __name__ == "__main__":
     mensagem_original = "Este é o conteúdo da NF-e a ser assinado."
 
     # Exemplo de assinatura Base64 (substitua com a assinatura real que você gerou)
-    assinatura_base64 = "GC7UT/egOr/KHViKF4nNUL8m5Q8q0YsjHtSSYncBKuNChv7am3ItVSSaHyKFqbkp4VJBUD7OT4Z+eUXOUGm7XkgRCo317heGIZu4TVXpEX/2nHJGb1UGwLxYNat2zVizJNX4+n6/8lQxgNWJSmYAQbAPkFidSlcKnuCAmhi5117X4dOh+8MK2Fa25oSOaKkJF4EW1Ow6L1a4xjwQB1maCuXSOjZzCSSXEBTKY94jXQ4ptpdgSSHDA1QLs4xnsLXP7KVi6W3830PrXDLs+lW6HJuGTxyED9TzRt/MFVUKpQn6tht99b8vlKXfaacQPZDRS1E9KIkg0AkkVuL4gacWdg=="
-
+    assinatura_base64 = "SUA CHAVE DE ASSINATURA CONTENDO APROXIMADAMENTE 345 CARACTERES"
     try:
         # Carregar a chave pública
         chave_publica = carregar_chave_publica()
