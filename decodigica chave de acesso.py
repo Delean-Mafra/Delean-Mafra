@@ -17,7 +17,7 @@ def calcular_dv(chave):
 
 uf = 42
 aamm = 2410
-cnpj = 82956160005051
+cnpj = 60477816000132
 modelo = 65
 serie = 1
 numero = 323752
