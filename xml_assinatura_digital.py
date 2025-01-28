@@ -4,6 +4,9 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 import base64
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
+
 def gerar_chaves():
     """
     Gera um par de chaves RSA (privada e pública).
@@ -58,7 +61,7 @@ if __name__ == "__main__":
     # Exemplo de uso - Aqui você pode passar a mensagem diretamente
     # ou você pode carregar de um arquivo de texto, como demonstrado abaixo
     
-    arquivo_path = r"D:\Python\Python_projcts\templates\xml.txt"  # Caminho do seu arquivo de texto
+    arquivo_path = r"\xml.txt"  # Caminho do seu arquivo de texto
     
     # Ler o conteúdo do arquivo de texto
     with open(arquivo_path, "r", encoding="utf-8") as file:
