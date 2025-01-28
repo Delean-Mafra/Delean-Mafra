@@ -1,7 +1,9 @@
 import os
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 # Define o caminho da pasta
-folder_path = r"D:\Python\Python_projcts"
+folder_path = r"\pasta"
 
 # Percorre todos os arquivos na pasta
 for filename in os.listdir(folder_path):
