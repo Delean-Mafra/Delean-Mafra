@@ -4,6 +4,9 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
+
 def criar_pdf_com_imagens(pasta_origem, arquivo_pdf):
     # Lista para armazenar os caminhos das imagens
     imagens = []
@@ -61,7 +64,7 @@ def criar_pdf_com_imagens(pasta_origem, arquivo_pdf):
     print(f"PDF criado com sucesso: {arquivo_pdf}")
 
 # Caminho da pasta com as imagens
-pasta_imagens = r"D:\Python\complementos\imag"
+pasta_imagens = 'caminho'
 # Caminho do arquivo PDF de saída
 arquivo_pdf_saida = os.path.join(pasta_imagens, "imagens_combinadas.pdf")
 
