@@ -1,5 +1,7 @@
 import subprocess
 import sys
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 
 # Lista de dependências com versão específica do numpy
 dependencias = [
