@@ -1,5 +1,6 @@
 import csv
 import os
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
 
 # Define the path to the CSV file
 csv_file_path = '\.csv'
