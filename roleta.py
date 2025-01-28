@@ -2,7 +2,7 @@ import csv
 import os
 
 # Define the path to the CSV file
-csv_file_path = 'D:\\Python\\Python_projcts\\templates\\roleta_lucro_despesa.csv'
+csv_file_path = '\.csv'
 
 # Function to calculate and log the profit and expense
 def roleta():
