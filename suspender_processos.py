@@ -1,7 +1,9 @@
 import psutil
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 # Lista de nomes dos processos que você deseja suspender
-processos_para_suspender = ["zoom.exe", "opera.exe"]
+processos_para_suspender = ["app1.exe", "app2.exe"]
 
 # Função para suspender processos
 def suspender_processos(processos):
