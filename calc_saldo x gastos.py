@@ -1,3 +1,5 @@
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 def calcular_tempo(saldo, gasto_mensal):
     meses = saldo / gasto_mensal
     anos = int(meses // 12)
