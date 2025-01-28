@@ -1,6 +1,6 @@
 import os
 
-print("Copyright ©2024 | Delean Mafra, todos os direitos reservados.")
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
 
 def find_in_files():
     while True:
