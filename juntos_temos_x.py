@@ -1,3 +1,5 @@
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 def solve_problem():
     # Solicitar entradas do usuário
     total = float(input("Juntos vocês têm: "))
