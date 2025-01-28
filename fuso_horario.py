@@ -1,6 +1,8 @@
 from datetime import datetime
 import pytz
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 print('Qual fuso horário você quer comparar?')
 
 # Definindo o fuso horário do computador (GMT-3)
