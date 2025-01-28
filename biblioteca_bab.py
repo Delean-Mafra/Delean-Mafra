@@ -1,6 +1,8 @@
 import random
 import string
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 # Função para gerar um texto aleatório com base em um número de caracteres
 def gerar_texto(tamanho):
     caracteres = string.ascii_lowercase + string.ascii_uppercase + string.punctuation + ' '
