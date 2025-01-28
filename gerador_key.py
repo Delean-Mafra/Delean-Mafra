@@ -1,6 +1,8 @@
 import random
 import string
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 def gera_bloco():
   """Gera um bloco aleatório de 4 caracteres alfanuméricos."""
   caracteres = string.ascii_uppercase + string.digits
