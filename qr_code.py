@@ -1,4 +1,5 @@
 import qrcode
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
 
 def generate_qr_code(url, file_name):
     # Cria uma instância de QR code
@@ -21,7 +22,7 @@ def generate_qr_code(url, file_name):
 
 # Exemplo de uso
 url = input('Informe o link: ')
-file_name = r"D:\Python\Python_projcts\templates\qrcode.png"
+file_name = r"\qrcode.png"
 generate_qr_code(url, file_name)
 
 print(f"O QR code para {url} foi salvo com sucesso em {file_name}.")
