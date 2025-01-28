@@ -1,3 +1,5 @@
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 # Função para calcular a potência
 def calcular_potencia(base, potencia):
     return base ** potencia
