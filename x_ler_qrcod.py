@@ -2,6 +2,8 @@ import cv2
 from pyzbar import pyzbar
 import numpy as np
 
+print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+
 def read_qr_code():
     # Abre a câmera
     cap = cv2.VideoCapture(0)
