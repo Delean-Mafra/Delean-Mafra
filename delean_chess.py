@@ -1,8 +1,14 @@
 class Peca:
     def __init__(self, cor):
-        self.cor = cor        
+        self._cor = cor  # Torne o atributo cor protegido
+
+    @property
+    def cor(self):
+        return self._cor
+
     def __repr__(self):
-        return f"{self.__class__.__name__[0]}_{self.cor[0]}"
+        return f"{self.__class__.__name__[0]}_{self._cor[0]}"
+
     def movimentos_validos(self, tabuleiro, linha, coluna):
         raise NotImplementedError()
 
@@ -142,6 +148,8 @@ class Tabuleiro:
     def mover_peca(self, inicio, fim):
         linha_inicio, coluna_inicio = inicio
         linha_fim, coluna_fim = fim
+        if not (0 <= linha_inicio < 8 and 0 <= coluna_inicio < 8 and 0 <= linha_fim < 8 and 0 <= coluna_fim < 8):
+            return False  # Verifique se as coordenadas estão dentro dos limites
         peca = self.tabuleiro[linha_inicio][coluna_inicio]        
         if not peca:
             return False
@@ -162,7 +170,9 @@ class Tabuleiro:
             'P_p': '♟', 'T_p': '♜', 'C_p': '♞', 'B_p': '♝', 'R_p': '♚', 'Q_p': '♛'
         }        
         return simbolos.get(str(peca), "?")        
+
     def get_estado_tabuleiro(self):
         return [[self.peca_para_unicode(self.tabuleiro[i][j]) for j in range(8)] for i in range(8)]
+
 print('Copyright © Delean Mafra, todos os direitos reservados | All rights reserved.')
 # End of delean_chess.py
