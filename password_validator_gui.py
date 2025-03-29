@@ -6,7 +6,6 @@ import string
 import hashlib
 import base64
 import os
-import json
 import functools
 import gzip
 import tkinter as tk
