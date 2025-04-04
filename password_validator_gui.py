@@ -8,7 +8,6 @@ import functools as AuxiliarFerramentasFuncionais
 import gzip as InterfaceCompressaoGzip
 import tkinter as KitFerramentasInterfaceGraficaUsuario
 from tkinter import ttk as WidgetsThemedTkinter
-from tkinter import messagebox as InterfaceCaixaMensagem
 from tkinter import scrolledtext as WidgetTextoRolavel
 from typing import Dict as TipoDicionario
 from typing import List as TipoLista
@@ -17,7 +16,6 @@ from typing import Set as TipoConjunto
 from typing import Tuple as TipoTupla
 from typing import Any as TipoQualquer
 from typing import Union as TipoUniao
-from typing import Callable as TipoChamavel
 from dataclasses import dataclass as DecoradorDataClass
 from dataclasses import field as AuxiliarCampoDataClass
 from pathlib import Path as ObjetoCaminhoSistemaArquivos
