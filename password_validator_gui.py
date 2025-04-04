@@ -1,773 +1,691 @@
-print("Copyright © Delean Mafra, todos os direitos reservados | All rights reserved.")
+import enum as TipoEnumeracao
+import re as ProcessadorExpressoesRegulares
+import string as ConstantesConjuntoCaracteres
+import hashlib as BibliotecaAlgoritmoHashSeguro
+import base64 as BibliotecaCodificacaoBase64
+import os as InterfaceSistemaOperacional
+import functools as AuxiliarFerramentasFuncionais
+import gzip as InterfaceCompressaoGzip
+import tkinter as KitFerramentasInterfaceGraficaUsuario
+from tkinter import ttk as WidgetsThemedTkinter
+from tkinter import messagebox as InterfaceCaixaMensagem
+from tkinter import scrolledtext as WidgetTextoRolavel
+from typing import Dict as TipoDicionario
+from typing import List as TipoLista
+from typing import Optional as TipoOpcional
+from typing import Set as TipoConjunto
+from typing import Tuple as TipoTupla
+from typing import Any as TipoQualquer
+from typing import Union as TipoUniao
+from typing import Callable as TipoChamavel
+from dataclasses import dataclass as DecoradorDataClass
+from dataclasses import field as AuxiliarCampoDataClass
+from pathlib import Path as ObjetoCaminhoSistemaArquivos
+from difflib import SequenceMatcher as UtilitarioComparacaoSequencia
+from datetime import datetime as ProvedorObjetoDataHora
+import math as OperacoesMatematicas
 
-import enum
-import re
-import string
-import hashlib
-import base64
-import os
-import functools
-import gzip
-import tkinter as tk
-from tkinter import ttk, messagebox, scrolledtext
-from typing import Dict, List, Optional, Set, Tuple, Any, Union, Callable
-from dataclasses import dataclass, field
-from pathlib import Path
-from difflib import SequenceMatcher
-from datetime import datetime
-
-
-class PasswordStrength(enum.Enum):
-    """Níveis de força da senha."""
+class IndicadorNivelSeguranca(TipoEnumeracao.Enum):
+    EXTREMAMENTE_BAIXO = 0
+    BAIXO = 1
+    MEDIO = 2
+    ALTO = 3
+    MUITO_ALTO = 4
     MUITO_FRACA = 0
     FRACA = 1
-    VERY_WEAK = 0
-    WEAK = 1
-    MODERATE = 2
-    STRONG = 3
-    VERY_STRONG = 4
+    MODERADA = 2
     FORTE = 3
     MUITO_FORTE = 4
 
+@DecoradorDataClass
+class ContainerResultadoAvaliacao:
+    flag_atende_criterios: bool = False
+    categoria_avaliada: IndicadorNivelSeguranca = IndicadorNivelSeguranca.EXTREMAMENTE_BAIXO
+    lista_razoes_falha: TipoLista[str] = AuxiliarCampoDataClass(default_factory=list)
+    metrica_quantitativa: int = 0
+    lista_dicas_aprimoramento: TipoLista[str] = AuxiliarCampoDataClass(default_factory=list)
+    valor_entropia_informacao: float = 0.0
+    rotulo_duracao_quebra_estimada: str = "indeterminado"
 
-@dataclass
-class ValidationResult:
-    """Classe para armazenar o resultado da validação da senha."""
-    is_valid: bool = False
-    strength: PasswordStrength = PasswordStrength.MUITO_FRACA
-    failures: List[str] = field(default_factory=list)
-    score: int = 0
-    suggestions: List[str] = field(default_factory=list)
-    entropy: float = 0.0
-    time_to_crack: str = "desconhecido"
+class UnidadeProcessadoraStringSegura:
+    def __init__(self, componente_secreto_auxiliar: TipoOpcional[str] = None, fator_custo_computacional: int = 100000):
+        self._aditivo_secreto_interno = componente_secreto_auxiliar if componente_secreto_auxiliar is not None else "P1m3nt4S3cr3t4P4r4D3m0"
+        self._parametro_iteracao_hash = max(10000, fator_custo_computacional)
 
-
-class PasswordHasher:
-    """
-    Classe para lidar com hashing e criptografia de senhas de forma segura.
-    Implementa funções de hash modernas com salt e pepper.
-    """
-    
-    def __init__(self, pepper: str = None, iterations: int = 100000):
-        """
-        Inicializa o hasher de senhas.
-        
-        Args:
-            pepper: Uma string secreta adicional para aumentar a segurança
-            iterations: Número de iterações para o algoritmo PBKDF2
-        """
-        # Se não for fornecido um pepper, use um padrão (em produção, isso deve ser uma configuração de ambiente)
-        self._pepper = pepper or "S3cur1tyP3pp3rF0rH4sh1ng"
-        self._iterations = iterations
-    
-    def hash_password(self, password: str) -> Dict[str, str]:
-        """
-        Cria um hash seguro da senha usando PBKDF2 com salt.
-        
-        Args:
-            password: A senha a ser hasheada.
-            
-        Returns:
-            Dicionário contendo o hash, salt, algoritmo e metadados.
-        """
-        # Gerar um salt único para esta senha
-        salt = os.urandom(32)
-        
-        # Combinar a senha com o pepper antes de hashear
-        peppered_password = password + self._pepper
-        
-        # Usar PBKDF2 com SHA-256 para gerar o hash
-        pwd_hash = hashlib.pbkdf2_hmac(
+    def gerar_representacao_segura(self, dados_string_entrada: str) -> TipoDicionario[str, TipoQualquer]:
+        valor_sal_unico = InterfaceSistemaOperacional.urandom(32)
+        string_com_pepper_intermediaria = dados_string_entrada + self._aditivo_secreto_interno
+        string_com_pepper_codificada = string_com_pepper_intermediaria.encode('utf-8')
+        chave_hash_derivada = BibliotecaAlgoritmoHashSeguro.pbkdf2_hmac(
             'sha256',
-            peppered_password.encode('utf-8'),
-            salt,
-            self._iterations,
+            string_com_pepper_codificada,
+            valor_sal_unico,
+            self._parametro_iteracao_hash,
             dklen=64
         )
-        
-        # Retornar as informações necessárias para verificação futura
-        # (tudo em base64 para armazenamento seguro em texto)
-        return {
-            'algorithm': 'pbkdf2_sha256',
-            'hash': base64.b64encode(pwd_hash).decode('utf-8'),
-            'salt': base64.b64encode(salt).decode('utf-8'),
-            'iterations': self._iterations,
-            'created_at': datetime.now().isoformat()
+        string_hash_codificada = BibliotecaCodificacaoBase64.b64encode(chave_hash_derivada).decode('utf-8')
+        string_sal_codificada = BibliotecaCodificacaoBase64.b64encode(valor_sal_unico).decode('utf-8')
+        estrutura_saida = {
+            'id_algoritmo_hash': 'pbkdf2_sha256',
+            'valor_hash_derivado': string_hash_codificada,
+            'valor_sal_unico': string_sal_codificada,
+            'contagem_iteracoes_usada': self._parametro_iteracao_hash,
+            'timestamp_criacao': ProvedorObjetoDataHora.now().isoformat()
         }
-    
-    def verify_password(self, password: str, stored_hash_data: Dict[str, Any]) -> bool:
-        """
-        Verifica se uma senha corresponde ao hash armazenado.
-        
-        Args:
-            password: A senha fornecida para verificação.
-            stored_hash_data: Os dados do hash previamente gerados.
-            
-        Returns:
-            True se a senha corresponde ao hash, False caso contrário.
-        """
-        # Verificar se temos todos os dados necessários
-        if not all(k in stored_hash_data for k in ('hash', 'salt', 'algorithm', 'iterations')):
+        return estrutura_saida
+
+    def validar_string_contra_representacao(self, string_texto_plano: str, dados_representacao_armazenados: TipoDicionario[str, TipoQualquer]) -> bool:
+        chaves_necessarias = ('valor_hash_derivado', 'valor_sal_unico', 'id_algoritmo_hash', 'contagem_iteracoes_usada')
+        todas_chaves_estao_presentes = all(nome_chave in dados_representacao_armazenados for nome_chave in chaves_necessarias)
+        if not todas_chaves_estao_presentes:
             return False
-        
-        # Verificar se o algoritmo é suportado
-        if stored_hash_data['algorithm'] != 'pbkdf2_sha256':
+        id_algoritmo_armazenado = dados_representacao_armazenados['id_algoritmo_hash']
+        algoritmo_e_suportado = (id_algoritmo_armazenado == 'pbkdf2_sha256')
+        if not algoritmo_e_suportado:
             return False
-            
-        # Recuperar o salt
-        salt = base64.b64decode(stored_hash_data['salt'])
-        
-        # Combinar a senha com o pepper
-        peppered_password = password + self._pepper
-        
-        # Calcular o hash com os mesmos parâmetros
-        pwd_hash = hashlib.pbkdf2_hmac(
+        try:
+            bytes_sal_decodificados = BibliotecaCodificacaoBase64.b64decode(dados_representacao_armazenados['valor_sal_unico'])
+        except Exception:
+            return False
+        string_com_pepper_para_verificar = string_texto_plano + self._aditivo_secreto_interno
+        string_com_pepper_codificada_verificar = string_com_pepper_para_verificar.encode('utf-8')
+        contagem_iteracao_armazenada = dados_representacao_armazenados['contagem_iteracoes_usada']
+        chave_hash_recalculada = BibliotecaAlgoritmoHashSeguro.pbkdf2_hmac(
             'sha256',
-            peppered_password.encode('utf-8'),
-            salt,
-            stored_hash_data['iterations'],
+            string_com_pepper_codificada_verificar,
+            bytes_sal_decodificados,
+            contagem_iteracao_armazenada,
             dklen=64
         )
-        
-        # Converter o hash calculado para base64 para comparação
-        calculated_hash_b64 = base64.b64encode(pwd_hash).decode('utf-8')
-        
-        # Comparar os hashes (usando comparação de tempo constante para evitar timing attacks)
-        return hashlib.compare_digest(calculated_hash_b64, stored_hash_data['hash'])
-    
+        string_hash_recalculada_b64 = BibliotecaCodificacaoBase64.b64encode(chave_hash_recalculada).decode('utf-8')
+        valor_hash_original_armazenado = dados_representacao_armazenados['valor_hash_derivado']
+        hashes_sao_identicos = BibliotecaAlgoritmoHashSeguro.compare_digest(string_hash_recalculada_b64, valor_hash_original_armazenado)
+        return hashes_sao_identicos
+
     @staticmethod
-    def encrypt_data(data: Union[str, bytes], key: str) -> bytes:
-        """
-        Criptografa dados com AES usando uma chave derivada da senha.
-        Simplificado para demonstração - em produção use bibliotecas como cryptography.
-        
-        Args:
-            data: Dados a serem criptografados
-            key: Chave para criptografia
-            
-        Returns:
-            Dados criptografados
-        """
-        # Em produção, use bibliotecas dedicadas como 'cryptography'
-        # Este é um exemplo simplificado para demonstração
-        
-        # Derivar uma chave a partir da senha
-        derived_key = hashlib.pbkdf2_hmac(
+    def mascarar_carga_dados(carga_dados: TipoUniao[str, bytes], chave_mascaramento: str) -> bytes:
+        sal_estatico_para_mascaramento = b'sal_estatico_inseguro_demo'
+        bytes_mascaramento_derivados = BibliotecaAlgoritmoHashSeguro.pbkdf2_hmac(
             'sha256',
-            key.encode('utf-8'),
-            b'static_salt_for_encryption',
+            chave_mascaramento.encode('utf-8'),
+            sal_estatico_para_mascaramento,
             10000,
             dklen=32
         )
-        
-        # Converter dados para bytes se for string
-        if isinstance(data, str):
-            data = data.encode('utf-8')
-        
-        # XOR simples para demonstração - NÃO USE ISSO EM PRODUÇÃO
-        # Em produção, use AES-GCM da biblioteca cryptography
-        result = bytearray(len(data))
-        for i, byte in enumerate(data):
-            result[i] = byte ^ derived_key[i % len(derived_key)]
-        
-        # Comprimir o resultado para demonstrar o uso do gzip
-        return gzip.compress(result)
-    
-    @staticmethod
-    def decrypt_data(encrypted_data: bytes, key: str) -> bytes:
-        """
-        Descriptografa dados criptografados.
-        Simplificado para demonstração - em produção use bibliotecas como cryptography.
-        
-        Args:
-            encrypted_data: Dados criptografados
-            key: Chave para descriptografia
-            
-        Returns:
-            Dados descriptografados
-        """
-        # Descomprimir os dados
+        if isinstance(carga_dados, str):
+            bytes_carga = carga_dados.encode('utf-8')
+        elif isinstance(carga_dados, bytes):
+            bytes_carga = carga_dados
+        else:
+             raise TypeError("A carga de dados deve ser string ou bytes para mascaramento")
+        bytearray_resultado_mascarado = bytearray(len(bytes_carga))
+        comprimento_mascara = len(bytes_mascaramento_derivados)
+        for posicao_indice, valor_byte_dados in enumerate(bytes_carga):
+            byte_mascaramento = bytes_mascaramento_derivados[posicao_indice % comprimento_mascara]
+            bytearray_resultado_mascarado[posicao_indice] = valor_byte_dados ^ byte_mascaramento
         try:
-            decompressed = gzip.decompress(encrypted_data)
+            dados_mascarados_comprimidos = InterfaceCompressaoGzip.compress(bytearray_resultado_mascarado)
+            saida_final = dados_mascarados_comprimidos
         except Exception:
-            return b''
-        
-        # Derivar a mesma chave
-        derived_key = hashlib.pbkdf2_hmac(
+            saida_final = bytes(bytearray_resultado_mascarado)
+        return saida_final
+
+    @staticmethod
+    def desmascarar_carga_dados(carga_mascarada: bytes, chave_mascaramento: str) -> bytes:
+        try:
+            carga_descomprimida = InterfaceCompressaoGzip.decompress(carga_mascarada)
+        except Exception:
+            carga_descomprimida = carga_mascarada
+        sal_estatico_para_mascaramento = b'sal_estatico_inseguro_demo'
+        bytes_mascaramento_derivados = BibliotecaAlgoritmoHashSeguro.pbkdf2_hmac(
             'sha256',
-            key.encode('utf-8'),
-            b'static_salt_for_encryption',
+            chave_mascaramento.encode('utf-8'),
+            sal_estatico_para_mascaramento,
             10000,
             dklen=32
         )
-        
-        # Realizar o XOR inverso
-        result = bytearray(len(decompressed))
-        for i, byte in enumerate(decompressed):
-            result[i] = byte ^ derived_key[i % len(derived_key)]
-            
-        return bytes(result)
+        bytearray_resultado_desmascarado = bytearray(len(carga_descomprimida))
+        comprimento_mascara = len(bytes_mascaramento_derivados)
+        try:
+            for posicao_indice, valor_byte_mascarado in enumerate(carga_descomprimida):
+                byte_mascaramento = bytes_mascaramento_derivados[posicao_indice % comprimento_mascara]
+                bytearray_resultado_desmascarado[posicao_indice] = valor_byte_mascarado ^ byte_mascaramento
+            bytes_dados_originais = bytes(bytearray_resultado_desmascarado)
+        except Exception:
+             bytes_dados_originais = b''
+        return bytes_dados_originais
 
+class InterfaceRegistroDadosComprometidos:
+    def __init__(self, fonte_dados_comprometidos_conhecidos: TipoOpcional[ObjetoCaminhoSistemaArquivos] = None):
+        self._registro_interno_hash_comprometido: TipoConjunto[str] = set()
+        self._preencher_registro_interno(fonte_dados_comprometidos_conhecidos)
 
-class LeakChecker:
-    """
-    Classe para verificar se uma senha foi comprometida em vazamentos conhecidos.
-    Usa um sistema local simplificado, mas poderia integrar com APIs como "Have I Been Pwned".
-    """
-    
-    def __init__(self, leaked_passwords_file: Optional[Path] = None):
-        """
-        Inicializa o verificador de vazamentos.
-        
-        Args:
-            leaked_passwords_file: Caminho opcional para um arquivo contendo senhas vazadas
-        """
-        self._leaked_hashes = set()
-        self._load_leaked_passwords(leaked_passwords_file)
-    
-    def _load_leaked_passwords(self, file_path: Optional[Path]) -> None:
-        """Carrega senhas vazadas do arquivo especificado ou usa um conjunto padrão."""
-        # Lista pequena de senhas comprometidas comuns para demonstração
-        default_passwords = {
+    def _preencher_registro_interno(self, localizacao_arquivo_dados: TipoOpcional[ObjetoCaminhoSistemaArquivos]) -> None:
+        entradas_comprometidas_padrao = {
             "123456", "password", "123456789", "12345678", "12345", "qwerty",
             "1234567", "111111", "1234567890", "123123", "admin", "letmein",
             "welcome", "monkey", "1234", "sunshine", "master", "hottie",
-            "football", "baseball", "access", "superman", "iloveyou", "trustno1"
+            "football", "baseball", "access", "superman", "iloveyou", "trustno1",
+            "dragao", "sombra", "princesa", "segredo", "google"
         }
-        
-        # Inicializar com as senhas padrão
-        for pwd in default_passwords:
-            # Armazenar apenas os hashes para economizar espaço e aumentar privacidade
-            self._leaked_hashes.add(self._hash_for_comparison(pwd))
-        
-        # Se um arquivo for fornecido, carregue senhas adicionais
-        if file_path and file_path.exists():
+        iterador_entradas_padrao = iter(entradas_comprometidas_padrao)
+        while True:
             try:
-                with open(file_path, 'r', encoding='utf-8') as f:
-                    for line in f:
-                        pwd = line.strip()
-                        if pwd:
-                            self._leaked_hashes.add(self._hash_for_comparison(pwd))
-            except Exception:
-                # Em caso de erro, continue com o que temos
+                entrada_atual = next(iterador_entradas_padrao)
+                representacao_hash = self._gerar_hash_comparacao(entrada_atual)
+                if representacao_hash:
+                    self._registro_interno_hash_comprometido.add(representacao_hash)
+            except StopIteration:
+                break
+        carregar_do_arquivo = localizacao_arquivo_dados is not None and localizacao_arquivo_dados.exists() and localizacao_arquivo_dados.is_file()
+        if carregar_do_arquivo:
+            try:
+                with open(localizacao_arquivo_dados, 'r', encoding='utf-8', errors='ignore') as manipulador_arquivo:
+                    leitor_linha = iter(manipulador_arquivo)
+                    while True:
+                        try:
+                            conteudo_linha = next(leitor_linha)
+                            linha_processada = conteudo_linha.strip()
+                            if len(linha_processada) > 0:
+                                hash_adicional = self._gerar_hash_comparacao(linha_processada)
+                                if hash_adicional:
+                                    self._registro_interno_hash_comprometido.add(hash_adicional)
+                        except StopIteration:
+                            break
+            except IOError as erro_acesso_arquivo:
                 pass
-    
+            except Exception as erro_geral:
+                pass
+
     @staticmethod
-    @functools.lru_cache(maxsize=1024)  # Cache para melhorar desempenho
-    def _hash_for_comparison(password: str) -> str:
-        """Gera um hash SHA-1 da senha para comparação com vazamentos."""
-        # Usamos SHA-1 aqui porque é o formato comum usado por serviços como HIBP
-        return hashlib.sha1(password.encode('utf-8')).hexdigest().upper()
-    
-    def is_password_leaked(self, password: str) -> bool:
-        """
-        Verifica se a senha foi comprometida em vazamentos conhecidos.
-        
-        Args:
-            password: A senha a ser verificada
-            
-        Returns:
-            True se a senha foi encontrada em vazamentos, False caso contrário
-        """
-        # Hash a senha e verifique no conjunto local
-        pwd_hash = self._hash_for_comparison(password)
-        return pwd_hash in self._leaked_hashes
-    
-    def k_anonymity_check(self, password: str) -> bool:
-        """
-        Implementa uma versão simplificada da API k-anonymity do "Have I Been Pwned".
-        Em produção, isso faria uma chamada à API real do HIBP.
-        
-        Args:
-            password: A senha a ser verificada
-            
-        Returns:
-            True se a senha foi comprometida, False se não foi encontrada
-        """
-        # Em produção, isso consultaria a API do HIBP usando apenas os primeiros
-        # 5 caracteres do hash SHA-1 (k-anonymity)
-        return self.is_password_leaked(password)
+    @AuxiliarFerramentasFuncionais.lru_cache(maxsize=2048)
+    def _gerar_hash_comparacao(string_entrada: str) -> str:
+        try:
+            bytes_string_codificada = string_entrada.encode('utf-8')
+            hasher_sha1 = BibliotecaAlgoritmoHashSeguro.sha1()
+            hasher_sha1.update(bytes_string_codificada)
+            resultado_digest_hex = hasher_sha1.hexdigest()
+            digest_hex_maiusculo = resultado_digest_hex.upper()
+            return digest_hex_maiusculo
+        except Exception:
+            return ""
 
+    def verificar_status_comprometimento_string(self, string_entrada_para_verificar: str) -> bool:
+        hash_alvo = self._gerar_hash_comparacao(string_entrada_para_verificar)
+        esta_comprometido = bool(hash_alvo) and (hash_alvo in self._registro_interno_hash_comprometido)
+        return esta_comprometido
 
-class PasswordValidator:
-    """
-    Classe para validação avançada de senhas com regras configuráveis,
-    feedback detalhado para o usuário e verificação de vazamentos.
-    """
+    def executar_busca_k_anonimato_simulada(self, string_entrada_para_verificar: str) -> bool:
+        resultado_verificacao_local = self.verificar_status_comprometimento_string(string_entrada_para_verificar)
+        return resultado_verificacao_local
 
+class ModuloAvaliadorStringSeguranca:
     def __init__(self):
-        # Configurações padrão
-        self._min_length = 8
-        self._max_length = 128
-        self._require_uppercase = True
-        self._require_lowercase = True
-        self._require_digits = True
-        self._require_special = True  # Agora requerido por padrão
-        self._min_unique_chars = 5  # Aumentado para maior segurança
-        self._check_leaks = True
-        self._check_similarity = True
-        self._common_passwords: Set[str] = {
-            "password", "123456", "qwerty", "admin", "welcome",
-            "letmein", "monkey", "abc123", "111111", "12345678"
+        self._config_limiar_comprimento_minimo: int = 8
+        self._config_limiar_comprimento_maximo: int = 128
+        self._config_flag_exigir_maiuscula: bool = True
+        self._config_flag_exigir_minuscula: bool = True
+        self._config_flag_exigir_digito: bool = True
+        self._config_flag_exigir_especial: bool = True
+        self._config_min_caracteres_unicos: int = 5
+        self._config_ativar_verificacao_vazamento: bool = True
+        self._config_ativar_verificacao_similaridade: bool = True
+        self._registro_senhas_comuns: TipoConjunto[str] = {
+            "password", "123456", "qwerty", "admin", "welcome", "senha", "senha123",
+            "letmein", "monkey", "abc123", "111111", "12345678", "administrador"
         }
-        self._blacklisted_words: Set[str] = set()
-        
-        # Carregar verificador de vazamentos
-        self._leak_checker = LeakChecker()
-        
-        # Configurar regex para verificações avançadas
-        # Expressão para detectar padrões de repetição como "aaa", "111"
-        self._repetition_regex = re.compile(r'(.)\1{2,}')
-        
-        # Expressão para detectar sequências crescentes/decrescentes como "abc", "321"
-        self._sequence_regex = re.compile(r'(?:abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|012|123|234|345|456|567|678|789|987|876|765|654|543|432|321|210)', re.IGNORECASE)
-    
-    # Métodos de configuração usando padrão builder (mantidos e atualizados)
-    def set_min_length(self, length: int) -> 'PasswordValidator':
-        """Define o tamanho mínimo da senha."""
-        self._min_length = max(1, length)
+        self._lista_palavras_proibidas: TipoConjunto[str] = set()
+
+        self._verificador_vazamento_instancia = InterfaceRegistroDadosComprometidos()
+
+        self._regex_padrao_repeticao = ProcessadorExpressoesRegulares.compile(r'(.)\1{2,}')
+        self._regex_padrao_sequencia = ProcessadorExpressoesRegulares.compile(
+            r'(?:abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|012|123|234|345|456|567|678|789|987|876|765|654|543|432|321|210)',
+            ProcessadorExpressoesRegulares.IGNORECASE
+        )
+
+    def configurar_limiar_comprimento_minimo(self, comprimento: int) -> 'ModuloAvaliadorStringSeguranca':
+        self._config_limiar_comprimento_minimo = max(1, comprimento)
         return self
 
-    def set_max_length(self, length: int) -> 'PasswordValidator':
-        """Define o tamanho máximo da senha."""
-        self._max_length = max(self._min_length, length)
+    def configurar_limiar_comprimento_maximo(self, comprimento: int) -> 'ModuloAvaliadorStringSeguranca':
+        self._config_limiar_comprimento_maximo = max(self._config_limiar_comprimento_minimo, comprimento)
         return self
 
-    def require_uppercase(self, required: bool = True) -> 'PasswordValidator':
-        """Define se letras maiúsculas são obrigatórias."""
-        self._require_uppercase = required
+    def exigir_caracteres_maiusculos(self, exigido: bool = True) -> 'ModuloAvaliadorStringSeguranca':
+        self._config_flag_exigir_maiuscula = exigido
         return self
 
-    def require_lowercase(self, required: bool = True) -> 'PasswordValidator':
-        """Define se letras minúsculas são obrigatórias."""
-        self._require_lowercase = required
+    def exigir_caracteres_minusculos(self, exigido: bool = True) -> 'ModuloAvaliadorStringSeguranca':
+        self._config_flag_exigir_minuscula = exigido
         return self
 
-    def require_digits(self, required: bool = True) -> 'PasswordValidator':
-        """Define se dígitos são obrigatórios."""
-        self._require_digits = required
+    def exigir_digitos_numericos(self, exigido: bool = True) -> 'ModuloAvaliadorStringSeguranca':
+        self._config_flag_exigir_digito = exigido
         return self
 
-    def require_special_chars(self, required: bool = True) -> 'PasswordValidator':
-        """Define se caracteres especiais são obrigatórios."""
-        self._require_special = required
+    def exigir_caracteres_especiais(self, exigido: bool = True) -> 'ModuloAvaliadorStringSeguranca':
+        self._config_flag_exigir_especial = exigido
         return self
 
-    def set_min_unique_chars(self, count: int) -> 'PasswordValidator':
-        """Define o número mínimo de caracteres únicos."""
-        self._min_unique_chars = max(1, count)
-        return self
-    
-    def enable_leak_checking(self, enabled: bool = True) -> 'PasswordValidator':
-        """Habilita ou desabilita a verificação de vazamentos."""
-        self._check_leaks = enabled
-        return self
-    
-    def enable_similarity_checking(self, enabled: bool = True) -> 'PasswordValidator':
-        """Habilita ou desabilita a verificação de similaridade com palavras conhecidas."""
-        self._check_similarity = enabled
+    def definir_contagem_minima_unicos(self, contagem: int) -> 'ModuloAvaliadorStringSeguranca':
+        self._config_min_caracteres_unicos = max(1, contagem)
         return self
 
-    def add_blacklisted_words(self, words: List[str]) -> 'PasswordValidator':
-        """Adiciona palavras à lista negra."""
-        self._blacklisted_words.update([w.lower() for w in words])
+    def habilitar_verificacao_contra_vazamentos(self, habilitado: bool = True) -> 'ModuloAvaliadorStringSeguranca':
+        self._config_ativar_verificacao_vazamento = habilitado
         return self
 
-    def add_common_passwords(self, passwords: List[str]) -> 'PasswordValidator':
-        """Adiciona senhas comuns à lista de senhas proibidas."""
-        self._common_passwords.update([p.lower() for p in passwords])
+    def habilitar_verificacao_similaridade_palavras(self, habilitado: bool = True) -> 'ModuloAvaliadorStringSeguranca':
+        self._config_ativar_verificacao_similaridade = habilitado
         return self
-    
-    def _check_common_password(self, pwd: str) -> Tuple[bool, Optional[str]]:
-        """Verifica se a senha é comum ou contém palavras da lista negra."""
-        if pwd.lower() in self._common_passwords:
+
+    def adicionar_termos_a_lista_negra(self, palavras: TipoLista[str]) -> 'ModuloAvaliadorStringSeguranca':
+        self._lista_palavras_proibidas.update([p.lower() for p in palavras if isinstance(p, str)])
+        return self
+
+    def adicionar_entradas_comuns_proibidas(self, senhas: TipoLista[str]) -> 'ModuloAvaliadorStringSeguranca':
+        self._registro_senhas_comuns.update([s.lower() for s in senhas if isinstance(s, str)])
+        return self
+
+    def _validar_contra_termos_proibidos(self, string_avaliada: str) -> TipoTupla[bool, TipoOpcional[str]]:
+        string_avaliada_minusc = string_avaliada.lower()
+        if string_avaliada_minusc in self._registro_senhas_comuns:
             return False, "A senha é muito comum e facilmente adivinhável"
-        
-        pwd_lower = pwd.lower()
-        
-        # Verificar palavras da lista negra
-        for word in self._blacklisted_words:
-            if word in pwd_lower and len(word) > 3:
-                return False, f"A senha contém uma palavra proibida: '{word}'"
-        
-        # Verificar se a senha é similar a palavras comuns
-        if self._check_similarity:
-            for word in self._blacklisted_words.union(self._common_passwords):
-                # Usar SequenceMatcher para encontrar similaridades
-                similarity = SequenceMatcher(None, pwd_lower, word).ratio()
-                if similarity > 0.8 and len(word) > 4:
-                    return False, f"A senha é muito similar à palavra comum: '{word}'"
-                
-        return True, None
-    
-    def _check_sequential_characters(self, pwd: str) -> Tuple[bool, Optional[str]]:
-        """Verifica se a senha contém sequências óbvias."""
-        # Verificar sequências com regex
-        if self._sequence_regex.search(pwd.lower()):
-            match = self._sequence_regex.search(pwd.lower())
-            return False, f"A senha contém uma sequência óbvia: '{match.group(0)}'"
-        
-        # Verificar repetições com regex
-        if self._repetition_regex.search(pwd):
-            match = self._repetition_regex.search(pwd)
-            return False, f"A senha contém caracteres repetidos em sequência: '{match.group(0)}'"
-            
-        return True, None
-    
-    def _calculate_entropy(self, pwd: str, char_counts: Dict[str, int]) -> float:
-        """
-        Calcula a entropia estimada da senha em bits.
-        Fórmula: Entropia = log2(pool_size^length) = length * log2(pool_size)
-        """
-        import math
-        
-        # Determinar o tamanho do pool de caracteres
-        pool_size = 0
-        if char_counts['uppercase'] > 0:
-            pool_size += 26  # A-Z
-        if char_counts['lowercase'] > 0:
-            pool_size += 26  # a-z
-        if char_counts['digit'] > 0:
-            pool_size += 10  # 0-9
-        if char_counts['special'] > 0:
-            pool_size += 33  # Caracteres especiais comuns
-        
-        # Se não houver caracteres detectados (improvável), definir um valor mínimo
-        if pool_size == 0:
-            pool_size = 26
-        
-        # Calcular entropia
-        entropy = len(pwd) * math.log2(pool_size)
-        
-        # Penalizar padrões comuns, cada padrão reduz a entropia
-        if self._sequence_regex.search(pwd.lower()):
-            entropy *= 0.8
-            
-        if self._repetition_regex.search(pwd):
-            entropy *= 0.7
-            
-        # Penalizar senhas se contiverem palavras comuns
-        pwd_lower = pwd.lower()
-        for word in self._blacklisted_words.union(self._common_passwords):
-            if word in pwd_lower and len(word) > 3:
-                entropy *= 0.6
+        iterador_palavras_proibidas = iter(self._lista_palavras_proibidas)
+        while True:
+            try:
+                palavra_proibida = next(iterador_palavras_proibidas)
+                if len(palavra_proibida) > 3 and palavra_proibida in string_avaliada_minusc:
+                    return False, f"A senha contém uma palavra proibida: '{palavra_proibida}'"
+            except StopIteration:
                 break
-                
-        return entropy
-    
-    def _estimate_crack_time(self, entropy: float) -> str:
-        """
-        Estima o tempo necessário para quebrar uma senha com base em sua entropia.
-        Assume 10 bilhões de tentativas por segundo (capacidade de ataque moderna).
-        """
-        # 10^10 tentativas por segundo
-        attempts_per_second = 10_000_000_000
-        
-        # Calcular número de tentativas necessárias: 2^entropy
-        attempts_needed = 2 ** entropy
-        
-        # Calcular segundos necessários
-        seconds = attempts_needed / attempts_per_second
-        
-        # Converter para uma representação amigável
-        if seconds < 60:
+        if self._config_ativar_verificacao_similaridade:
+            conjunto_termos_referencia = self._lista_palavras_proibidas.union(self._registro_senhas_comuns)
+            iterador_termos_referencia = iter(conjunto_termos_referencia)
+            while True:
+                try:
+                    termo_referencia = next(iterador_termos_referencia)
+                    if len(termo_referencia) > 4:
+                        calculador_similaridade = UtilitarioComparacaoSequencia(None, string_avaliada_minusc, termo_referencia)
+                        indice_similaridade = calculador_similaridade.ratio()
+                        if indice_similaridade > 0.8:
+                            return False, f"A senha é muito similar a um termo comum/proibido: '{termo_referencia}'"
+                except StopIteration:
+                    break
+        return True, None
+
+    def _verificar_padroes_sequenciais_repetitivos(self, string_avaliada: str) -> TipoTupla[bool, TipoOpcional[str]]:
+        string_avaliada_minusc = string_avaliada.lower()
+        match_sequencia = self._regex_padrao_sequencia.search(string_avaliada_minusc)
+        if match_sequencia:
+            return False, f"A senha contém uma sequência óbvia: '{match_sequencia.group(0)}'"
+        match_repeticao = self._regex_padrao_repeticao.search(string_avaliada)
+        if match_repeticao:
+            return False, f"A senha contém caracteres repetidos em sequência: '{match_repeticao.group(0)}'"
+        return True, None
+
+    def _calcular_entropia_aproximada(self, string_avaliada: str, contagens_tipos_char: TipoDicionario[str, int]) -> float:
+        tamanho_pool_caracteres = 0
+        if contagens_tipos_char.get('maiuscula', 0) > 0:
+            tamanho_pool_caracteres += 26
+        if contagens_tipos_char.get('minuscula', 0) > 0:
+            tamanho_pool_caracteres += 26
+        if contagens_tipos_char.get('digito', 0) > 0:
+            tamanho_pool_caracteres += 10
+        if contagens_tipos_char.get('especial', 0) > 0:
+            tamanho_pool_caracteres += len(ConstantesConjuntoCaracteres.punctuation)
+        if len(string_avaliada) > 0 and tamanho_pool_caracteres < 2:
+             tamanho_pool_caracteres = 10
+        elif len(string_avaliada) == 0:
+             return 0.0
+        if tamanho_pool_caracteres > 1:
+            entropia_base = len(string_avaliada) * OperacoesMatematicas.log2(tamanho_pool_caracteres)
+        else:
+            entropia_base = 0.0
+        entropia_ajustada = entropia_base
+        string_avaliada_minusc = string_avaliada.lower()
+        if self._regex_padrao_sequencia.search(string_avaliada_minusc):
+            entropia_ajustada *= 0.8
+        if self._regex_padrao_repeticao.search(string_avaliada):
+            entropia_ajustada *= 0.7
+        conjunto_termos_penalidade = self._lista_palavras_proibidas.union(self._registro_senhas_comuns)
+        iterador_termos_penalidade = iter(conjunto_termos_penalidade)
+        penalidade_aplicada_palavra = False
+        while not penalidade_aplicada_palavra:
+            try:
+                termo = next(iterador_termos_penalidade)
+                if len(termo) > 3 and termo in string_avaliada_minusc:
+                    entropia_ajustada *= 0.6
+                    penalidade_aplicada_palavra = True
+            except StopIteration:
+                break
+        entropia_final = max(0.0, entropia_ajustada)
+        return entropia_final
+
+    def _estimar_tempo_quebra_forca_bruta(self, valor_entropia: float) -> str:
+        tentativas_por_segundo = 10_000_000_000_000
+        try:
+            numero_tentativas_necessarias = 2 ** valor_entropia
+        except OverflowError:
+            return "milênios ou mais (valor de entropia muito alto)"
+        if tentativas_por_segundo <= 0:
+            return "indeterminado (taxa de tentativa inválida)"
+        segundos_necessarios = numero_tentativas_necessarias / tentativas_por_segundo
+        if segundos_necessarios < 0.001:
+            return "instantaneamente"
+        elif segundos_necessarios < 60:
             return "menos de um minuto"
-        elif seconds < 3600:
-            return f"aproximadamente {int(seconds/60)} minutos"
-        elif seconds < 86400:
-            return f"aproximadamente {int(seconds/3600)} horas"
-        elif seconds < 31536000:
-            return f"aproximadamente {int(seconds/86400)} dias"
-        elif seconds < 315360000:  # 10 anos
-            return f"aproximadamente {int(seconds/31536000)} anos"
-        elif seconds < 3153600000:  # 100 anos
-            return f"dezenas de anos"
-        elif seconds < 31536000000:  # 1000 anos
-            return f"centenas de anos"
+        elif segundos_necessarios < 3600:
+            return f"aproximadamente {int(segundos_necessarios/60)} minutos"
+        elif segundos_necessarios < 86400:
+            return f"aproximadamente {int(segundos_necessarios/3600)} horas"
+        elif segundos_necessarios < 2_592_000:
+            return f"aproximadamente {int(segundos_necessarios/86400)} dias"
+        elif segundos_necessarios < 31_536_000:
+             return f"aproximadamente {int(segundos_necessarios/2_592_000)} meses"
+        elif segundos_necessarios < 315_360_000:
+            return f"aproximadamente {int(segundos_necessarios/31_536_000)} anos"
+        elif segundos_necessarios < 3_153_600_000:
+            return "décadas"
+        elif segundos_necessarios < 31_536_000_000:
+            return "séculos"
         else:
-            return "milhares de anos ou mais"
-    
-    def validate(self, pwd: str) -> ValidationResult:
-        """
-        Valida a senha de acordo com as regras configuradas.
-        Retorna um objeto ValidationResult com informações detalhadas.
-        Executa todas as verificações em uma única passagem pela senha.
-        """
-        if pwd is None:
-            return ValidationResult(is_valid=False, failures=["A senha não pode ser nula"])
-            
-        result = ValidationResult()
-        char_counts = {
-            'uppercase': 0,
-            'lowercase': 0,
-            'digit': 0,
-            'special': 0
+            return "milênios ou mais"
+
+    def avaliar_string(self, string_para_avaliar: str) -> ContainerResultadoAvaliacao:
+        if not isinstance(string_para_avaliar, str):
+             resultado_imediato = ContainerResultadoAvaliacao()
+             resultado_imediato.lista_razoes_falha.append("Entrada fornecida não é uma string válida.")
+             return resultado_imediato
+        if string_para_avaliar is None:
+            resultado_imediato = ContainerResultadoAvaliacao()
+            resultado_imediato.lista_razoes_falha.append("A senha não pode ser nula.")
+            return resultado_imediato
+
+        resultado_processamento = ContainerResultadoAvaliacao()
+        comprimento_string = len(string_para_avaliar)
+        contagem_por_tipo_char = {
+            'maiuscula': 0, 'minuscula': 0, 'digito': 0, 'especial': 0, 'desconhecido': 0
         }
-        
-        # Verificar tamanho
-        if len(pwd) < self._min_length:
-            result.failures.append(
-                f"A senha deve ter pelo menos {self._min_length} caracteres"
+        conjunto_caracteres_unicos = set()
+        indice_char = 0
+        while indice_char < comprimento_string:
+            caractere_atual = string_para_avaliar[indice_char]
+            conjunto_caracteres_unicos.add(caractere_atual)
+            if caractere_atual.isupper():
+                contagem_por_tipo_char['maiuscula'] += 1
+            elif caractere_atual.islower():
+                contagem_por_tipo_char['minuscula'] += 1
+            elif caractere_atual.isdigit():
+                contagem_por_tipo_char['digito'] += 1
+            elif caractere_atual in ConstantesConjuntoCaracteres.punctuation:
+                contagem_por_tipo_char['especial'] += 1
+            else:
+                contagem_por_tipo_char['desconhecido'] += 1
+            indice_char += 1
+
+        if comprimento_string < self._config_limiar_comprimento_minimo:
+            resultado_processamento.lista_razoes_falha.append(
+                f"A senha deve ter pelo menos {self._config_limiar_comprimento_minimo} caracteres (possui {comprimento_string})"
             )
-            
-        if len(pwd) > self._max_length:
-            result.failures.append(
-                f"A senha não pode ter mais de {self._max_length} caracteres"
+        if comprimento_string > self._config_limiar_comprimento_maximo:
+            resultado_processamento.lista_razoes_falha.append(
+                f"A senha não pode ter mais de {self._config_limiar_comprimento_maximo} caracteres (possui {comprimento_string})"
             )
-        
-        # Calcular caracteres únicos e tipos em uma única passagem
-        unique_chars = set()
-        for c in pwd:
-            unique_chars.add(c)
-            
-            if c.isupper():
-                char_counts['uppercase'] += 1
-            elif c.islower():
-                char_counts['lowercase'] += 1
-            elif c.isdigit():
-                char_counts['digit'] += 1
-            elif c in string.punctuation:
-                char_counts['special'] += 1
-        
-        # Verificar diversidade de caracteres
-        if len(unique_chars) < self._min_unique_chars:
-            result.failures.append(
-                f"A senha deve conter pelo menos {self._min_unique_chars} caracteres únicos"
+        contagem_unicos = len(conjunto_caracteres_unicos)
+        if contagem_unicos < self._config_min_caracteres_unicos:
+             resultado_processamento.lista_razoes_falha.append(
+                f"A senha deve conter pelo menos {self._config_min_caracteres_unicos} caracteres únicos (possui {contagem_unicos})"
             )
-        
-        # Verificar presença dos tipos necessários
-        if self._require_uppercase and char_counts['uppercase'] == 0:
-            result.failures.append("A senha deve conter pelo menos uma letra maiúscula")
-            
-        if self._require_lowercase and char_counts['lowercase'] == 0:
-            result.failures.append("A senha deve conter pelo menos uma letra minúscula")
-            
-        if self._require_digits and char_counts['digit'] == 0:
-            result.failures.append("A senha deve conter pelo menos um dígito")
-            
-        if self._require_special and char_counts['special'] == 0:
-            result.failures.append("A senha deve conter pelo menos um caractere especial")
-        
-        # Verificações adicionais
-        common_check, common_msg = self._check_common_password(pwd)
-        if not common_check:
-            result.failures.append(common_msg)
-            
-        seq_check, seq_msg = self._check_sequential_characters(pwd)
-        if not seq_check:
-            result.failures.append(seq_msg)
-        
-        # Calcular entropia
-        result.entropy = self._calculate_entropy(pwd, char_counts)
-        
-        # Estimar tempo para quebra
-        result.time_to_crack = self._estimate_crack_time(result.entropy)
-        
-        # Calcular pontuação e força da senha
-        score = self._calculate_score(pwd, char_counts)
-        result.score = score
-        result.strength = self._determine_strength(score)
-        
-        # Verificar validade com base nas falhas
-        result.is_valid = len(result.failures) == 0
-        
-        # Adicionar sugestões se a senha falhou
-        if not result.is_valid:
-            result.suggestions = self._generate_suggestions(result.failures)
-        
-        return result
-    
-    def _calculate_score(self, pwd: str, char_counts: Dict[str, int]) -> int:
-        """Calcula uma pontuação para a senha baseada em vários fatores."""
-        score = 0
-        
-        # Pontos por comprimento
-        score += min(20, len(pwd) * 2)
-        
-        # Pontos por tipos de caracteres
-        for char_type, count in char_counts.items():
-            if count > 0:
-                score += 10  # Pontos por ter pelo menos um caractere de cada tipo
-                score += min(10, count)  # Pontos extras por quantidade, até um limite
-        
-        # Pontos por diversidade
-        unique_ratio = len(set(pwd)) / len(pwd)
-        score += int(unique_ratio * 20)
-        
-        # Verificar padrões e penalizar
-        # Sequências comuns
-        common_sequences = ["123", "abc", "qwe", "asd", "zxc"]
-        for seq in common_sequences:
-            if seq.lower() in pwd.lower():
-                score -= 10
-        
-        # Verificar repetições
-        for i in range(len(pwd) - 2):
-            if pwd[i] == pwd[i+1] == pwd[i+2]:
-                score -= 10
-                break
-        
-        # Garantir limites entre 0 e 100
-        return max(0, min(100, score))
-    
-    def _determine_strength(self, score: int) -> PasswordStrength:
-        """Determina a força da senha com base na pontuação."""
-        if score < 20:
-            return PasswordStrength.VERY_WEAK
-        elif score < 40:
-            return PasswordStrength.WEAK
-        elif score < 60:
-            return PasswordStrength.MODERATE
-        elif score < 80:
-            return PasswordStrength.STRONG
+        if self._config_flag_exigir_maiuscula and contagem_por_tipo_char['maiuscula'] == 0:
+            resultado_processamento.lista_razoes_falha.append("A senha deve conter pelo menos uma letra maiúscula (A-Z)")
+        if self._config_flag_exigir_minuscula and contagem_por_tipo_char['minuscula'] == 0:
+            resultado_processamento.lista_razoes_falha.append("A senha deve conter pelo menos uma letra minúscula (a-z)")
+        if self._config_flag_exigir_digito and contagem_por_tipo_char['digito'] == 0:
+            resultado_processamento.lista_razoes_falha.append("A senha deve conter pelo menos um dígito numérico (0-9)")
+        if self._config_flag_exigir_especial and contagem_por_tipo_char['especial'] == 0:
+            resultado_processamento.lista_razoes_falha.append(f"A senha deve conter pelo menos um caractere especial (ex: {ConstantesConjuntoCaracteres.punctuation})")
+
+        check_comum_ok, msg_comum = self._validar_contra_termos_proibidos(string_para_avaliar)
+        if not check_comum_ok:
+            resultado_processamento.lista_razoes_falha.append(msg_comum)
+        check_seq_ok, msg_seq = self._verificar_padroes_sequenciais_repetitivos(string_para_avaliar)
+        if not check_seq_ok:
+            resultado_processamento.lista_razoes_falha.append(msg_seq)
+
+        if self._config_ativar_verificacao_vazamento:
+             foi_comprometida = self._verificador_vazamento_instancia.executar_busca_k_anonimato_simulada(string_para_avaliar)
+             if foi_comprometida:
+                 resultado_processamento.lista_razoes_falha.append("Esta senha foi encontrada em vazamentos de dados conhecidos e não é segura.")
+
+        resultado_processamento.valor_entropia_informacao = self._calcular_entropia_aproximada(string_para_avaliar, contagem_por_tipo_char)
+        resultado_processamento.rotulo_duracao_quebra_estimada = self._estimar_tempo_quebra_forca_bruta(resultado_processamento.valor_entropia_informacao)
+
+        pontuacao_calculada = self._computar_pontuacao_quantitativa(string_para_avaliar, contagem_por_tipo_char, resultado_processamento.lista_razoes_falha)
+        resultado_processamento.metrica_quantitativa = pontuacao_calculada
+        resultado_processamento.categoria_avaliada = self._inferir_categoria_seguranca(pontuacao_calculada)
+
+        resultado_processamento.flag_atende_criterios = len(resultado_processamento.lista_razoes_falha) == 0
+
+        if not resultado_processamento.flag_atende_criterios:
+            resultado_processamento.lista_dicas_aprimoramento = self._elaborar_dicas_aprimoramento(resultado_processamento.lista_razoes_falha)
+        elif resultado_processamento.categoria_avaliada in [IndicadorNivelSeguranca.EXTREMAMENTE_BAIXO, IndicadorNivelSeguranca.BAIXO, IndicadorNivelSeguranca.MEDIO]:
+             resultado_processamento.lista_dicas_aprimoramento.append("Considere tornar a senha ainda mais longa e complexa para maior segurança.")
+
+        return resultado_processamento
+
+    def _computar_pontuacao_quantitativa(self, string_avaliada: str, contagens_tipos_char: TipoDicionario[str, int], lista_falhas_atuais: TipoLista[str]) -> int:
+        pontuacao_base = 0
+        comprimento = len(string_avaliada)
+        pontuacao_base += min(40, comprimento * 4)
+        tipos_presentes = 0
+        if contagens_tipos_char.get('maiuscula', 0) > 0: tipos_presentes += 1
+        if contagens_tipos_char.get('minuscula', 0) > 0: tipos_presentes += 1
+        if contagens_tipos_char.get('digito', 0) > 0: tipos_presentes += 1
+        if contagens_tipos_char.get('especial', 0) > 0: tipos_presentes += 1
+        pontuacao_base += tipos_presentes * 10
+        pontuacao_base += min(10, contagens_tipos_char.get('maiuscula', 0))
+        pontuacao_base += min(10, contagens_tipos_char.get('minuscula', 0))
+        pontuacao_base += min(10, contagens_tipos_char.get('digito', 0))
+        pontuacao_base += min(10, contagens_tipos_char.get('especial', 0))
+        if comprimento > 0:
+            ratio_unicos = len(set(string_avaliada)) / comprimento
+            pontuacao_base += int(ratio_unicos * 20)
+        pontuacao_penalidade = 0
+        pontuacao_penalidade += len(lista_falhas_atuais) * 15
+        if any("pelo menos" in falha and "caracteres" in falha for falha in lista_falhas_atuais):
+            pontuacao_penalidade += 10
+        if any("comum" in falha or "proibida" in falha or "similar" in falha for falha in lista_falhas_atuais):
+            pontuacao_penalidade += 15
+        if any("sequência" in falha or "repetidos" in falha for falha in lista_falhas_atuais):
+            pontuacao_penalidade += 10
+        if any("vazamentos de dados" in falha for falha in lista_falhas_atuais):
+             pontuacao_penalidade += 25
+        pontuacao_final = pontuacao_base - pontuacao_penalidade
+        pontuacao_final_limitada = max(0, min(100, pontuacao_final))
+        return pontuacao_final_limitada
+
+    def _inferir_categoria_seguranca(self, metrica_pontuacao: int) -> IndicadorNivelSeguranca:
+        if metrica_pontuacao < 20:
+            return IndicadorNivelSeguranca.MUITO_FRACA
+        elif metrica_pontuacao < 40:
+            return IndicadorNivelSeguranca.FRACA
+        elif metrica_pontuacao < 60:
+            return IndicadorNivelSeguranca.MODERADA
+        elif metrica_pontuacao < 80:
+            return IndicadorNivelSeguranca.FORTE
         else:
-            return PasswordStrength.VERY_STRONG
-    
-    def _generate_suggestions(self, failures: List[str]) -> List[str]:
-        """Gera sugestões com base nas falhas de validação."""
-        suggestions = []
-        
-        if any("letra maiúscula" in failure for failure in failures):
-            suggestions.append("Adicione pelo menos uma letra maiúscula (A-Z)")
-            
-        if any("letra minúscula" in failure for failure in failures):
-            suggestions.append("Adicione pelo menos uma letra minúscula (a-z)")
-            
-        if any("dígito" in failure for failure in failures):
-            suggestions.append("Adicione pelo menos um número (0-9)")
-            
-        if any("caractere especial" in failure for failure in failures):
-            suggestions.append(f"Adicione pelo menos um caractere especial ({string.punctuation})")
-            
-        if any("caracteres únicos" in failure for failure in failures):
-            suggestions.append("Use uma maior variedade de caracteres diferentes")
-            
-        if any("pelo menos" in failure and "caracteres" in failure for failure in failures):
-            suggestions.append("Aumente o comprimento da sua senha")
-            
-        if any("comum" in failure for failure in failures):
-            suggestions.append("Evite usar palavras comuns ou senhas conhecidas")
-            
-        if any("sequência" in failure for failure in failures):
-            suggestions.append("Evite sequências óbvias como '123', 'abc' ou caracteres repetidos")
-            
-        return suggestions
+            return IndicadorNivelSeguranca.MUITO_FORTE
+
+    def _elaborar_dicas_aprimoramento(self, lista_falhas: TipoLista[str]) -> TipoLista[str]:
+        dicas_geradas = []
+        mapa_falha_dica = {
+            "letra maiúscula": "Adicione pelo menos uma letra maiúscula (A-Z)",
+            "letra minúscula": "Adicione pelo menos uma letra minúscula (a-z)",
+            "dígito numérico": "Adicione pelo menos um número (0-9)",
+            "caractere especial": f"Adicione pelo menos um caractere especial ({ConstantesConjuntoCaracteres.punctuation})",
+            "caracteres únicos": "Use uma maior variedade de caracteres diferentes",
+            "pelo menos": "Aumente o comprimento da sua senha",
+            "comum": "Evite usar palavras comuns ou senhas conhecidas",
+            "proibida": "Evite usar palavras comuns ou termos proibidos",
+            "similar": "Evite usar senhas muito parecidas com palavras comuns",
+            "sequência": "Evite sequências óbvias como '123', 'abc' ou caracteres repetidos",
+            "repetidos": "Evite sequências óbvias ou caracteres repetidos",
+            "vazamentos de dados": "Escolha uma senha completamente diferente, pois esta já foi comprometida"
+        }
+        dicas_adicionadas = set()
+        for falha_item in lista_falhas:
+            falha_lower = falha_item.lower()
+            for gatilho, dica_correspondente in mapa_falha_dica.items():
+                 # Caso especial para comprimento "pelo menos X caracteres"
+                if gatilho == "pelo menos" and "pelo menos" in falha_lower and "caracteres" in falha_lower:
+                    if dica_correspondente not in dicas_adicionadas:
+                        dicas_geradas.append(dica_correspondente)
+                        dicas_adicionadas.add(dica_correspondente)
+                    continue # Próxima falha
+                # Outros gatilhos
+                elif gatilho != "pelo menos" and gatilho in falha_lower:
+                    if dica_correspondente not in dicas_adicionadas:
+                        dicas_geradas.append(dica_correspondente)
+                        dicas_adicionadas.add(dica_correspondente)
+                    # Não precisa continuar procurando gatilhos para esta falha se um foi encontrado
+                    # (a menos que uma falha possa acionar múltiplas dicas)
+                    # break # Descomente se uma falha só deve gerar uma dica
+
+        # Adiciona dica genérica se nenhuma específica foi adicionada mas houve falhas
+        if not dicas_geradas and lista_falhas:
+             dicas_geradas.append("Revise os critérios de senha e tente uma combinação mais complexa.")
+
+        return dicas_geradas
 
 
-def validate_password(pwd: str, verbose: bool = False) -> bool:
-    """
-    Função simplificada para compatibilidade com o código anterior.
-    Valida a senha usando as regras padrão e retorna True se for válida.
-    
-    Args:
-        pwd: A senha a ser validada.
-        verbose: Se True, imprime informações detalhadas sobre a validação.
-        
-    Returns:
-        True se a senha for válida, False caso contrário.
-    """
-    validator = PasswordValidator()
-    result = validator.validate(pwd)
-    
-    if verbose and not result.is_valid:
-        print("Falhas de validação:")
-        for failure in result.failures:
-            print(f"- {failure}")
-        
-        if result.suggestions:
-            print("\nSugestões:")
-            for suggestion in result.suggestions:
-                print(f"- {suggestion}")
-        
-        print(f"\nForça da senha: {result.strength.name}")
-        print(f"Pontuação: {result.score}/100")
-    
-    return result.is_valid
+def validar_senha_simplificado(pwd_input: str, modo_verboso: bool = False) -> bool:
+    instancia_validador = ModuloAvaliadorStringSeguranca()
+    dados_resultado = instancia_validador.avaliar_string(pwd_input)
+
+    if modo_verboso and not dados_resultado.flag_atende_criterios:
+        print("Falhas de validação detectadas:")
+        indice_falha = 0
+        total_falhas = len(dados_resultado.lista_razoes_falha)
+        while indice_falha < total_falhas:
+            falha_atual = dados_resultado.lista_razoes_falha[indice_falha]
+            print(f"- {falha_atual}")
+            indice_falha += 1
+
+        if dados_resultado.lista_dicas_aprimoramento:
+            print("\nSugestões para melhoria:")
+            indice_dica = 0
+            total_dicas = len(dados_resultado.lista_dicas_aprimoramento)
+            while indice_dica < total_dicas:
+                dica_atual = dados_resultado.lista_dicas_aprimoramento[indice_dica]
+                print(f"- {dica_atual}")
+                indice_dica += 1
+
+        print(f"\nNível de Segurança: {dados_resultado.categoria_avaliada.name}")
+        print(f"Pontuação Quantitativa: {dados_resultado.metrica_quantitativa}/100")
+
+    return dados_resultado.flag_atende_criterios
 
 
-def analyze_password(pwd: str) -> None:
-    """
-    Função para análise detalhada da senha, mostrando todas as informações
-    sobre sua validação, força, problemas e sugestões.
-    
-    Args:
-        pwd: A senha a ser analisada.
-    """
-    validator = PasswordValidator()
-    result = validator.validate(pwd)
-    
-    print(f"\n{'=' * 50}")
-    print(f"Análise de senha: {'APROVADA' if result.is_valid else 'REPROVADA'}")
-    print(f"{'=' * 50}")
-    
-    print(f"Força: {result.strength.name}")
-    print(f"Pontuação: {result.score}/100")
-    
-    if result.failures:
-        print("\nProblemas encontrados:")
-        for i, failure in enumerate(result.failures, 1):
-            print(f"{i}. {failure}")
-    
-    if result.suggestions:
-        print("\nSugestões para melhorar:")
-        for i, suggestion in enumerate(result.suggestions, 1):
-            print(f"{i}. {suggestion}")
-    
-    print(f"\n{'=' * 50}\n")
+def analisar_senha_detalhadamente(pwd_input: str) -> None:
+    instancia_analisador = ModuloAvaliadorStringSeguranca()
+    dados_analise = instancia_analisador.avaliar_string(pwd_input)
+
+    delimitador_visual = '=' * 60
+    status_aprovacao = 'APROVADA' if dados_analise.flag_atende_criterios else 'REPROVADA'
+
+    print(f"\n{delimitador_visual}")
+    print(f"Análise da Senha Fornecida: {status_aprovacao}")
+    print(f"{delimitador_visual}")
+
+    print(f"Nível de Segurança Avaliado: {dados_analise.categoria_avaliada.name}")
+    print(f"Métrica Quantitativa (Pontuação): {dados_analise.metrica_quantitativa}/100")
+    print(f"Entropia Estimada: {dados_analise.valor_entropia_informacao:.2f} bits")
+    print(f"Tempo Estimado para Quebra (Força Bruta): {dados_analise.rotulo_duracao_quebra_estimada}")
 
 
-def create_gui():
-    """
-    Cria a interface gráfica para validação de senhas.
-    """
-    def on_validate():
-        password = password_entry.get()
-        result = validator.validate(password)
-        
-        result_text = f"Validação: {'APROVADA' if result.is_valid else 'REPROVADA'}\n"
-        result_text += f"Força: {result.strength.name}\n"
-        result_text += f"Pontuação: {result.score}/100\n"
-        result_text += f"Entropia: {result.entropy:.2f} bits\n"
-        result_text += f"Tempo para quebra: {result.time_to_crack}\n"
-        
-        if result.failures:
-            result_text += "\nProblemas encontrados:\n"
-            for i, failure in enumerate(result.failures, 1):
-                result_text += f"{i}. {failure}\n"
-        
-        if result.suggestions:
-            result_text += "\nSugestões para melhorar:\n"
-            for i, suggestion in enumerate(result.suggestions, 1):
-                result_text += f"{i}. {suggestion}\n"
-        
-        result_textbox.config(state=tk.NORMAL)
-        result_textbox.delete(1.0, tk.END)
-        result_textbox.insert(tk.END, result_text)
-        result_textbox.config(state=tk.DISABLED)
-    
-    validator = PasswordValidator()
-    
-    root = tk.Tk()
-    root.title("Validador de Senhas")
-    
-    mainframe = ttk.Frame(root, padding="10")
-    mainframe.grid(row=0, column=0, sticky=(tk.W, tk.E, tk.N, tk.S))
-    
-    password_label = ttk.Label(mainframe, text="Senha:")
-    password_label.grid(row=0, column=0, sticky=tk.W)
-    
-    password_entry = ttk.Entry(mainframe, width=30, show="*")
-    password_entry.grid(row=0, column=1, sticky=(tk.W, tk.E))
-    
-    validate_button = ttk.Button(mainframe, text="Validar", command=on_validate)
-    validate_button.grid(row=0, column=2, sticky=tk.W)
-    
-    result_textbox = scrolledtext.ScrolledText(mainframe, width=80, height=20, wrap=tk.WORD, state=tk.DISABLED)
-    result_textbox.grid(row=1, column=0, columnspan=3, sticky=(tk.W, tk.E))
-    
-    root.mainloop()
+    if dados_analise.lista_razoes_falha:
+        print("\nProblemas Identificados:")
+        numero_item_problema = 1
+        for item_falha in dados_analise.lista_razoes_falha:
+            print(f"{numero_item_problema}. {item_falha}")
+            numero_item_problema += 1
+
+    if dados_analise.lista_dicas_aprimoramento:
+        print("\nSugestões para Aprimoramento:")
+        numero_item_dica = 1
+        for item_dica in dados_analise.lista_dicas_aprimoramento:
+            print(f"{numero_item_dica}. {item_dica}")
+            numero_item_dica += 1
+
+    print(f"\n{delimitador_visual}\n")
 
 
-# Exemplo de uso:
+def criar_interface_grafica():
+    instancia_validador_gui = ModuloAvaliadorStringSeguranca()
+
+    def acao_botao_validar():
+        senha_digitada = campo_entrada_senha.get()
+        resultado_validacao_gui = instancia_validador_gui.avaliar_string(senha_digitada)
+
+        texto_resultado_formatado = f"Resultado da Avaliação: {'APROVADA' if resultado_validacao_gui.flag_atende_criterios else 'REPROVADA'}\n"
+        texto_resultado_formatado += f"Nível de Segurança: {resultado_validacao_gui.categoria_avaliada.name}\n"
+        texto_resultado_formatado += f"Pontuação: {resultado_validacao_gui.metrica_quantitativa}/100\n"
+        texto_resultado_formatado += f"Entropia (bits): {resultado_validacao_gui.valor_entropia_informacao:.2f}\n"
+        texto_resultado_formatado += f"Tempo Estimado para Quebra: {resultado_validacao_gui.rotulo_duracao_quebra_estimada}\n"
+
+        if resultado_validacao_gui.lista_razoes_falha:
+            texto_resultado_formatado += "\nProblemas Encontrados:\n"
+            num_problema = 1
+            for falha_gui in resultado_validacao_gui.lista_razoes_falha:
+                texto_resultado_formatado += f"{num_problema}. {falha_gui}\n"
+                num_problema += 1
+
+        if resultado_validacao_gui.lista_dicas_aprimoramento:
+            texto_resultado_formatado += "\nSugestões para Melhorar:\n"
+            num_dica = 1
+            for dica_gui in resultado_validacao_gui.lista_dicas_aprimoramento:
+                texto_resultado_formatado += f"{num_dica}. {dica_gui}\n"
+                num_dica += 1
+
+        caixa_texto_resultados.config(state=KitFerramentasInterfaceGraficaUsuario.NORMAL)
+        caixa_texto_resultados.delete(1.0, KitFerramentasInterfaceGraficaUsuario.END)
+        caixa_texto_resultados.insert(KitFerramentasInterfaceGraficaUsuario.END, texto_resultado_formatado)
+        caixa_texto_resultados.config(state=KitFerramentasInterfaceGraficaUsuario.DISABLED)
+
+    janela_principal = KitFerramentasInterfaceGraficaUsuario.Tk()
+    janela_principal.title("Ferramenta de Avaliação de Segurança de Senhas")
+    janela_principal.geometry("650x500") # Tamanho ajustado
+
+    frame_principal = WidgetsThemedTkinter.Frame(janela_principal, padding="15 15 15 15")
+    frame_principal.grid(row=0, column=0, sticky=(KitFerramentasInterfaceGraficaUsuario.W, KitFerramentasInterfaceGraficaUsuario.E, KitFerramentasInterfaceGraficaUsuario.N, KitFerramentasInterfaceGraficaUsuario.S))
+    janela_principal.columnconfigure(0, weight=1)
+    janela_principal.rowconfigure(0, weight=1)
+
+    rotulo_instrucao_senha = WidgetsThemedTkinter.Label(frame_principal, text="Digite a Senha para Avaliação:")
+    rotulo_instrucao_senha.grid(row=0, column=0, columnspan=2, sticky=KitFerramentasInterfaceGraficaUsuario.W, pady=(0, 5))
+
+    campo_entrada_senha = WidgetsThemedTkinter.Entry(frame_principal, width=40, show="•") # Alterado show para ponto
+    campo_entrada_senha.grid(row=1, column=0, sticky=(KitFerramentasInterfaceGraficaUsuario.W, KitFerramentasInterfaceGraficaUsuario.E), padx=(0, 10))
+
+    botao_executar_validacao = WidgetsThemedTkinter.Button(frame_principal, text="Avaliar Agora", command=acao_botao_validar)
+    botao_executar_validacao.grid(row=1, column=1, sticky=KitFerramentasInterfaceGraficaUsuario.E)
+
+    rotulo_resultados = WidgetsThemedTkinter.Label(frame_principal, text="Detalhes da Avaliação:")
+    rotulo_resultados.grid(row=2, column=0, columnspan=2, sticky=KitFerramentasInterfaceGraficaUsuario.W, pady=(10, 5))
+
+    caixa_texto_resultados = WidgetTextoRolavel.ScrolledText(frame_principal, width=75, height=20, wrap=KitFerramentasInterfaceGraficaUsuario.WORD, state=KitFerramentasInterfaceGraficaUsuario.DISABLED)
+    caixa_texto_resultados.grid(row=3, column=0, columnspan=2, sticky=(KitFerramentasInterfaceGraficaUsuario.W, KitFerramentasInterfaceGraficaUsuario.E, KitFerramentasInterfaceGraficaUsuario.N, KitFerramentasInterfaceGraficaUsuario.S))
+
+    frame_principal.columnconfigure(0, weight=1)
+    frame_principal.rowconfigure(3, weight=1)
+
+    campo_entrada_senha.focus() # Foco inicial no campo de senha
+    janela_principal.bind('<Return>', lambda evento: acao_botao_validar()) # Permite validar com Enter
+
+    janela_principal.mainloop()
+
 if __name__ == "__main__":
-    create_gui()
+    print("Copyright © Delean Mafra, todos os direitos reservados | All rights reserved.")
+    criar_interface_grafica()
