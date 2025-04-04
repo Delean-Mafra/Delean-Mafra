@@ -8,7 +8,7 @@ import functools as FUNCAO
 import gzip as GZ
 import tkinter as TK
 from tkinter import ttk as WT
-from tkinter import scrolledtext as WidgetTextoRolavel
+from tkinter import scrolledtext as WTR
 from typing import Dict as DIC
 from typing import List as LISTA
 from typing import Optional as OPT
@@ -673,7 +673,7 @@ def criar_interface_grafica():
     rotulo_resultados = WT.Label(frame_principal, text="Detalhes da Avaliação:")
     rotulo_resultados.grid(row=2, column=0, columnspan=2, sticky=TK.W, pady=(10, 5))
 
-    caixa_texto_resultados = WidgetTextoRolavel.ScrolledText(frame_principal, width=75, height=20, wrap=TK.WORD, state=TK.DISABLED)
+    caixa_texto_resultados = WTR.ScrolledText(frame_principal, width=75, height=20, wrap=TK.WORD, state=TK.DISABLED)
     caixa_texto_resultados.grid(row=3, column=0, columnspan=2, sticky=(TK.W, TK.E, TK.N, TK.S))
 
     frame_principal.columnconfigure(0, weight=1)
