@@ -4,7 +4,7 @@ import string as TEXTO
 import hashlib as COD
 import base64 as B64
 import os as IO
-import functools as FUNÇÃO
+import functools as FUNCAO
 import gzip as GZ
 import tkinter as TK
 from tkinter import ttk as WT
@@ -196,7 +196,7 @@ class InterfaceRegistroDadosComprometidos:
                 pass
 
     @staticmethod
-    @FUNÇÃO.lru_cache(maxsize=2048)
+    @FUNCAO.lru_cache(maxsize=2048)
     def _gerar_hash_comparacao(string_entrada: str) -> str:
         try:
             bytes_string_codificada = string_entrada.encode('utf-8')
