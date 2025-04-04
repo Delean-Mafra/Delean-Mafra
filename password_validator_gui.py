@@ -1,29 +1,29 @@
-import enum as TipoEnumeracao
-import re as ProcessadorExpressoesRegulares
-import string as ConstantesConjuntoCaracteres
-import hashlib as BibliotecaAlgoritmoHashSeguro
-import base64 as BibliotecaCodificacaoBase64
-import os as InterfaceSistemaOperacional
-import functools as AuxiliarFerramentasFuncionais
-import gzip as InterfaceCompressaoGzip
-import tkinter as KitFerramentasInterfaceGraficaUsuario
-from tkinter import ttk as WidgetsThemedTkinter
+import enum as TE
+import re as Z
+import string as TEXTO
+import hashlib as COD
+import base64 as B64
+import os as IO
+import functools as FUNÇÃO
+import gzip as GZ
+import tkinter as TK
+from tkinter import ttk as WT
 from tkinter import scrolledtext as WidgetTextoRolavel
-from typing import Dict as TipoDicionario
-from typing import List as TipoLista
-from typing import Optional as TipoOpcional
-from typing import Set as TipoConjunto
-from typing import Tuple as TipoTupla
-from typing import Any as TipoQualquer
-from typing import Union as TipoUniao
-from dataclasses import dataclass as DecoradorDataClass
-from dataclasses import field as AuxiliarCampoDataClass
-from pathlib import Path as ObjetoCaminhoSistemaArquivos
-from difflib import SequenceMatcher as UtilitarioComparacaoSequencia
-from datetime import datetime as ProvedorObjetoDataHora
-import math as OperacoesMatematicas
+from typing import Dict as DIC
+from typing import List as LISTA
+from typing import Optional as OPT
+from typing import Set as SET
+from typing import Tuple as TT
+from typing import Any as A
+from typing import Union as U
+from dataclasses import dataclass as DDC
+from dataclasses import field as CAMPO
+from pathlib import Path as OSA
+from difflib import SequenceMatcher as SM
+from datetime import datetime as PODH
+import math as OM
 
-class IndicadorNivelSeguranca(TipoEnumeracao.Enum):
+class IndicadorNivelSeguranca(TE.Enum):
     EXTREMAMENTE_BAIXO = 0
     BAIXO = 1
     MEDIO = 2
@@ -35,44 +35,44 @@ class IndicadorNivelSeguranca(TipoEnumeracao.Enum):
     FORTE = 3
     MUITO_FORTE = 4
 
-@DecoradorDataClass
+@DDC
 class ContainerResultadoAvaliacao:
     flag_atende_criterios: bool = False
     categoria_avaliada: IndicadorNivelSeguranca = IndicadorNivelSeguranca.EXTREMAMENTE_BAIXO
-    lista_razoes_falha: TipoLista[str] = AuxiliarCampoDataClass(default_factory=list)
+    lista_razoes_falha: LISTA[str] = CAMPO(default_factory=list)
     metrica_quantitativa: int = 0
-    lista_dicas_aprimoramento: TipoLista[str] = AuxiliarCampoDataClass(default_factory=list)
+    lista_dicas_aprimoramento: LISTA[str] = CAMPO(default_factory=list)
     valor_entropia_informacao: float = 0.0
     rotulo_duracao_quebra_estimada: str = "indeterminado"
 
 class UnidadeProcessadoraStringSegura:
-    def __init__(self, componente_secreto_auxiliar: TipoOpcional[str] = None, fator_custo_computacional: int = 100000):
+    def __init__(self, componente_secreto_auxiliar: OPT[str] = None, fator_custo_computacional: int = 100000):
         self._aditivo_secreto_interno = componente_secreto_auxiliar if componente_secreto_auxiliar is not None else "P1m3nt4S3cr3t4P4r4D3m0"
         self._parametro_iteracao_hash = max(10000, fator_custo_computacional)
 
-    def gerar_representacao_segura(self, dados_string_entrada: str) -> TipoDicionario[str, TipoQualquer]:
-        valor_sal_unico = InterfaceSistemaOperacional.urandom(32)
+    def gerar_representacao_segura(self, dados_string_entrada: str) -> DIC[str, A]:
+        valor_sal_unico = IO.urandom(32)
         string_com_pepper_intermediaria = dados_string_entrada + self._aditivo_secreto_interno
         string_com_pepper_codificada = string_com_pepper_intermediaria.encode('utf-8')
-        chave_hash_derivada = BibliotecaAlgoritmoHashSeguro.pbkdf2_hmac(
+        chave_hash_derivada = COD.pbkdf2_hmac(
             'sha256',
             string_com_pepper_codificada,
             valor_sal_unico,
             self._parametro_iteracao_hash,
             dklen=64
         )
-        string_hash_codificada = BibliotecaCodificacaoBase64.b64encode(chave_hash_derivada).decode('utf-8')
-        string_sal_codificada = BibliotecaCodificacaoBase64.b64encode(valor_sal_unico).decode('utf-8')
+        string_hash_codificada = B64.b64encode(chave_hash_derivada).decode('utf-8')
+        string_sal_codificada = B64.b64encode(valor_sal_unico).decode('utf-8')
         estrutura_saida = {
             'id_algoritmo_hash': 'pbkdf2_sha256',
             'valor_hash_derivado': string_hash_codificada,
             'valor_sal_unico': string_sal_codificada,
             'contagem_iteracoes_usada': self._parametro_iteracao_hash,
-            'timestamp_criacao': ProvedorObjetoDataHora.now().isoformat()
+            'timestamp_criacao': PODH.now().isoformat()
         }
         return estrutura_saida
 
-    def validar_string_contra_representacao(self, string_texto_plano: str, dados_representacao_armazenados: TipoDicionario[str, TipoQualquer]) -> bool:
+    def validar_string_contra_representacao(self, string_texto_plano: str, dados_representacao_armazenados: DIC[str, A]) -> bool:
         chaves_necessarias = ('valor_hash_derivado', 'valor_sal_unico', 'id_algoritmo_hash', 'contagem_iteracoes_usada')
         todas_chaves_estao_presentes = all(nome_chave in dados_representacao_armazenados for nome_chave in chaves_necessarias)
         if not todas_chaves_estao_presentes:
@@ -82,28 +82,28 @@ class UnidadeProcessadoraStringSegura:
         if not algoritmo_e_suportado:
             return False
         try:
-            bytes_sal_decodificados = BibliotecaCodificacaoBase64.b64decode(dados_representacao_armazenados['valor_sal_unico'])
+            bytes_sal_decodificados = B64.b64decode(dados_representacao_armazenados['valor_sal_unico'])
         except Exception:
             return False
         string_com_pepper_para_verificar = string_texto_plano + self._aditivo_secreto_interno
         string_com_pepper_codificada_verificar = string_com_pepper_para_verificar.encode('utf-8')
         contagem_iteracao_armazenada = dados_representacao_armazenados['contagem_iteracoes_usada']
-        chave_hash_recalculada = BibliotecaAlgoritmoHashSeguro.pbkdf2_hmac(
+        chave_hash_recalculada = COD.pbkdf2_hmac(
             'sha256',
             string_com_pepper_codificada_verificar,
             bytes_sal_decodificados,
             contagem_iteracao_armazenada,
             dklen=64
         )
-        string_hash_recalculada_b64 = BibliotecaCodificacaoBase64.b64encode(chave_hash_recalculada).decode('utf-8')
+        string_hash_recalculada_b64 = B64.b64encode(chave_hash_recalculada).decode('utf-8')
         valor_hash_original_armazenado = dados_representacao_armazenados['valor_hash_derivado']
-        hashes_sao_identicos = BibliotecaAlgoritmoHashSeguro.compare_digest(string_hash_recalculada_b64, valor_hash_original_armazenado)
+        hashes_sao_identicos = COD.compare_digest(string_hash_recalculada_b64, valor_hash_original_armazenado)
         return hashes_sao_identicos
 
     @staticmethod
-    def mascarar_carga_dados(carga_dados: TipoUniao[str, bytes], chave_mascaramento: str) -> bytes:
+    def mascarar_carga_dados(carga_dados: U[str, bytes], chave_mascaramento: str) -> bytes:
         sal_estatico_para_mascaramento = b'sal_estatico_inseguro_demo'
-        bytes_mascaramento_derivados = BibliotecaAlgoritmoHashSeguro.pbkdf2_hmac(
+        bytes_mascaramento_derivados = COD.pbkdf2_hmac(
             'sha256',
             chave_mascaramento.encode('utf-8'),
             sal_estatico_para_mascaramento,
@@ -122,7 +122,7 @@ class UnidadeProcessadoraStringSegura:
             byte_mascaramento = bytes_mascaramento_derivados[posicao_indice % comprimento_mascara]
             bytearray_resultado_mascarado[posicao_indice] = valor_byte_dados ^ byte_mascaramento
         try:
-            dados_mascarados_comprimidos = InterfaceCompressaoGzip.compress(bytearray_resultado_mascarado)
+            dados_mascarados_comprimidos = GZ.compress(bytearray_resultado_mascarado)
             saida_final = dados_mascarados_comprimidos
         except Exception:
             saida_final = bytes(bytearray_resultado_mascarado)
@@ -131,11 +131,11 @@ class UnidadeProcessadoraStringSegura:
     @staticmethod
     def desmascarar_carga_dados(carga_mascarada: bytes, chave_mascaramento: str) -> bytes:
         try:
-            carga_descomprimida = InterfaceCompressaoGzip.decompress(carga_mascarada)
+            carga_descomprimida = GZ.decompress(carga_mascarada)
         except Exception:
             carga_descomprimida = carga_mascarada
         sal_estatico_para_mascaramento = b'sal_estatico_inseguro_demo'
-        bytes_mascaramento_derivados = BibliotecaAlgoritmoHashSeguro.pbkdf2_hmac(
+        bytes_mascaramento_derivados = COD.pbkdf2_hmac(
             'sha256',
             chave_mascaramento.encode('utf-8'),
             sal_estatico_para_mascaramento,
@@ -154,11 +154,11 @@ class UnidadeProcessadoraStringSegura:
         return bytes_dados_originais
 
 class InterfaceRegistroDadosComprometidos:
-    def __init__(self, fonte_dados_comprometidos_conhecidos: TipoOpcional[ObjetoCaminhoSistemaArquivos] = None):
-        self._registro_interno_hash_comprometido: TipoConjunto[str] = set()
+    def __init__(self, fonte_dados_comprometidos_conhecidos: OPT[OSA] = None):
+        self._registro_interno_hash_comprometido: SET[str] = set()
         self._preencher_registro_interno(fonte_dados_comprometidos_conhecidos)
 
-    def _preencher_registro_interno(self, localizacao_arquivo_dados: TipoOpcional[ObjetoCaminhoSistemaArquivos]) -> None:
+    def _preencher_registro_interno(self, localizacao_arquivo_dados: OPT[OSA]) -> None:
         entradas_comprometidas_padrao = {
             "123456", "password", "123456789", "12345678", "12345", "qwerty",
             "1234567", "111111", "1234567890", "123123", "admin", "letmein",
@@ -196,11 +196,11 @@ class InterfaceRegistroDadosComprometidos:
                 pass
 
     @staticmethod
-    @AuxiliarFerramentasFuncionais.lru_cache(maxsize=2048)
+    @FUNÇÃO.lru_cache(maxsize=2048)
     def _gerar_hash_comparacao(string_entrada: str) -> str:
         try:
             bytes_string_codificada = string_entrada.encode('utf-8')
-            hasher_sha1 = BibliotecaAlgoritmoHashSeguro.sha1()
+            hasher_sha1 = COD.sha1()
             hasher_sha1.update(bytes_string_codificada)
             resultado_digest_hex = hasher_sha1.hexdigest()
             digest_hex_maiusculo = resultado_digest_hex.upper()
@@ -228,18 +228,18 @@ class ModuloAvaliadorStringSeguranca:
         self._config_min_caracteres_unicos: int = 5
         self._config_ativar_verificacao_vazamento: bool = True
         self._config_ativar_verificacao_similaridade: bool = True
-        self._registro_senhas_comuns: TipoConjunto[str] = {
+        self._registro_senhas_comuns: SET[str] = {
             "password", "123456", "qwerty", "admin", "welcome", "senha", "senha123",
             "letmein", "monkey", "abc123", "111111", "12345678", "administrador"
         }
-        self._lista_palavras_proibidas: TipoConjunto[str] = set()
+        self._lista_palavras_proibidas: SET[str] = set()
 
         self._verificador_vazamento_instancia = InterfaceRegistroDadosComprometidos()
 
-        self._regex_padrao_repeticao = ProcessadorExpressoesRegulares.compile(r'(.)\1{2,}')
-        self._regex_padrao_sequencia = ProcessadorExpressoesRegulares.compile(
+        self._regex_padrao_repeticao = Z.compile(r'(.)\1{2,}')
+        self._regex_padrao_sequencia = Z.compile(
             r'(?:abc|bcd|cde|def|efg|fgh|ghi|hij|ijk|jkl|klm|lmn|mno|nop|opq|pqr|qrs|rst|stu|tuv|uvw|vwx|wxy|xyz|012|123|234|345|456|567|678|789|987|876|765|654|543|432|321|210)',
-            ProcessadorExpressoesRegulares.IGNORECASE
+            Z.IGNORECASE
         )
 
     def configurar_limiar_comprimento_minimo(self, comprimento: int) -> 'ModuloAvaliadorStringSeguranca':
@@ -278,15 +278,15 @@ class ModuloAvaliadorStringSeguranca:
         self._config_ativar_verificacao_similaridade = habilitado
         return self
 
-    def adicionar_termos_a_lista_negra(self, palavras: TipoLista[str]) -> 'ModuloAvaliadorStringSeguranca':
+    def adicionar_termos_a_lista_negra(self, palavras: LISTA[str]) -> 'ModuloAvaliadorStringSeguranca':
         self._lista_palavras_proibidas.update([p.lower() for p in palavras if isinstance(p, str)])
         return self
 
-    def adicionar_entradas_comuns_proibidas(self, senhas: TipoLista[str]) -> 'ModuloAvaliadorStringSeguranca':
+    def adicionar_entradas_comuns_proibidas(self, senhas: LISTA[str]) -> 'ModuloAvaliadorStringSeguranca':
         self._registro_senhas_comuns.update([s.lower() for s in senhas if isinstance(s, str)])
         return self
 
-    def _validar_contra_termos_proibidos(self, string_avaliada: str) -> TipoTupla[bool, TipoOpcional[str]]:
+    def _validar_contra_termos_proibidos(self, string_avaliada: str) -> TT[bool, OPT[str]]:
         string_avaliada_minusc = string_avaliada.lower()
         if string_avaliada_minusc in self._registro_senhas_comuns:
             return False, "A senha é muito comum e facilmente adivinhável"
@@ -305,7 +305,7 @@ class ModuloAvaliadorStringSeguranca:
                 try:
                     termo_referencia = next(iterador_termos_referencia)
                     if len(termo_referencia) > 4:
-                        calculador_similaridade = UtilitarioComparacaoSequencia(None, string_avaliada_minusc, termo_referencia)
+                        calculador_similaridade = SM(None, string_avaliada_minusc, termo_referencia)
                         indice_similaridade = calculador_similaridade.ratio()
                         if indice_similaridade > 0.8:
                             return False, f"A senha é muito similar a um termo comum/proibido: '{termo_referencia}'"
@@ -313,7 +313,7 @@ class ModuloAvaliadorStringSeguranca:
                     break
         return True, None
 
-    def _verificar_padroes_sequenciais_repetitivos(self, string_avaliada: str) -> TipoTupla[bool, TipoOpcional[str]]:
+    def _verificar_padroes_sequenciais_repetitivos(self, string_avaliada: str) -> TT[bool, OPT[str]]:
         string_avaliada_minusc = string_avaliada.lower()
         match_sequencia = self._regex_padrao_sequencia.search(string_avaliada_minusc)
         if match_sequencia:
@@ -323,7 +323,7 @@ class ModuloAvaliadorStringSeguranca:
             return False, f"A senha contém caracteres repetidos em sequência: '{match_repeticao.group(0)}'"
         return True, None
 
-    def _calcular_entropia_aproximada(self, string_avaliada: str, contagens_tipos_char: TipoDicionario[str, int]) -> float:
+    def _calcular_entropia_aproximada(self, string_avaliada: str, contagens_tipos_char: DIC[str, int]) -> float:
         tamanho_pool_caracteres = 0
         if contagens_tipos_char.get('maiuscula', 0) > 0:
             tamanho_pool_caracteres += 26
@@ -332,13 +332,13 @@ class ModuloAvaliadorStringSeguranca:
         if contagens_tipos_char.get('digito', 0) > 0:
             tamanho_pool_caracteres += 10
         if contagens_tipos_char.get('especial', 0) > 0:
-            tamanho_pool_caracteres += len(ConstantesConjuntoCaracteres.punctuation)
+            tamanho_pool_caracteres += len(TEXTO.punctuation)
         if len(string_avaliada) > 0 and tamanho_pool_caracteres < 2:
              tamanho_pool_caracteres = 10
         elif len(string_avaliada) == 0:
              return 0.0
         if tamanho_pool_caracteres > 1:
-            entropia_base = len(string_avaliada) * OperacoesMatematicas.log2(tamanho_pool_caracteres)
+            entropia_base = len(string_avaliada) * OM.log2(tamanho_pool_caracteres)
         else:
             entropia_base = 0.0
         entropia_ajustada = entropia_base
@@ -417,7 +417,7 @@ class ModuloAvaliadorStringSeguranca:
                 contagem_por_tipo_char['minuscula'] += 1
             elif caractere_atual.isdigit():
                 contagem_por_tipo_char['digito'] += 1
-            elif caractere_atual in ConstantesConjuntoCaracteres.punctuation:
+            elif caractere_atual in TEXTO.punctuation:
                 contagem_por_tipo_char['especial'] += 1
             else:
                 contagem_por_tipo_char['desconhecido'] += 1
@@ -443,7 +443,7 @@ class ModuloAvaliadorStringSeguranca:
         if self._config_flag_exigir_digito and contagem_por_tipo_char['digito'] == 0:
             resultado_processamento.lista_razoes_falha.append("A senha deve conter pelo menos um dígito numérico (0-9)")
         if self._config_flag_exigir_especial and contagem_por_tipo_char['especial'] == 0:
-            resultado_processamento.lista_razoes_falha.append(f"A senha deve conter pelo menos um caractere especial (ex: {ConstantesConjuntoCaracteres.punctuation})")
+            resultado_processamento.lista_razoes_falha.append(f"A senha deve conter pelo menos um caractere especial (ex: {TEXTO.punctuation})")
 
         check_comum_ok, msg_comum = self._validar_contra_termos_proibidos(string_para_avaliar)
         if not check_comum_ok:
@@ -473,7 +473,7 @@ class ModuloAvaliadorStringSeguranca:
 
         return resultado_processamento
 
-    def _computar_pontuacao_quantitativa(self, string_avaliada: str, contagens_tipos_char: TipoDicionario[str, int], lista_falhas_atuais: TipoLista[str]) -> int:
+    def _computar_pontuacao_quantitativa(self, string_avaliada: str, contagens_tipos_char: DIC[str, int], lista_falhas_atuais: LISTA[str]) -> int:
         pontuacao_base = 0
         comprimento = len(string_avaliada)
         pontuacao_base += min(40, comprimento * 4)
@@ -516,13 +516,13 @@ class ModuloAvaliadorStringSeguranca:
         else:
             return IndicadorNivelSeguranca.MUITO_FORTE
 
-    def _elaborar_dicas_aprimoramento(self, lista_falhas: TipoLista[str]) -> TipoLista[str]:
+    def _elaborar_dicas_aprimoramento(self, lista_falhas: LISTA[str]) -> LISTA[str]:
         dicas_geradas = []
         mapa_falha_dica = {
             "letra maiúscula": "Adicione pelo menos uma letra maiúscula (A-Z)",
             "letra minúscula": "Adicione pelo menos uma letra minúscula (a-z)",
             "dígito numérico": "Adicione pelo menos um número (0-9)",
-            "caractere especial": f"Adicione pelo menos um caractere especial ({ConstantesConjuntoCaracteres.punctuation})",
+            "caractere especial": f"Adicione pelo menos um caractere especial ({TEXTO.punctuation})",
             "caracteres únicos": "Use uma maior variedade de caracteres diferentes",
             "pelo menos": "Aumente o comprimento da sua senha",
             "comum": "Evite usar palavras comuns ou senhas conhecidas",
@@ -647,34 +647,34 @@ def criar_interface_grafica():
                 texto_resultado_formatado += f"{num_dica}. {dica_gui}\n"
                 num_dica += 1
 
-        caixa_texto_resultados.config(state=KitFerramentasInterfaceGraficaUsuario.NORMAL)
-        caixa_texto_resultados.delete(1.0, KitFerramentasInterfaceGraficaUsuario.END)
-        caixa_texto_resultados.insert(KitFerramentasInterfaceGraficaUsuario.END, texto_resultado_formatado)
-        caixa_texto_resultados.config(state=KitFerramentasInterfaceGraficaUsuario.DISABLED)
+        caixa_texto_resultados.config(state=TK.NORMAL)
+        caixa_texto_resultados.delete(1.0, TK.END)
+        caixa_texto_resultados.insert(TK.END, texto_resultado_formatado)
+        caixa_texto_resultados.config(state=TK.DISABLED)
 
-    janela_principal = KitFerramentasInterfaceGraficaUsuario.Tk()
+    janela_principal = TK.Tk()
     janela_principal.title("Ferramenta de Avaliação de Segurança de Senhas")
     janela_principal.geometry("650x500") # Tamanho ajustado
 
-    frame_principal = WidgetsThemedTkinter.Frame(janela_principal, padding="15 15 15 15")
-    frame_principal.grid(row=0, column=0, sticky=(KitFerramentasInterfaceGraficaUsuario.W, KitFerramentasInterfaceGraficaUsuario.E, KitFerramentasInterfaceGraficaUsuario.N, KitFerramentasInterfaceGraficaUsuario.S))
+    frame_principal = WT.Frame(janela_principal, padding="15 15 15 15")
+    frame_principal.grid(row=0, column=0, sticky=(TK.W, TK.E, TK.N, TK.S))
     janela_principal.columnconfigure(0, weight=1)
     janela_principal.rowconfigure(0, weight=1)
 
-    rotulo_instrucao_senha = WidgetsThemedTkinter.Label(frame_principal, text="Digite a Senha para Avaliação:")
-    rotulo_instrucao_senha.grid(row=0, column=0, columnspan=2, sticky=KitFerramentasInterfaceGraficaUsuario.W, pady=(0, 5))
+    rotulo_instrucao_senha = WT.Label(frame_principal, text="Digite a Senha para Avaliação:")
+    rotulo_instrucao_senha.grid(row=0, column=0, columnspan=2, sticky=TK.W, pady=(0, 5))
 
-    campo_entrada_senha = WidgetsThemedTkinter.Entry(frame_principal, width=40, show="•") # Alterado show para ponto
-    campo_entrada_senha.grid(row=1, column=0, sticky=(KitFerramentasInterfaceGraficaUsuario.W, KitFerramentasInterfaceGraficaUsuario.E), padx=(0, 10))
+    campo_entrada_senha = WT.Entry(frame_principal, width=40, show="•") # Alterado show para ponto
+    campo_entrada_senha.grid(row=1, column=0, sticky=(TK.W, TK.E), padx=(0, 10))
 
-    botao_executar_validacao = WidgetsThemedTkinter.Button(frame_principal, text="Avaliar Agora", command=acao_botao_validar)
-    botao_executar_validacao.grid(row=1, column=1, sticky=KitFerramentasInterfaceGraficaUsuario.E)
+    botao_executar_validacao = WT.Button(frame_principal, text="Avaliar Agora", command=acao_botao_validar)
+    botao_executar_validacao.grid(row=1, column=1, sticky=TK.E)
 
-    rotulo_resultados = WidgetsThemedTkinter.Label(frame_principal, text="Detalhes da Avaliação:")
-    rotulo_resultados.grid(row=2, column=0, columnspan=2, sticky=KitFerramentasInterfaceGraficaUsuario.W, pady=(10, 5))
+    rotulo_resultados = WT.Label(frame_principal, text="Detalhes da Avaliação:")
+    rotulo_resultados.grid(row=2, column=0, columnspan=2, sticky=TK.W, pady=(10, 5))
 
-    caixa_texto_resultados = WidgetTextoRolavel.ScrolledText(frame_principal, width=75, height=20, wrap=KitFerramentasInterfaceGraficaUsuario.WORD, state=KitFerramentasInterfaceGraficaUsuario.DISABLED)
-    caixa_texto_resultados.grid(row=3, column=0, columnspan=2, sticky=(KitFerramentasInterfaceGraficaUsuario.W, KitFerramentasInterfaceGraficaUsuario.E, KitFerramentasInterfaceGraficaUsuario.N, KitFerramentasInterfaceGraficaUsuario.S))
+    caixa_texto_resultados = WidgetTextoRolavel.ScrolledText(frame_principal, width=75, height=20, wrap=TK.WORD, state=TK.DISABLED)
+    caixa_texto_resultados.grid(row=3, column=0, columnspan=2, sticky=(TK.W, TK.E, TK.N, TK.S))
 
     frame_principal.columnconfigure(0, weight=1)
     frame_principal.rowconfigure(3, weight=1)
