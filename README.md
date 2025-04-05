@@ -1,7 +1,7 @@
 # Delean Mafra
 
 👋 Olá! Sou Delean Mafra, um profissional apaixonado por tecnologia e inovação com mais de dez anos de experiência na área de tecnologia. Atualmente, estou cursando Ciência de Dados e atuo como Customer Owner na TOTVS, onde sou referência na análise e resolução de incidentes de média e alta complexidade. Minha atuação é focada na automação de processos e na implementação de soluções inovadoras utilizando inteligência artificial.
-Treine seus codigos comigo no [codewars](www.codewars.com/r/DnrkrQ)
+Treine seus codigos comigo no [codewars](http://www.codewars.com/r/DnrkrQ/).
 
 ## Sobre Mim
 
@@ -58,7 +58,7 @@ Veja todas as minhas competências em [minhas habilidades no LinkedIn](https://w
 # Delean Mafra
 
 Hello! 👋 I am Delean Mafra, a professional passionate about technology and innovation with over ten years of experience in the technology field. Currently, I am pursuing a degree in Data Science and working as a Technical Support Analyst II at TOTVS, where I am a reference in the analysis and resolution of medium and high complexity incidents. My work focuses on process automation and implementing innovative solutions using artificial intelligence.
-Train your codes with me at [codewars](www.codewars.com/r/DnrkrQ)
+Train your codes with me at [codewars](http://www.codewars.com/r/DnrkrQ/).
 
 ## About Me
 
