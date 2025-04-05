@@ -7,7 +7,20 @@ Treine seus codigos comigo no [codewars](www.codewars.com/r/DnrkrQ)
 
 🚀 Sou entusiasta de novas tecnologias e metodologias inovadoras, sempre buscando aprimorar processos e melhorar a eficiência operacional por meio da automação e da análise de dados. Meu trabalho envolve a otimização de bancos de dados SQL, automação de tarefas utilizando Python e a criação de dashboards e relatórios analíticos com ferramentas como Power BI, Excel e Metabase.
 
-<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="4660700c-0f08-4c52-9015-dd9d8d3b5718" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+<p xmlns:cc="http://creativecommons.org/ns#" xmlns:dct="http://purl.org/dc/terms/">
+    <a property="dct:title" rel="cc:attributionURL" href="https://www.credly.com">Credly Badge</a> by 
+    <a rel="cc:attributionURL dct:creator" property="cc:attributionName" href="https://github.com/Delean-Mafra">Delean Mafra</a> is licensed under 
+    <a href="https://www.credly.com" target="_blank" rel="license noopener noreferrer" style="display:inline-block;">
+        <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="4660700c-0f08-4c52-9015-dd9d8d3b5718" data-share-badge-host="https://www.credly.com"></div>
+        <script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+        Creative Commons Attribution-Non Commercial-No Derivatives 4.0 International.<br> 
+        Copyright © 2024-2025 | Delean Mafra, todos os direitos reservados/All rights reserved
+        <img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/cc.svg?ref=chooser-v1" alt="">
+        <img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/by.svg?ref=chooser-v1" alt="">
+        <img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nc.svg?ref=chooser-v1" alt="">
+        <img style="height:22px!important;margin-left:3px;vertical-align:text-bottom;" src="https://mirrors.creativecommons.org/presskit/icons/nd.svg?ref=chooser-v1" alt="">
+    </a>
+</p>
 
 ## Principais Habilidades
 
