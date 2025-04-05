@@ -10,7 +10,6 @@ Treine seus codigos comigo no [codewars](www.codewars.com/r/DnrkrQ)
 <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="4660700c-0f08-4c52-9015-dd9d8d3b5718" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
 
 
-
 ## Principais Habilidades
 
 - 🤖 **Automação de processos para ganho de produtividade utilizando Python**
