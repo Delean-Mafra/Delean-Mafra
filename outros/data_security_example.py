@@ -38,7 +38,7 @@ def generate_hash(data):
 # Exemplo de uso
 
 # Dados a serem criptografados
-data = b"Dados sensíveis que precisam ser protegidos."
+data = "Dados sensíveis que precisam ser protegidos.".encode()
 
 # Criptografia simétrica (AES)
 symmetric_key = get_random_bytes(16)  # Chave de 128 bits
