@@ -7,6 +7,8 @@ Treine seus codigos comigo no [codewars](www.codewars.com/r/DnrkrQ)
 
 🚀 Sou entusiasta de novas tecnologias e metodologias inovadoras, sempre buscando aprimorar processos e melhorar a eficiência operacional por meio da automação e da análise de dados. Meu trabalho envolve a otimização de bancos de dados SQL, automação de tarefas utilizando Python e a criação de dashboards e relatórios analíticos com ferramentas como Power BI, Excel e Metabase.
 
+<div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="4660700c-0f08-4c52-9015-dd9d8d3b5718" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+
 ## Principais Habilidades
 
 - 🤖 **Automação de processos para ganho de produtividade utilizando Python**
