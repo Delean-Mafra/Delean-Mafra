@@ -1,107 +1,166 @@
-# Delean Mafra
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delean Mafra - Perfil Profissional | Tecnologia e Dados</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <img src="https://lh3.googleusercontent.com/a/ACg8ocJeLUFxnYhLFgklprbMMVFzzYCwqlUYnVaNYO8ZGR59Ui5AZ-NwSw=s288-c-no" alt="Foto de Perfil de Delean Mafra">
+        <h1>Delean Mafra</h1>
+        <p>Conectando Suporte Técnico de Excelência com o Poder dos Dados | SQL | Python | BI</p>
+        <div class="contact-links">
+             <a href="https://www.linkedin.com/in/delean-mafra/" target="_blank" title="LinkedIn">LinkedIn</a> |
+            <a href="https://github.com/Delean-Mafra" target="_blank" title="GitHub">GitHub</a>
+        </div>
+    </header>
 
-👋 Olá! Sou Delean Mafra, um profissional apaixonado por tecnologia e inovação com mais de dez anos de experiência na área de tecnologia. Atualmente, estou cursando Ciência de Dados e atuo como Customer Owner na TOTVS, onde sou referência na análise e resolução de incidentes de média e alta complexidade. Minha atuação é focada na automação de processos e na implementação de soluções inovadoras utilizando inteligência artificial.
-Treine seus codigos comigo no [codewars](http://www.codewars.com/r/DnrkrQ/).
+    <main>
+        <section id="about">
+            <h2>Sobre Mim</h2>
+            <p>
+                Minha jornada na tecnologia começou há mais de uma década, imerso na dinâmica do suporte técnico, onde aprendi o valor de entender profundamente os desafios dos usuários e entregar soluções eficazes. Essa experiência prática acendeu minha paixão por otimização e pela busca incessante por respostas – não apenas para resolver problemas, mas para antecipá-los.
+            </p>
+            <p>
+                Hoje, estou canalizando essa energia e curiosidade para o universo da <strong>Ciência de Dados</strong>, cursando Tecnólogo na Descomplica. Vejo um potencial imenso em unir minha bagagem de atendimento e infraestrutura com a capacidade analítica dos dados. Explorar bancos de dados (<strong>MySQL</strong> é um campo que domino bem!), visualizar informações com <strong>Power BI</strong> e começar a desvendar o <strong>Python</strong> para automação e análise são partes empolgantes dessa nova fase.
+            </p>
+             <p>
+                Sou movido pela resolução de problemas, pela organização e por transformar dados brutos em insights acionáveis. Combinando um perfil analítico com uma forte orientação para resultados (como apontado no DISC), estou sempre pronto para aprender, colaborar e aplicar meu conhecimento para fazer a diferença.
+            </p>
+        </section>
 
-## Sobre Mim
+        <section id="experience">
+            <h2>Experiência Profissional</h2>
+            <div class="job">
+                <h3>Customer Owner / Líder Técnico / Especialista de Service Desk</h3>
+                <p><strong>TOTVS</strong> | Florianópolis, SC (Maio 2024 - Presente / Experiência Total na TOTVS: ~4 anos)</p>
+                <ul>
+                    <li>Gestão de SLAs, priorização e escalonamento de demandas de clientes.</li>
+                    <li>Monitoramento e análise de indicadores de performance (Power BI, Excel, Metabase).</li>
+                    <li>Liderança técnica da equipe de Customer Service Desk, garantindo conformidade com ISO 9001 e 27001.</li>
+                    <li>Referência técnica na análise e resolução de incidentes complexos.</li>
+                    <li>Automação de processos e extração de dados para relatórios analíticos.</li>
+                    <li>Comunicação com clientes e áreas internas (Desenvolvimento, Qualidade).</li>
+                    <li>Utilização de ferramentas como Hubspot, Movidesk, Sankhya, Jira, Trello, Google Workspace.</li>
+                </ul>
+            </div>
+            <div class="job">
+                <h3>Analista de Suporte / Consultor de Implantação</h3>
+                <p><strong>Procel Software</strong> | Florianópolis, SC (Abril 2015 - Março 2021 | 6 anos)</p>
+                <ul>
+                    <li>Suporte técnico remoto a usuários de sistemas ERP.</li>
+                    <li>Manutenção de bancos de dados (MySQL): backup, restore, rollback, recovery.</li>
+                    <li>Criação de scripts SQL (UPDATE, INSERT, SELECT, DELETE).</li>
+                    <li>Implantação de sistemas ERP e gerenciamento de relacionamento com o cliente.</li>
+                    <li>Atuação como Help Desk e Customer Service Manager.</li>
+                </ul>
+            </div>
+             <div class="job">
+                
+                
+   
+            </div>
+        </section>
 
-🚀 Sou entusiasta de novas tecnologias e metodologias inovadoras, sempre buscando aprimorar processos e melhorar a eficiência operacional por meio da automação e da análise de dados. Meu trabalho envolve a otimização de bancos de dados SQL, automação de tarefas utilizando Python e a criação de dashboards e relatórios analíticos com ferramentas como Power BI, Excel e Metabase.
+        <section id="education">
+            <h2>Formação e Capacitação</h2>
+            <div class="course">
+                <h3>Ciência de Dados (Tecnólogo)</h3>
+                <p><strong>Descomplica Faculdade Digital</strong> (Cursando)</p>
+            </div>
+             <div class="course">
+                <h3>Auditor Interno da Norma ISO 9001</h3>
+                 <p>Formação Maio 2024</p>
+             </div>
+            <div class="course">
+                <h3>Fundamentos de Engenharia de Dados</h3>
+                <p><strong>Data Science Academy</strong></p>
+                <p><em>Conhecimento Adquirido:</em> Estruturação de Bancos de Dados</p>
+            </div>
+            <div class="course">
+                <h3>SQL Completo</h3>
+                <p><strong>Softblue</strong></p>
+                <p><em>Conhecimento Adquirido:</em> MySQL - Banco de Dados de Infraestrutura</p>
+            </div>
+             <div class="course">
+                <h3>Programming and Communication</h3>
+                 <p><strong>Descomplica</strong> (Formação)</p>
+                <p><em>Conhecimento Adquirido:</em> Visão analítica</p>
+            </div>
 
+        </section>
 
+        <section id="skills">
+            <h2>Principais Competências</h2>
+            <!-- Mantendo a estrutura anterior para clareza, mas o CSS novo pode não estilizá-la da mesma forma -->
+             <div class="skills-container">
+                <div class="skill-category">
+                    <h3>Técnicas</h3>
+                    <ul>
+                        <li>SQL (MySQL, Firebird)</li>
+                        <li>Python (Aprendendo/Aplicando)</li>
+                        <li>Business Intelligence (Power BI, Excel, Metabase)</li>
+                        <li>Análise de Dados</li>
+                        <li>Gestão de Banco de Dados</li>
+                        <li>Suporte Técnico Especializado</li>
+                        <li>ITIL (Conceitos)</li>
+                        <li>Ferramentas de Ticketing (Jira, Hubspot, Movidesk, etc.)</li>
+                        <li>Google Workspace</li>
+                        <li>Segurança da Informação (LGPD, ISO 27001)</li>
+                        <li>Normas de Qualidade (ISO 9001)</li>
+                         <li>Docker / Kubernetes (Conceitos)</li>
+                         <li>Metodologias Ágeis (Conceitos)</li>
+                    </ul>
+                </div>
+                <div class="skill-category">
+                    <h3>Comportamentais / Soft Skills</h3>
+                    <ul>
+                        <li>Comunicação Clara e Objetiva</li>
+                        <li>Organização e Planejamento</li>
+                        <li>Tomada de Decisão Baseada em Análise</li>
+                        <li>Colaboração e Trabalho em Equipe</li>
+                        <li>Visão Analítica e Crítica</li>
+                        <li>Resolução de Problemas Complexos</li>
+                        <li>Habilidade de Negociação</li>
+                        <li>Liderança Técnica</li>
+                        <li>Foco no Cliente e na Experiência</li>
+                        <li>Proatividade e Determinação (Executor)</li>
+                        <li>Atenção a Detalhes e Precisão (Analítico)</li>
+                        <li>Curiosidade e Aprendizado Contínuo</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
 
+        <section id="portfolio">
+            <h2>Portfólio e Projetos</h2>
+            <p>Acompanhe minhas explorações e projetos no <a href="https://github.com/Delean-Mafra" target="_blank">GitHub</a>.</p>
+            <div class="project">
+                <h3>CDADOS - Projeto de Extensão I (Descomplica)</h3>
+                <p><strong>Área:</strong> Instituições religiosas</p>
+                <p><strong>Foco:</strong> Aplicação inicial de Análise de Dados, Desenvolvimento com Python, Redação Técnica e desenvolvimento da Visão Analítica.</p>
+                <p><a href="https://github.com/Delean-Mafra/pex" target="_blank">Repositório do Projeto</a></p>
+                 
+            </div>
+        </section>
 
-## Principais Habilidades
+        <section id="interests">
+            <h2>Interesses</h2>
+             <p>Além do universo tech: Análise de Dados | Big Data & IA | MySQL & Bancos de Dados | Python | Investimentos | Games (Estratégia e RPGs são favoritos!) | Música (Rock/Metal!) | Jogos de Tabuleiro</p>
+        </section>
+    </main>
 
-- 🤖 **Automação de processos para ganho de produtividade utilizando Python**
-- 🗄️ **Manutenção e otimização de bancos de dados SQL como MySQL e outros similares**
-- 📊 **Monitoramento e análise de indicadores de performance utilizando Power BI, Excel e Metabase**
-- 🧠 **Implementação de soluções em inteligência artificial**
-- 📝 **Desenvolvimento de scripts e algoritmos para análise de dados**
-- 🔒 **Conhecimento em legislação trabalhista, LGPD e boas práticas de segurança da informação**
-- 🎟️ **Gestão e categorização de tickets utilizando ferramentas como Hubspot, Movidesk, Sankhya, Jira, Trello, etc.**
+    <footer>
+        <!-- Minhas credenciais -->
+        <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="4660700c-0f08-4c52-9015-dd9d8d3b5718" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+        <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="4fc185b8-a453-457c-aea8-75fe55099b2e" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+        <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="a03a2621-4006-4687-bbd6-6a2ed5671e9f" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+    </footer>
 
-## Formação Acadêmica
-
-### Descomplica
-**Curso Superior de Tecnologia (CST), Ciência de Dados (Data Science)**  
-Outubro de 2024 - o momento
-
-- 🖥️ Arquitetura de computadores, Probabilidade e Estatística, Coleta e Tratamento de Dados
-- 💻 Desenvolvimento de Algoritmos, CyberSecurity, Ciência de Dados para Negócios
-- 🌐 Big Data, Redes Neurais e Deep Learning, Clusterização de dados, Modelagem de Dados
-
-## Certificações Relevantes
-
-- 📜 **Fundamentos de Dados e IA** - TOTVS
-- 📜 **ETL - Transformação e Carga de Dados** - TOTVS
-- 📜 **Estrutura de Dados & SQL** - TOTVS
-- 📜 **Semana do Python na prática** - Empowerdata
-- 📜 **Cibersegurança** - Hacker Rangers Brasil
-- 📜 **Ferramentas e Aplicações da Inteligência Artificial** - Descomplica
-
-## Competências
-
-Veja todas as minhas competências em [minhas habilidades no LinkedIn](https://www.linkedin.com/in/delean-mafra/details/skills/).
-
-## Conecte-se Comigo
-
-📩 Aberto a novas conexões e oportunidades de colaboração!  
-[LinkedIn](https://www.linkedin.com/in/delean-mafra/)
-
----
-
-❤️ Amo Python e Banco de dados SQL. Sou um profissional movido por desafios e inovação, sempre em busca de novas tecnologias e metodologias para aprimorar processos e oferecer a melhor experiência para os clientes. 🚀
-
-
-
-
-# Delean Mafra
-
-Hello! 👋 I am Delean Mafra, a professional passionate about technology and innovation with over ten years of experience in the technology field. Currently, I am pursuing a degree in Data Science and working as a Technical Support Analyst II at TOTVS, where I am a reference in the analysis and resolution of medium and high complexity incidents. My work focuses on process automation and implementing innovative solutions using artificial intelligence.
-Train your codes with me at [codewars](http://www.codewars.com/r/DnrkrQ/).
-
-## About Me
-
-🚀 I am an enthusiast of new technologies and innovative methodologies, always seeking to improve processes and enhance operational efficiency through automation and data analysis. My work involves optimizing SQL databases, automating tasks using Python, and creating dashboards and analytical reports with tools such as Power BI, Excel, and Metabase.
-
-## Key Skills
-
-- 🤖 **Process automation for productivity gain using Python**
-- 🗄️ **Maintenance and optimization of SQL databases like MySQL and similar**
-- 📊 **Monitoring and analyzing performance indicators using Power BI, Excel, and Metabase**
-- 🧠 **Implementation of artificial intelligence solutions**
-- 📝 **Development of scripts and algorithms for data analysis**
-- 🔒 **Knowledge of labor legislation, LGPD, and information security best practices**
-- 🎟️ **Ticket management and categorization using tools like Hubspot, Movidesk, Sankhya, Jira, Trello, etc.**
-
-## Academic Background
-
-### Descomplica
-**Bachelor's Degree in Technology, Data Science**  
-October 2024 - Present
-
-- 🖥️ Computer Architecture, Probability and Statistics, Data Collection and Processing
-- 💻 Algorithm Development, CyberSecurity, Data Science for Business
-- 🌐 Big Data, Neural Networks and Deep Learning, Data Clustering, Data Modeling
-
-## Relevant Certifications
-
-- 📜 **Data and AI Fundamentals** - TOTVS
-- 📜 **ETL - Data Transformation and Loading** - TOTVS
-- 📜 **Data Structures & SQL** - TOTVS
-- 📜 **Python Week in Practice** - Empowerdata
-- 📜 **Cybersecurity** - Hacker Rangers Brazil
-- 📜 **AI Tools and Applications** - Descomplica
-
-## Skills
-
-Check out all my skills on [my LinkedIn profile](https://www.linkedin.com/in/delean-mafra/details/skills/).
-
-## Connect with Me
-
-📩 Open to new connections and collaboration opportunities!  
-[LinkedIn](https://www.linkedin.com/in/delean-mafra/)
-
----
-
-❤️ I love Python and SQL databases. I am a professional driven by challenges and innovation, always seeking new technologies and methodologies to improve processes and provide the best experience for clients. 🚀
+</body>
+</html>
