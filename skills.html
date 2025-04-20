@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Galeria de Certificados - Estilo Museu</title>
+  <style>
+    /* Fundo de parede escura texturizada */
+    body {
+      margin: 0;
+      font-family: 'Playfair Display', serif;
+      background: #1a1a1a;
+      color: #eee;
+    }
+    h1 {
+      text-align: center;
+      padding: 1.5rem 0;
+      font-size: 2.5rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 2rem;
+      padding: 2rem 4rem;
+      max-width: 1400px;
+      margin: 0 auto;
+      background: radial-gradient(circle at center top, rgba(255,255,255,0.05), transparent 70%);
+    }
+    .item {
+      position: relative;
+      padding: 1rem;
+      background: #f5f0e1;
+      border: 8px solid #fff;
+      border-radius: 4px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+      cursor: pointer;
+      transform-style: preserve-3d;
+      transition: transform 0.5s ease, box-shadow 0.5s ease;
+    }
+    /* Simula o gancho e fio de pendurar */
+    .item::before {
+      content: '';
+      position: absolute;
+      top: -40px;
+      left: 50%;
+      width: 2px;
+      height: 40px;
+      background: #bbb;
+      transform: translateX(-50%);
+    }
+    .item::after {
+      content: '';
+      position: absolute;
+      top: -44px;
+      left: 50%;
+      width: 40px;
+      height: 2px;
+      background: #999;
+      transform: translateX(-50%);
+    }
+    .item img {
+      display: block;
+      width: 100%;
+      height: auto;
+      transition: transform 0.5s ease;
+      transform-origin: center center;
+    }
+    .item:hover {
+      transform: perspective(600px) rotateX(8deg) rotateY(-8deg) translateY(-10px);
+      box-shadow: 0 12px 28px rgba(0,0,0,0.7);
+    }
+    .item:hover img {
+      transform: scale(1.02);
+    }
+    /* Lightbox estilo moldura escura */
+    .lightbox {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .lightbox img {
+      max-width: 85%;
+      max-height: 80%;
+      border: 12px solid #222;
+      box-shadow: 0 0 30px rgba(0,0,0,0.9);
+      border-radius: 4px;
+    }
+    .lightbox .close {
+      position: absolute;
+      top: 30px;
+      right: 40px;
+      font-size: 3rem;
+      color: #fff;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Galeria de Certificados</h1>
+  <div class="gallery"></div>
+
+  <div id="lightbox" class="lightbox">
+    <span class="close">&times;</span>
+    <img src="" alt="Visualização Ampliada">
+  </div>
+
+  <script>
+    const gallery = document.querySelector('.gallery');
+    const total = 40;
+    for (let i = 1; i <= total; i++) {
+      const ext = (i === total) ? 'jpg' : 'png';
+      const path = `skills/certificado_${i}.${ext}`;
+      const frame = document.createElement('div');
+      frame.className = 'item';
+      const img = document.createElement('img');
+      img.src = path;
+      img.alt = `Certificado ${i}`;
+      frame.appendChild(img);
+      gallery.appendChild(frame);
+
+      frame.addEventListener('click', () => {
+        const lb = document.getElementById('lightbox');
+        lb.querySelector('img').src = path;
+        lb.style.display = 'flex';
+      });
+    }
+    // Fechar lightbox
+    document.querySelector('.lightbox .close').addEventListener('click', () => {
+      document.getElementById('lightbox').style.display = 'none';
+    });
+    document.getElementById('lightbox').addEventListener('click', e => {
+      if (e.target.id === 'lightbox') {
+        e.currentTarget.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>
