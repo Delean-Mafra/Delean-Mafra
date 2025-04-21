@@ -4,10 +4,206 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Delean Mafra - Perfil Profissional | Tecnologia e Dados</title>
-    <link rel="stylesheet" href="style.css">
+    <!-- <link rel="stylesheet" href="style.css"> Removido o link para o CSS externo -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <!-- Adicionado Favicon -->
+    <link rel="icon" href="db.png" type="image/png">
+
+    <!-- CSS Incorporado -->
+    <style>
+        *, *::before, *::after {
+          box-sizing: border-box; /* Adicionado: Box-sizing global */
+        }
+
+        body {
+          margin: 0;
+          font-family: 'Roboto', sans-serif;
+          background-color: #0d1117; /* Fundo escuro principal (GitHub Dark) */
+          color: #c9d1d9; /* Cor de texto principal (claro) */
+        }
+
+        header {
+          background-color: #161b22; /* Fundo ligeiramente mais claro para o header */
+          padding: 2rem;
+          text-align: center;
+          border-bottom: 1px solid #30363d; /* Linha divisória sutil */
+        }
+
+        header img {
+          border-radius: 50%;
+          width: 150px;
+          height: 150px;
+          border: 3px solid #58a6ff; /* Borda azul clara na imagem */
+          object-fit: cover; /* Garante que a imagem cubra a área sem distorcer */
+        }
+
+        header h1 {
+          margin-top: 1rem;
+          font-size: 2rem;
+          color: #58a6ff; /* Título principal em azul */
+        }
+
+        header p {
+          font-size: 1rem;
+          color: #8b949e; /* Subtítulo/tagline em cinza claro */
+          margin-bottom: 1rem; /* Espaço antes dos links */
+        }
+
+        /* Estilo adicional para os links de contato no header */
+        .contact-links a {
+            color: #58a6ff; /* Links em azul */
+            text-decoration: none;
+            margin: 0 10px;
+            font-weight: bold;
+        }
+
+        .contact-links a:hover {
+            text-decoration: underline;
+            color: #79c0ff; /* Azul mais claro no hover */
+        }
+
+
+        main {
+          max-width: 900px;
+          margin: 2rem auto;
+          padding: 0 1rem;
+        }
+
+        section {
+          margin-bottom: 2rem;
+          padding: 1.5rem; /* Adiciona um padding interno às seções */
+          background-color: #161b22; /* Fundo das seções igual ao header */
+          border: 1px solid #30363d; /* Borda sutil nas seções */
+          border-radius: 6px; /* Cantos arredondados */
+        }
+
+        h2 {
+          color: #79c0ff; /* Títulos de seção em azul claro */
+          border-bottom: 1px solid #30363d; /* Linha abaixo dos títulos */
+          padding-bottom: 0.5rem;
+          margin-top: 0; /* Remove margem superior padrão do h2 */
+          margin-bottom: 1rem; /* Espaço abaixo do título */
+        }
+
+        /* Estilizando listas dentro das seções */
+        ul {
+            padding-left: 20px;
+            list-style-type: disc; /* ou 'circle' ou 'square' */
+            color: #c9d1d9; /* Cor dos itens da lista */
+        }
+
+        li {
+            margin-bottom: 0.7em; /* Espaçamento entre itens da lista */
+            line-height: 1.5;
+        }
+
+        /* Estilo para links dentro do conteúdo principal */
+        main a {
+            color: #58a6ff; /* Azul para links no main */
+        }
+        main a:hover {
+            color: #79c0ff;
+            text-decoration: underline;
+        }
+
+        /* Estilo específico para as tags de Strong/Bold */
+        strong, b {
+            color: #a5d6ff; /* Destaca texto em negrito com um azul diferente */
+            font-weight: 600; /* Ajusta o peso da fonte se necessário */
+        }
+        em, i {
+             color: #8b949e; /* Itálico em cinza */
+             font-style: italic;
+        }
+
+        /* Estilo para o container das skills (Flexbox para colunas) */
+        .skills-container {
+            display: flex;
+            gap: 2rem; /* Espaço entre as colunas */
+            flex-wrap: wrap; /* Permite quebrar em telas menores */
+        }
+
+        .skill-category {
+            flex: 1; /* Faz cada categoria tentar ocupar espaço igual */
+            min-width: 250px; /* Define uma largura mínima antes de quebrar */
+        }
+
+        #skills ul {
+            margin-top: 0.5rem;
+        }
+
+        /* Footer */
+        footer {
+          background-color: #161b22; /* Fundo igual ao header */
+          padding: 2rem;
+          display: flex;
+          justify-content: center;
+          align-items: center; /* Alinha itens verticalmente */
+          gap: 2rem; /* Espaço entre os badges */
+          flex-wrap: wrap; /* Permite que os badges quebrem linha */
+          border-top: 1px solid #30363d; /* Linha divisória sutil */
+          margin-top: 2rem;
+          text-align: center; /* Centraliza o texto do copyright */
+        }
+
+        /* Ajustes para os iframes do Credly (removido o display:inline-block desnecessário com flex) */
+        footer div[data-iframe-width] {
+           /* display: inline-block; */
+           /* vertical-align: top; */
+           margin-bottom: 1rem; /* Adiciona espaço abaixo dos badges antes do copyright */
+        }
+
+        footer p {
+            width: 100%; /* Faz o parágrafo do copyright ocupar toda a largura */
+            margin-top: 1rem; /* Adiciona espaço acima do copyright */
+            font-size: 0.9em;
+            color: #8b949e;
+        }
+
+        /* Responsividade Básica */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            header p {
+                font-size: 0.9rem;
+            }
+            main {
+                margin: 1.5rem auto;
+            }
+            /* Desfaz o flex das skills para ficarem uma abaixo da outra */
+            .skills-container {
+                flex-direction: column;
+                 gap: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+             header {
+                padding: 1.5rem 1rem;
+            }
+             header img {
+                width: 120px;
+                height: 120px;
+            }
+            header h1 {
+                font-size: 1.6rem;
+            }
+             main {
+                margin: 1rem auto;
+                padding: 0 0.5rem;
+             }
+            section {
+                padding: 1rem;
+            }
+            footer {
+                gap: 1rem; /* Diminui o espaço entre badges em telas menores */
+                padding: 1.5rem 1rem;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -16,7 +212,9 @@
         <p>Conectando Suporte Técnico de Excelência com o Poder dos Dados | SQL | Python | BI</p>
         <div class="contact-links">
              <a href="https://www.linkedin.com/in/delean-mafra/" target="_blank" title="LinkedIn">LinkedIn</a> |
-            <a href="https://github.com/Delean-Mafra" target="_blank" title="GitHub">GitHub</a>
+            <a href="https://github.com/Delean-Mafra" target="_blank" title="GitHub">GitHub</a> |
+            <!-- Adicionado link para seguir no LinkedIn -->
+            <a href="https://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=delean-mafra" target="_blank" title="Seguir no LinkedIn">Siga-me no LinkedIn</a>
             <!-- Email removido -->
         </div>
     </header>
@@ -61,15 +259,14 @@
                     <li>Atuação como Help Desk e Customer Service Manager.</li>
                 </ul>
             </div>
-             <div class="job">
-                
-                
-   
-            </div>
+             <!-- Div vazia removida -->
         </section>
 
         <section id="education">
             <h2>Formação e Capacitação</h2>
+            <!-- Adicionado Link para Galeria de Certificados -->
+            <p><a href="https://delean-mafra.github.io/Delean-Mafra/skills" target="_blank"><strong>Veja minha Galeria de Certificados</strong></a></p>
+
             <div class="course">
                 <h3>Ciência de Dados (Tecnólogo)</h3>
                 <p><strong>Descomplica Faculdade Digital</strong> (Cursando)</p>
@@ -81,24 +278,23 @@
             <div class="course">
                 <h3>Fundamentos de Engenharia de Dados</h3>
                 <p><strong>Data Science Academy</strong></p>
-                <p><em>Conhecimento Adquirido:</em> Estruturação de Bancos de Dados</p>
+                <p><strong>Conhecimento Adquirido:</strong> Estruturação de Bancos de Dados</p> <!-- Usando Strong para consistência -->
             </div>
             <div class="course">
                 <h3>SQL Completo</h3>
                 <p><strong>Softblue</strong></p>
-                <p><em>Conhecimento Adquirido:</em> MySQL - Banco de Dados de Infraestrutura</p>
+                <p><strong>Conhecimento Adquirido:</strong> MySQL - Banco de Dados de Infraestrutura</p> <!-- Usando Strong para consistência -->
             </div>
              <div class="course">
                 <h3>Programming and Communication</h3>
                  <p><strong>Descomplica</strong> (Formação)</p>
-                <p><em>Conhecimento Adquirido:</em> Visão analítica</p>
+                <p><strong>Conhecimento Adquirido:</strong> Visão analítica</p> <!-- Usando Strong para consistência -->
             </div>
 
         </section>
 
         <section id="skills">
             <h2>Principais Competências</h2>
-            <!-- Mantendo a estrutura anterior para clareza, mas o CSS novo pode não estilizá-la da mesma forma -->
              <div class="skills-container">
                 <div class="skill-category">
                     <h3>Técnicas</h3>
@@ -146,13 +342,14 @@
                 <p><strong>Área:</strong> Instituições religiosas</p>
                 <p><strong>Foco:</strong> Aplicação inicial de Análise de Dados, Desenvolvimento com Python, Redação Técnica e desenvolvimento da Visão Analítica.</p>
                 <p><a href="https://github.com/Delean-Mafra/pex" target="_blank">Repositório do Projeto</a></p>
-                 
+
             </div>
         </section>
 
         <section id="interests">
             <h2>Interesses</h2>
-             <p>Além do universo tech: Análise de Dados | Big Data & IA | MySQL & Bancos de Dados | Python | Investimentos | Games (Estratégia e RPGs são favoritos!) | Música (Rock/Metal!) | Jogos de Tabuleiro</p>
+             <!-- Texto sobre música atualizado -->
+             <p>Além do universo tech: Análise de Dados | Big Data & IA | MySQL & Bancos de Dados | Python | Investimentos | Games (Estratégia e RPGs são favoritos!) | Música: Rock, pop, alternativa, Soul, R&B, Jazz, Blues, Electronic e Hip Hop | Jogos de Tabuleiro</p>
         </section>
     </main>
 
@@ -161,6 +358,9 @@
         <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="4660700c-0f08-4c52-9015-dd9d8d3b5718" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
         <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="4fc185b8-a453-457c-aea8-75fe55099b2e" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
         <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="a03a2621-4006-4687-bbd6-6a2ed5671e9f" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+
+        <!-- Adicionado Copyright -->
+        <p>Copyright © Delean Mafra. Todos os direitos reservados.</p>
     </footer>
 
 </body>
