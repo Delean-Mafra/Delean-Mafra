@@ -1,32 +1,30 @@
 import pikepdf
 import os
 
-print("Copyright ©2025 | Delean Mafra, todos os direitos reservados.")
+def desbloquear_pdf(input_pdf):
+    # Abrir o arquivo PDF de entrada com a opção de permitir sobrescrever o arquivo
+    with pikepdf.open(input_pdf, allow_overwriting_input=True) as pdf:
+        # Salvar o PDF desbloqueado, sobrescrevendo o original
+        pdf.save(input_pdf)
 
+# Solicitar o caminho da pasta contendo os PDFs
+pasta_pdf = r'D:\Python\complementos\pdf'
 
-def desbloquear_pdf(input_pdf, output_pdf):
-    # Abrir o arquivo PDF de entrada
-    with pikepdf.open(input_pdf) as pdf:
-        # Salvar o novo PDF desbloqueado
-        pdf.save(output_pdf)
-
-# Exemplo de uso
-
-nome = input('Informe o nome do boleto: ')  # Corrigido o nome de "booleto" para "boleto"
-input_caminho_pdf = r'\pdf'
-
-# Corrigindo a montagem do caminho do arquivo
-input_pdf = os.path.join(input_caminho_pdf, nome + '.pdf')
-
-output_pdf = r'\pdf\boleto_desbloqueado.pdf'
-
-# Verificar se o arquivo existe antes de tentar desbloqueá-lo
-if os.path.exists(input_pdf):
-    desbloquear_pdf(input_pdf, output_pdf)
+# Verificar se a pasta existe
+if os.path.exists(pasta_pdf) and os.path.isdir(pasta_pdf):
+    # Percorrer todos os arquivos na pasta
+    for nome_arquivo in os.listdir(pasta_pdf):
+        # Montar o caminho completo do arquivo
+        caminho_arquivo = os.path.join(pasta_pdf, nome_arquivo)
+        # Verificar se é um arquivo PDF
+        if os.path.isfile(caminho_arquivo) and caminho_arquivo.lower().endswith('.pdf'):
+            try:
+                # Desbloquear o PDF
+                desbloquear_pdf(caminho_arquivo)
+                print(f'O arquivo {nome_arquivo} foi desbloqueado com sucesso!')
+            except Exception as e:
+                print(f'Erro ao desbloquear o arquivo {nome_arquivo}: {e}')
 else:
-    print(f'O arquivo {input_pdf} não foi encontrado.')
+    print(f'A pasta {pasta_pdf} não foi encontrada.')
 
-
-
-print('PDF desbloqueado com sucesso!')
-
+print('Todos os PDFs foram processados!')

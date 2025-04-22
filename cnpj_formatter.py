@@ -1,9 +1,9 @@
-import pyperclip
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.label import Label
+import re
 
 def format_cnpj(cnpj):
     # Formata o CNPJ no padrão XX.XXX.XXX/XXXX-XX
@@ -21,8 +21,8 @@ class CNPJApp(App):
         self.layout.add_widget(self.input_cnpj)
         
         # Botão para formatar o CNPJ
-        self.btn_format = Button(text="Formatar e Copiar CNPJ", size_hint=(1, 0.5))
-        self.btn_format.bind(on_press=self.format_and_copy_cnpj)
+        self.btn_format = Button(text="Formatar CNPJ", size_hint=(1, 0.5))
+        self.btn_format.bind(on_press=self.format_cnpj)
         self.layout.add_widget(self.btn_format)
         
         # Label para exibir o resultado
@@ -31,18 +31,11 @@ class CNPJApp(App):
         
         return self.layout
 
-    def format_and_copy_cnpj(self, instance):
+    def format_cnpj(self, instance):
         # Obtém o CNPJ do campo de entrada e formata
         cnpj = self.input_cnpj.text
         formatted_cnpj = format_cnpj(cnpj)
-        
-        # Atualiza o texto no rótulo
         self.result_label.text = f"CNPJ formatado: {formatted_cnpj}"
-        
-        # Copia o CNPJ formatado para a área de transferência, se válido
-        if "inválido" not in formatted_cnpj:
-            pyperclip.copy(formatted_cnpj)
-            self.result_label.text += " (copiado para a área de transferência)"
 
 # Executa o aplicativo
 if __name__ == "__main__":

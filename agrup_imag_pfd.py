@@ -64,7 +64,7 @@ def criar_pdf_com_imagens(pasta_origem, arquivo_pdf):
     print(f"PDF criado com sucesso: {arquivo_pdf}")
 
 # Caminho da pasta com as imagens
-pasta_imagens = 'caminho'
+pasta_imagens = r"D:\Python\complementos\imag"
 # Caminho do arquivo PDF de saída
 arquivo_pdf_saida = os.path.join(pasta_imagens, "imagens_combinadas.pdf")
 
