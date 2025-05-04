@@ -3,365 +3,534 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Delean Mafra - Perfil Profissional | Tecnologia e Dados</title>
-    <!-- <link rel="stylesheet" href="style.css"> Removido o link para o CSS externo -->
+    <title>Delean Mafra | Profissional de Dados & Líder Técnico</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
-    <!-- Adicionado Favicon -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="db.png" type="image/png">
 
-    <!-- CSS Incorporado -->
     <style>
-        *, *::before, *::after {
-          box-sizing: border-box; /* Adicionado: Box-sizing global */
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #10b981;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --dark-gray: #1e293b;
         }
-
+        
         body {
-          margin: 0;
-          font-family: 'Roboto', sans-serif;
-          background-color: #0d1117; /* Fundo escuro principal (GitHub Dark) */
-          color: #c9d1d9; /* Cor de texto principal (claro) */
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc;
+            color: var(--dark);
+            line-height: 1.6;
         }
-
-        header {
-          background-color: #161b22; /* Fundo ligeiramente mais claro para o header */
-          padding: 2rem;
-          text-align: center;
-          border-bottom: 1px solid #30363d; /* Linha divisória sutil */
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
         }
-
-        header img {
-          border-radius: 50%;
-          width: 150px;
-          height: 150px;
-          border: 3px solid #58a6ff; /* Borda azul clara na imagem */
-          object-fit: cover; /* Garante que a imagem cubra a área sem distorcer */
+        
+        .skill-bar {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #e2e8f0;
+            overflow: hidden;
         }
-
-        header h1 {
-          margin-top: 1rem;
-          font-size: 2rem;
-          color: #58a6ff; /* Título principal em azul */
+        
+        .skill-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 4px;
         }
-
-        header p {
-          font-size: 1rem;
-          color: #8b949e; /* Subtítulo/tagline em cinza claro */
-          margin-bottom: 1rem; /* Espaço antes dos links */
+        
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-
-        /* Estilo adicional para os links de contato no header */
-        .contact-links a {
-            color: #58a6ff; /* Links em azul */
-            text-decoration: none;
-            margin: 0 10px;
-            font-weight: bold;
+        
+        .timeline-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            left: 18px;
+            top: 30px;
+            height: calc(100% - 30px);
+            width: 2px;
+            background-color: var(--primary);
         }
-
-        .contact-links a:hover {
-            text-decoration: underline;
-            color: #79c0ff; /* Azul mais claro no hover */
+        
+        .iframe-container {
+            position: relative;
+            overflow: hidden;
+            padding-top: 56.25%;
         }
-
-
-        main {
-          max-width: 900px;
-          margin: 2rem auto;
-          padding: 0 1rem;
-        }
-
-        section {
-          margin-bottom: 2rem;
-          padding: 1.5rem; /* Adiciona um padding interno às seções */
-          background-color: #161b22; /* Fundo das seções igual ao header */
-          border: 1px solid #30363d; /* Borda sutil nas seções */
-          border-radius: 6px; /* Cantos arredondados */
-        }
-
-        h2 {
-          color: #79c0ff; /* Títulos de seção em azul claro */
-          border-bottom: 1px solid #30363d; /* Linha abaixo dos títulos */
-          padding-bottom: 0.5rem;
-          margin-top: 0; /* Remove margem superior padrão do h2 */
-          margin-bottom: 1rem; /* Espaço abaixo do título */
-        }
-
-        /* Estilizando listas dentro das seções */
-        ul {
-            padding-left: 20px;
-            list-style-type: disc; /* ou 'circle' ou 'square' */
-            color: #c9d1d9; /* Cor dos itens da lista */
-        }
-
-        li {
-            margin-bottom: 0.7em; /* Espaçamento entre itens da lista */
-            line-height: 1.5;
-        }
-
-        /* Estilo para links dentro do conteúdo principal */
-        main a {
-            color: #58a6ff; /* Azul para links no main */
-        }
-        main a:hover {
-            color: #79c0ff;
-            text-decoration: underline;
-        }
-
-        /* Estilo específico para as tags de Strong/Bold */
-        strong, b {
-            color: #a5d6ff; /* Destaca texto em negrito com um azul diferente */
-            font-weight: 600; /* Ajusta o peso da fonte se necessário */
-        }
-        em, i {
-             color: #8b949e; /* Itálico em cinza */
-             font-style: italic;
-        }
-
-        /* Estilo para o container das skills (Flexbox para colunas) */
-        .skills-container {
-            display: flex;
-            gap: 2rem; /* Espaço entre as colunas */
-            flex-wrap: wrap; /* Permite quebrar em telas menores */
-        }
-
-        .skill-category {
-            flex: 1; /* Faz cada categoria tentar ocupar espaço igual */
-            min-width: 250px; /* Define uma largura mínima antes de quebrar */
-        }
-
-        #skills ul {
-            margin-top: 0.5rem;
-        }
-
-        /* Footer */
-        footer {
-          background-color: #161b22; /* Fundo igual ao header */
-          padding: 2rem;
-          display: flex;
-          justify-content: center;
-          align-items: center; /* Alinha itens verticalmente */
-          gap: 2rem; /* Espaço entre os badges */
-          flex-wrap: wrap; /* Permite que os badges quebrem linha */
-          border-top: 1px solid #30363d; /* Linha divisória sutil */
-          margin-top: 2rem;
-          text-align: center; /* Centraliza o texto do copyright */
-        }
-
-        /* Ajustes para os iframes do Credly (removido o display:inline-block desnecessário com flex) */
-        footer div[data-iframe-width] {
-           /* display: inline-block; */
-           /* vertical-align: top; */
-           margin-bottom: 1rem; /* Adiciona espaço abaixo dos badges antes do copyright */
-        }
-
-        footer p {
-            width: 100%; /* Faz o parágrafo do copyright ocupar toda a largura */
-            margin-top: 1rem; /* Adiciona espaço acima do copyright */
-            font-size: 0.9em;
-            color: #8b949e;
-        }
-
-        /* Responsividade Básica */
-        @media (max-width: 768px) {
-            header h1 {
-                font-size: 1.8rem;
-            }
-            header p {
-                font-size: 0.9rem;
-            }
-            main {
-                margin: 1.5rem auto;
-            }
-            /* Desfaz o flex das skills para ficarem uma abaixo da outra */
-            .skills-container {
-                flex-direction: column;
-                 gap: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-             header {
-                padding: 1.5rem 1rem;
-            }
-             header img {
-                width: 120px;
-                height: 120px;
-            }
-            header h1 {
-                font-size: 1.6rem;
-            }
-             main {
-                margin: 1rem auto;
-                padding: 0 0.5rem;
-             }
-            section {
-                padding: 1rem;
-            }
-            footer {
-                gap: 1rem; /* Diminui o espaço entre badges em telas menores */
-                padding: 1.5rem 1rem;
-            }
+        
+        .iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
         }
     </style>
 </head>
-<body>
-    <header>
-        <img src="https://lh3.googleusercontent.com/a/ACg8ocJeLUFxnYhLFgklprbMMVFzzYCwqlUYnVaNYO8ZGR59Ui5AZ-NwSw=s288-c-no" alt="Foto de Perfil de Delean Mafra">
-        <h1>Delean Mafra</h1>
-        <p>Conectando Suporte Técnico de Excelência com o Poder dos Dados | SQL | Python | BI</p>
-        <div class="contact-links">
-             <a href="https://www.linkedin.com/in/delean-mafra/" target="_blank" title="LinkedIn">LinkedIn</a> |
-            <a href="https://github.com/Delean-Mafra" target="_blank" title="GitHub">GitHub</a> |
-            <!-- Adicionado link para seguir no LinkedIn -->
-            <a href="https://www.linkedin.com/comm/mynetwork/discovery-see-all?usecase=PEOPLE_FOLLOWS&followMember=delean-mafra" target="_blank" title="Seguir no LinkedIn">Siga-me no LinkedIn</a>
-            <!-- Email removido -->
+<body class="antialiased">
+    <!-- Cabeçalho com Perfil -->
+    <header class="gradient-bg text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center justify-between">
+                <div class="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
+                    <img src="https://lh3.googleusercontent.com/a/ACg8ocJeLUFxnYhLFgklprbMMVFzzYCwqlUYnVaNYO8ZGR59Ui5AZ-NwSw=s288-c-no" 
+                         alt="Delean Mafra" 
+                         class="w-32 h-32 rounded-full border-4 border-white shadow-lg">
+                    <div>
+                        <h1 class="text-3xl md:text-4xl font-bold">Delean Mafra</h1>
+                        <p class="text-lg text-blue-100 mt-2">Líder Técnico & Profissional de Dados</p>
+                        <div class="flex flex-wrap gap-4 mt-4">
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                <i class="fas fa-database mr-2"></i> Especialista em SQL
+                            </span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                <i class="fas fa-chart-line mr-2"></i> Analista de BI
+                            </span>
+                            <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                                <i class="fab fa-python mr-2"></i> Python
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 md:mt-0 flex space-x-4">
+                    <a href="https://www.linkedin.com/in/delean-mafra/" target="_blank" 
+                       class="bg-white text-blue-600 hover:bg-blue-50 px-4 py-2 rounded-lg font-medium flex items-center">
+                        <i class="fab fa-linkedin mr-2"></i> LinkedIn
+                    </a>
+                    <a href="https://github.com/Delean-Mafra" target="_blank" 
+                       class="bg-white text-gray-800 hover:bg-gray-100 px-4 py-2 rounded-lg font-medium flex items-center">
+                        <i class="fab fa-github mr-2"></i> GitHub
+                    </a>
+                </div>
+            </div>
         </div>
     </header>
 
-    <main>
-        <section id="about">
-            <h2>Sobre Mim</h2>
-            <p>
-                Minha jornada na tecnologia começou há mais de uma década, imerso na dinâmica do suporte técnico, onde aprendi o valor de entender profundamente os desafios dos usuários e entregar soluções eficazes. Essa experiência prática acendeu minha paixão por otimização e pela busca incessante por respostas – não apenas para resolver problemas, mas para antecipá-los.
-            </p>
-            <p>
-                Hoje, estou canalizando essa energia e curiosidade para o universo da <strong>Ciência de Dados</strong>, cursando Tecnólogo na Descomplica. Vejo um potencial imenso em unir minha bagagem de atendimento e infraestrutura com a capacidade analítica dos dados. Explorar bancos de dados (<strong>MySQL</strong> é um campo que domino bem!), visualizar informações com <strong>Power BI</strong> e começar a desvendar o <strong>Python</strong> para automação e análise são partes empolgantes dessa nova fase.
-            </p>
-             <p>
-                Sou movido pela resolução de problemas, pela organização e por transformar dados brutos em insights acionáveis. Combinando um perfil analítico com uma forte orientação para resultados (como apontado no DISC), estou sempre pronto para aprender, colaborar e aplicar meu conhecimento para fazer a diferença.
-            </p>
-        </section>
-
-        <section id="experience">
-            <h2>Experiência Profissional</h2>
-            <div class="job">
-                <h3>Customer Owner / Líder Técnico / Especialista de Service Desk</h3>
-                <p><strong>TOTVS</strong> | Florianópolis, SC (Maio 2024 - Presente / Experiência Total na TOTVS: ~4 anos)</p>
-                <ul>
-                    <li>Gestão de SLAs, priorização e escalonamento de demandas de clientes.</li>
-                    <li>Monitoramento e análise de indicadores de performance (Power BI, Excel, Metabase).</li>
-                    <li>Liderança técnica da equipe de Customer Service Desk, garantindo conformidade com ISO 9001 e 27001.</li>
-                    <li>Referência técnica na análise e resolução de incidentes complexos.</li>
-                    <li>Automação de processos e extração de dados para relatórios analíticos.</li>
-                    <li>Comunicação com clientes e áreas internas (Desenvolvimento, Qualidade).</li>
-                    <li>Utilização de ferramentas como Hubspot, Movidesk, Sankhya, Jira, Trello, Google Workspace.</li>
-                </ul>
-            </div>
-            <div class="job">
-                <h3>Analista de Suporte / Consultor de Implantação</h3>
-                <p><strong>Procel Software</strong> | Florianópolis, SC (Abril 2015 - Março 2021 | 6 anos)</p>
-                <ul>
-                    <li>Suporte técnico remoto a usuários de sistemas ERP.</li>
-                    <li>Manutenção de bancos de dados (MySQL): backup, restore, rollback, recovery.</li>
-                    <li>Criação de scripts SQL (UPDATE, INSERT, SELECT, DELETE).</li>
-                    <li>Implantação de sistemas ERP e gerenciamento de relacionamento com o cliente.</li>
-                    <li>Atuação como Help Desk e Customer Service Manager.</li>
-                </ul>
-            </div>
-             <!-- Div vazia removida -->
-        </section>
-
-        <section id="education">
-            <h2>Formação e Capacitação</h2>
-            <!-- Adicionado Link para Galeria de Certificados -->
-            <p><a href="https://delean-mafra.github.io/Delean-Mafra/skills" target="_blank"><strong>Veja minha Galeria de Certificados</strong></a></p>
-
-            <div class="course">
-                <h3>Ciência de Dados (Tecnólogo)</h3>
-                <p><strong>Descomplica Faculdade Digital</strong> (Cursando)</p>
-            </div>
-             <div class="course">
-                <h3>Auditor Interno da Norma ISO 9001</h3>
-                 <p>Formação Maio 2024</p>
-             </div>
-            <div class="course">
-                <h3>Fundamentos de Engenharia de Dados</h3>
-                <p><strong>Data Science Academy</strong></p>
-                <p><strong>Conhecimento Adquirido:</strong> Estruturação de Bancos de Dados</p> <!-- Usando Strong para consistência -->
-            </div>
-            <div class="course">
-                <h3>SQL Completo</h3>
-                <p><strong>Softblue</strong></p>
-                <p><strong>Conhecimento Adquirido:</strong> MySQL - Banco de Dados de Infraestrutura</p> <!-- Usando Strong para consistência -->
-            </div>
-             <div class="course">
-                <h3>Programming and Communication</h3>
-                 <p><strong>Descomplica</strong> (Formação)</p>
-                <p><strong>Conhecimento Adquirido:</strong> Visão analítica</p> <!-- Usando Strong para consistência -->
-            </div>
-
-        </section>
-
-        <section id="skills">
-            <h2>Principais Competências</h2>
-             <div class="skills-container">
-                <div class="skill-category">
-                    <h3>Técnicas</h3>
-                    <ul>
-                        <li>SQL (MySQL, Firebird)</li>
-                        <li>Python (Aprendendo/Aplicando)</li>
-                        <li>Business Intelligence (Power BI, Excel, Metabase)</li>
-                        <li>Análise de Dados</li>
-                        <li>Gestão de Banco de Dados</li>
-                        <li>Suporte Técnico Especializado</li>
-                        <li>ITIL (Conceitos)</li>
-                        <li>Ferramentas de Ticketing (Jira, Hubspot, Movidesk, etc.)</li>
-                        <li>Google Workspace</li>
-                        <li>Segurança da Informação (LGPD, ISO 27001)</li>
-                        <li>Normas de Qualidade (ISO 9001)</li>
-                         <li>Docker / Kubernetes (Conceitos)</li>
-                         <li>Metodologias Ágeis (Conceitos)</li>
-                    </ul>
-                </div>
-                <div class="skill-category">
-                    <h3>Comportamentais / Soft Skills</h3>
-                    <ul>
-                        <li>Comunicação Clara e Objetiva</li>
-                        <li>Organização e Planejamento</li>
-                        <li>Tomada de Decisão Baseada em Análise</li>
-                        <li>Colaboração e Trabalho em Equipe</li>
-                        <li>Visão Analítica e Crítica</li>
-                        <li>Resolução de Problemas Complexos</li>
-                        <li>Habilidade de Negociação</li>
-                        <li>Liderança Técnica</li>
-                        <li>Foco no Cliente e na Experiência</li>
-                        <li>Proatividade e Determinação (Executor)</li>
-                        <li>Atenção a Detalhes e Precisão (Analítico)</li>
-                        <li>Curiosidade e Aprendizado Contínuo</li>
-                    </ul>
+    <!-- Conteúdo Principal -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Seção Sobre Mim -->
+        <section class="mb-12">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-user mr-2 text-blue-500"></i> Perfil Profissional
+                    </h2>
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <p class="text-gray-700 mb-4">
+                                Com mais de uma década de experiência como analista de sistemas e  suporte técnico, desenvolvi uma perspectiva única que une expertise técnica a decisões baseadas em dados. Minha jornada evoluiu da resolução de problemas técnicos imediatos para a descoberta de padrões e insights através da análise de dados.
+                            </p>
+                            <p class="text-gray-700 mb-4">
+                                Atualmente cursando Ciência de Dados, sou apaixonado por transformar dados brutos em inteligência acionável. Meu histórico em atendimento ao cliente e liderança técnica me proporciona uma abordagem centrada no usuário para soluções baseada em dados.
+                            </p>
+                        </div>
+                        <div>
+                            <p class="text-gray-700 mb-4">
+                                Sou especialista em gestão de bancos de dados SQL, visualização de BI (Power BI), e estou expandindo minhas capacidades em Python para análise e automação de dados. Meu perfil DISC destaca minha natureza analítica combinada com fortes habilidades de execução - uma combinação valiosa para profissionais de dados.
+                            </p>
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <h3 class="font-medium text-blue-800 mb-2">Valores Essenciais</h3>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        Decisões Baseadas em Dados
+                                    </span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        Aprendizado Contínuo
+                                    </span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        Resolução de Problemas
+                                    </span>
+                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        Excelência Técnica
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section id="portfolio">
-            <h2>Portfólio e Projetos</h2>
-            <p>Acompanhe minhas explorações e projetos no <a href="https://github.com/Delean-Mafra" target="_blank">GitHub</a>.</p>
-            <div class="project">
-                <h3>CDADOS - Projeto de Extensão I (Descomplica)</h3>
-                <p><strong>Área:</strong> Instituições religiosas</p>
-                <p><strong>Foco:</strong> Aplicação inicial de Análise de Dados, Desenvolvimento com Python, Redação Técnica e desenvolvimento da Visão Analítica.</p>
-                <p><a href="https://github.com/Delean-Mafra/pex" target="_blank">Repositório do Projeto</a></p>
-
+        <!-- Visualização de Habilidades -->
+        <section class="mb-12">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i class="fas fa-tools mr-2 text-blue-500"></i> Competências Técnicas
+                    </h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <!-- Habilidades Técnicas -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="fas fa-code mr-2 text-blue-500"></i> Habilidades Técnicas
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">SQL e Bancos de Dados</span>
+                                        <span class="text-sm font-medium text-gray-500">Especialista</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 95%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Business Intelligence</span>
+                                        <span class="text-sm font-medium text-gray-500">Avançado</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Python</span>
+                                        <span class="text-sm font-medium text-gray-500">Intermediário</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 70%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Análise de Dados</span>
+                                        <span class="text-sm font-medium text-gray-500">Avançado</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 80%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Excel </span>
+                                        <span class="text-sm font-medium text-gray-500">Especialista</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 90%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Habilidades Profissionais -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="fas fa-users mr-2 text-blue-500"></i> Habilidades Profissionais
+                            </h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Liderança Técnica</span>
+                                        <span class="text-sm font-medium text-gray-500">Especialista</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 90%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Resolução de Problemas</span>
+                                        <span class="text-sm font-medium text-gray-500">Especialista</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 95%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Comunicação</span>
+                                        <span class="text-sm font-medium text-gray-500">Avançado</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 85%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Pensamento Analítico</span>
+                                        <span class="text-sm font-medium text-gray-500">Avançado</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 88%"></div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-1">
+                                        <span class="text-sm font-medium text-gray-700">Gestão de Projetos</span>
+                                        <span class="text-sm font-medium text-gray-500">Intermediário</span>
+                                    </div>
+                                    <div class="skill-bar">
+                                        <div class="skill-progress" style="width: 75%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section id="interests">
-            <h2>Interesses</h2>
-             <!-- Texto sobre música atualizado -->
-             <p>Além do universo tech: Análise de Dados | Big Data & IA | MySQL & Bancos de Dados | Python | Investimentos | Games (Estratégia e RPGs são favoritos!) | Música: Rock, pop, alternativa, Soul, R&B, Jazz, Blues, Electronic e Hip Hop | Jogos de Tabuleiro</p>
+        <!-- Linha do Tempo de Experiência -->
+        <section class="mb-12">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i class="fas fa-briefcase mr-2 text-blue-500"></i> Jornada Profissional
+                    </h2>
+                    
+                    <div class="space-y-8">
+                        <!-- Cargo Atual -->
+                        <div class="relative timeline-item pl-10">
+                            <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="bg-blue-50 p-4 rounded-lg card-hover transition-all duration-300">
+                                <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                                    <h3 class="text-lg font-semibold text-gray-800">Customer Owner / Líder Técnico</h3>
+                                    <span class="text-sm font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-full">Atual</span>
+                                </div>
+                                <p class="text-gray-600 mb-2">TOTVS | Florianópolis, SC | Abril 2021 - Atualmente</p>
+                                <ul class="list-disc pl-5 space-y-1 text-gray-700">
+                                    <li>Liderar equipe técnica para o Customer Service Desk, garantindo conformidade ISO 9001/27001.</li>
+                                    <li>Desenvolver e monitorar KPIs usando Power BI, Excel e Metabase para decisões baseadas em dados.</li>
+                                    <li>Otimizar processos de serviço através de automação e análise de dados.</li>
+                                    <li>Atuar como referência técnica para resolução de incidentes complexos.</li>
+                                </ul>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <i class="fas fa-chart-pie mr-1"></i> Power BI
+                                    </span>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <i class="fas fa-database mr-1"></i> SQL
+                                    </span>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        <i class="fas fa-cogs mr-1"></i> Automação de Processos
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Cargo Anterior -->
+                        <div class="relative timeline-item pl-10">
+                            <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                                <i class="fas fa-laptop-code"></i>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg card-hover transition-all duration-300">
+                                <h3 class="text-lg font-semibold text-gray-800">Analista de Suporte / Consultor de Implementação</h3>
+                                <p class="text-gray-600 mb-2">Procel Software | Florianópolis, SC | Abr 2015 - Mar 2021</p>
+                                <ul class="list-disc pl-5 space-y-1 text-gray-700">
+                                    <li>Prestar suporte técnico para sistemas ERP com gestão de banco de dados MySQL.</li>
+                                    <li>Criar scripts SQL para manipulação de dados e manutenção de sistemas.</li>
+                                    <li>Gerenciar implementações de ERP e relacionamento com clientes.</li>
+                                    <li>Atuar como Gerente de Help Desk e Atendimento ao Cliente.</li>
+                                </ul>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-800">
+                                        <i class="fas fa-database mr-1"></i> MySQL
+                                    </span>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-800">
+                                        <i class="fas fa-headset mr-1"></i> Suporte ao Cliente
+                                    </span>
+                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-gray-200 text-gray-800">
+                                        <i class="fas fa-project-diagram mr-1"></i> Implementação de ERP
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Formação e Certificações -->
+        <section class="mb-12">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i class="fas fa-graduation-cap mr-2 text-blue-500"></i> Formação e Credenciais
+                    </h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Formação -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="fas fa-university mr-2 text-blue-500"></i> Formação Acadêmica
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="bg-blue-50 p-4 rounded-lg">
+                                    <h4 class="font-medium text-blue-800">Ciência de Dados (Tecnólogo)</h4>
+                                    <p class="text-gray-700">Descomplica Faculdade Digital</p>
+                                    <p class="text-sm text-gray-500">Cursando Atualmente</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Certificações -->
+                        <div>
+                            <h3 class="text-lg font-semibold text-gray-800 mb-4 flex items-center">
+                                <i class="fas fa-certificate mr-2 text-blue-500"></i> Certificações Profissionais
+                            </h3>
+                            <div class="space-y-4">
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="font-medium text-gray-800">Auditor Interno ISO 9001</h4>
+                                    <p class="text-gray-700">Maio 2024</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="font-medium text-gray-800">Fundamentos de Engenharia de Dados</h4>
+                                    <p class="text-gray-700">Data Science Academy</p>
+                                </div>
+                                <div class="bg-gray-50 p-4 rounded-lg">
+                                    <h4 class="font-medium text-gray-800">Curso Completo de SQL</h4>
+                                    <p class="text-gray-700">Softblue</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Badges de Certificações -->
+                    <div class="mt-8">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Distintivos  Oficiais</h3>
+                        <div class="flex flex-wrap justify-center gap-4">
+                            <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="4660700c-0f08-4c52-9015-dd9d8d3b5718" data-share-badge-host="https://www.credly.com"></div>
+                            <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="4fc185b8-a453-457c-aea8-75fe55099b2e" data-share-badge-host="https://www.credly.com"></div>
+                            <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="a03a2621-4006-4687-bbd6-6a2ed5671e9f" data-share-badge-host="https://www.credly.com"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Embed da Página de Habilidades -->
+        <section class="mb-12">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i class="fas fa-trophy mr-2 text-blue-500"></i> Galeria de Habilidades e Certificações
+                    </h2>
+                    <div class="iframe-container">
+                        <iframe src="https://delean-mafra.github.io/Delean-Mafra/skills.html" allowfullscreen></iframe>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Projetos e Portfólio -->
+        <section class="mb-12">
+            <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i class="fas fa-project-diagram mr-2 text-blue-500"></i> Projetos de Dados
+                    </h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <!-- Projeto 1 -->
+                        <div class="bg-gray-50 p-6 rounded-lg card-hover transition-all duration-300">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-blue-100 p-2 rounded-full mr-4">
+                                    <i class="fas fa-database text-blue-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800">CDADOS - Projeto de Extensão</h3>
+                                    <p class="text-sm text-gray-500">Descomplica</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">
+                                Projeto de análise de dados focado em instituições religiosas, combinando desenvolvimento em Python com escrita técnica e visão analítica.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    <i class="fab fa-python mr-1"></i> Python
+                                </span>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    <i class="fas fa-chart-bar mr-1"></i> Análise de Dados
+                                </span>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    <i class="fas fa-file-alt mr-1"></i> Escrita Técnica
+                                </span>
+                            </div>
+                            <a href="https://github.com/Delean-Mafra/pex" target="_blank" 
+                               class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+                                <i class="fab fa-github mr-2"></i> Ver no GitHub
+                            </a>
+                        </div>
+                        
+                        <!-- Placeholder Projeto 2 -->
+                        <div class="bg-gray-50 p-6 rounded-lg card-hover transition-all duration-300">
+                            <div class="flex items-center mb-4">
+                                <div class="bg-green-100 p-2 rounded-full mr-4">
+                                    <i class="fas fa-chart-line text-green-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-lg font-semibold text-gray-800">Coleção de Dashboards de BI</h3>
+                                    <p class="text-sm text-gray-500">Projetos em Power BI</p>
+                                </div>
+                            </div>
+                            <p class="text-gray-700 mb-4">
+                                Coleção de dashboards de business intelligence criados para monitoramento de performance de serviços e análise de métricas operacionais.
+                            </p>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-chart-pie mr-1"></i> Power BI
+                                </span>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-tachometer-alt mr-1"></i> Monitoramento de KPIs
+                                </span>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <i class="fas fa-server mr-1"></i> Modelagem de Dados
+                                </span>
+                            </div>
+                            <a href="https://github.com/Delean-Mafra?tab=repositories" target="_blank" 
+                               class="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium">
+                                <i class="fab fa-github mr-2"></i> Explorar Projetos
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </section>
     </main>
 
-    <footer>
-        <!-- Minhas credenciais -->
-        <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="4660700c-0f08-4c52-9015-dd9d8d3b5718" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
-        <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="4fc185b8-a453-457c-aea8-75fe55099b2e" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
-        <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="a03a2621-4006-4687-bbd6-6a2ed5671e9f" data-share-badge-host="https://www.credly.com"></div><script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
-
-        <!-- Adicionado Copyright -->
-        <p>Copyright © Delean Mafra. Todos os direitos reservados.</p>
+    <!-- Rodapé -->
+    <footer class="gradient-bg text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-4 md:mb-0">
+                    <h3 class="text-xl font-bold mb-2">Delean Mafra</h3>
+                    <p class="text-blue-100">Unindo Expertise Técnica com Insights de Dados</p>
+                </div>
+                
+                <div class="flex space-x-6">
+                    <a href="https://www.linkedin.com/in/delean-mafra/" target="_blank" class="text-white hover:text-blue-200">
+                        <i class="fab fa-linkedin text-2xl"></i>
+                    </a>
+                    <a href="https://github.com/Delean-Mafra" target="_blank" class="text-white hover:text-blue-200">
+                        <i class="fab fa-github text-2xl"></i>
+                    </a>
+                    <a href="https://delean-mafra.github.io/Delean-Mafra/skills.html" target="_blank" class="text-white hover:text-blue-200">
+                        <i class="fas fa-trophy text-2xl"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-blue-400 mt-6 pt-6 text-center text-blue-100">
+                <p>Copyright © Delean Mafra, todos os direitos reservados | All rights reserved.</p>
+            </div>
+        </div>
     </footer>
 
+    <!-- Script de Badges Credly -->
+    <script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
 </body>
 </html>
