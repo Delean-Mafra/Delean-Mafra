@@ -74,4 +74,6 @@ def gerar_senha():
         return jsonify({'error': f'Erro ao gerar senha: {str(e)}'})
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    import os
+    debug_mode = os.getenv('FLASK_DEBUG', 'false').lower() == 'true'
+    app.run(debug=debug_mode, host='127.0.0.1', port=5000)
