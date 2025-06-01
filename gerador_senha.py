@@ -71,7 +71,9 @@ def gerar_senha():
         return jsonify(result)
         
     except Exception as e:
-        return jsonify({'error': f'Erro ao gerar senha: {str(e)}'})
+        import logging
+        logging.error(f"Erro ao gerar senha: {str(e)}")
+        return jsonify({'error': 'Ocorreu um erro interno ao gerar a senha. Por favor, tente novamente mais tarde.'})
 
 if __name__ == '__main__':
     import os
