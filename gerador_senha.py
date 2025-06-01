@@ -1,8 +1,10 @@
 import random
 import string
+import logging
 from flask import Flask, render_template, request, jsonify
 
 app = Flask(__name__)
+app.logger.setLevel(logging.ERROR)
 
 class PasswordGenerator:
     def __init__(self):
@@ -71,7 +73,8 @@ def gerar_senha():
         return jsonify(result)
         
     except Exception as e:
-        return jsonify({'error': f'Erro ao gerar senha: {str(e)}'})
+        app.logger.error(f"Erro ao gerar senha: {str(e)}")
+        return jsonify({'error': 'Erro interno ao gerar senha.'})
 
 if __name__ == '__main__':
     app.run(debug=True, host='127.0.0.1', port=5000)
