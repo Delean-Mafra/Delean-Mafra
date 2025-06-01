@@ -73,6 +73,11 @@ def verificar_processos():
     if not caminho_pasta:
         return jsonify({'error': 'Caminho da pasta é obrigatório'}), 400
     
+    safe_root = '/safe/root/directory'
+    caminho_pasta = os.path.abspath(caminho_pasta)
+    if not caminho_pasta.startswith(safe_root):
+        return jsonify({'error': 'Caminho da pasta não é permitido'}), 400
+    
     if not os.path.exists(caminho_pasta):
         return jsonify({'error': 'Caminho da pasta não existe'}), 400
     
