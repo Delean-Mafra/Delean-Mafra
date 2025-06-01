@@ -92,4 +92,5 @@ def fechar_processos():
     return jsonify({'processos_encerrados': processos_encerrados})
 
 if __name__ == "__main__":
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    debug_mode = os.getenv('FLASK_DEBUG', 'False').lower() in ['true', '1', 't']
+    app.run(debug=debug_mode, host='127.0.0.1', port=5000)
