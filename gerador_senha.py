@@ -1,77 +1,77 @@
 import random
 import string
-import tkinter as tk
-from tkinter import ttk
+from flask import Flask, render_template, request, jsonify
+
+app = Flask(__name__)
 
 class PasswordGenerator:
-    def __init__(self, root):
-        self.root = root
-        self.root.title("Gerador de Senha")
+    def __init__(self):
+        self.lowercase_letters = 'abcdefghijklmnopqrstuvwxyz'
+        self.uppercase_letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        self.numbers = '0123456789'
+        self.special_characters = '!@#$%^&*()-_=+[{]}|;:",<.>/?'
         
-        # Variáveis de controle
-        self.use_lowercase = tk.BooleanVar()
-        self.use_uppercase = tk.BooleanVar()
-        self.use_numbers = tk.BooleanVar()
-        self.use_special = tk.BooleanVar()
-        self.use_unique = tk.BooleanVar()
-        self.password_length = tk.IntVar(value=12)
-        
-        # Criar widgets
-        self.create_widgets()
-        
-    def create_widgets(self):
-        # Checkboxes
-        ttk.Checkbutton(self.root, text="Letras minúsculas", variable=self.use_lowercase).pack()
-        ttk.Checkbutton(self.root, text="Letras maiúsculas", variable=self.use_uppercase).pack()
-        ttk.Checkbutton(self.root, text="Números", variable=self.use_numbers).pack()
-        ttk.Checkbutton(self.root, text="Caracteres especiais", variable=self.use_special).pack()
-        ttk.Checkbutton(self.root, text="Caracteres únicos", variable=self.use_unique).pack()
-        
-        # Slider para comprimento
-        ttk.Label(self.root, text="Comprimento da senha:").pack()
-        length_scale = ttk.Scale(self.root, from_=4, to=30, variable=self.password_length, orient='horizontal')
-        length_scale.pack()
-        
-        # Campo de resultado
-        self.password_var = tk.StringVar()
-        ttk.Label(self.root, textvariable=self.password_var).pack(pady=10)
-        
-        # Botão gerar
-        ttk.Button(self.root, text="Gerar Senha", command=self.generate_password).pack(pady=10)
-        
-    def generate_password(self):
-        lowercase_letters = 'abcdefghijklmnopqrstuvwxyz'
-        uppercase_letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        numbers = '0123456789'
-        special_characters = '!@#$%^&*()-_=+[{]}|;:",<.>/?'
-        
+    def generate_password(self, length, use_lowercase, use_uppercase, use_numbers, use_special, use_unique):
         characters = ''
-        if self.use_lowercase.get():
-            characters += lowercase_letters
-        if self.use_uppercase.get():
-            characters += uppercase_letters
-        if self.use_numbers.get():
-            characters += numbers
-        if self.use_special.get():
-            characters += special_characters
+        
+        if use_lowercase:
+            characters += self.lowercase_letters
+        if use_uppercase:
+            characters += self.uppercase_letters
+        if use_numbers:
+            characters += self.numbers
+        if use_special:
+            characters += self.special_characters
 
         if characters == '':
-            self.password_var.set('Selecione pelo menos uma opção de caracteres.')
-            return
+            return {'error': 'Selecione pelo menos uma opção de caracteres.'}
+
+        if use_unique and len(characters) < length:
+            return {'error': f'Não há caracteres únicos suficientes. Máximo possível: {len(characters)}'}
 
         password = ''
         used_characters = set()
-        for i in range(self.password_length.get()):
+        
+        for i in range(length):
+            attempts = 0
             while True:
                 character = random.choice(characters)
-                if not self.use_unique.get() or character not in used_characters:
+                if not use_unique or character not in used_characters:
                     password += character
                     used_characters.add(character)
                     break
+                attempts += 1
+                if attempts > 1000:  # Evitar loop infinito
+                    return {'error': 'Erro ao gerar senha com caracteres únicos.'}
         
-        self.password_var.set(password)
+        return {'password': password}
+
+generator = PasswordGenerator()
+
+@app.route('/')
+def index():
+    return render_template('gerador_senha.html')
+
+@app.route('/gerar_senha', methods=['POST'])
+def gerar_senha():
+    try:
+        data = request.get_json()
+        
+        length = int(data.get('length', 12))
+        use_lowercase = data.get('use_lowercase', False)
+        use_uppercase = data.get('use_uppercase', False)
+        use_numbers = data.get('use_numbers', False)
+        use_special = data.get('use_special', False)
+        use_unique = data.get('use_unique', False)
+        
+        if length < 4 or length > 30:
+            return jsonify({'error': 'Comprimento deve estar entre 4 e 30 caracteres.'})
+        
+        result = generator.generate_password(length, use_lowercase, use_uppercase, use_numbers, use_special, use_unique)
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({'error': f'Erro ao gerar senha: {str(e)}'})
 
 if __name__ == '__main__':
-    root = tk.Tk()
-    app = PasswordGenerator(root)
-    root.mainloop()
+    app.run(debug=True, host='127.0.0.1', port=5000)
