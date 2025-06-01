@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciador de Processos por Pasta</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='fechar_programas_pasta.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔧 Gerenciador de Processos por Pasta</h1>
+            <p>Visualize e feche programas que estão utilizando arquivos de uma pasta específica</p>
+        </header>
+
+        <main>
+            <div class="form-section">
+                <div class="input-group">
+                    <label for="caminho_pasta">📁 Caminho da Pasta:</label>
+                    <input type="text" id="caminho_pasta" placeholder="Ex: C:\Users\Usuario\Downloads\pasta" 
+                           value="C:\Users\Acer\Downloads\pratica integradora de dados">
+                </div>
+                
+                <div class="button-group">
+                    <button onclick="verificarProcessos()" class="btn btn-primary">
+                        🔍 Verificar Processos
+                    </button>
+                    <button onclick="fecharProcessos()" class="btn btn-danger">
+                        ❌ Fechar Processos
+                    </button>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div id="loading" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p>Processando...</p>
+                </div>
+
+                <div id="error-message" class="error-message hidden"></div>
+
+                <div id="processos-container" class="processos-container hidden">
+                    <h3 id="processos-title"></h3>
+                    <div id="processos-list" class="processos-list"></div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>⚠️ <strong>Aviso:</strong> Use com cuidado. Fechar processos pode causar perda de dados não salvos.</p>
+        </footer>
+    </div>
+
+    <script>
+        async function verificarProcessos() {
+            const caminhoPasta = document.getElementById('caminho_pasta').value;
+            
+            if (!caminhoPasta.trim()) {
+                showError('Por favor, informe o caminho da pasta.');
+                return;
+            }
+
+            showLoading();
+            
+            try {
+                const response = await fetch('/verificar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `caminho_pasta=${encodeURIComponent(caminhoPasta)}`
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showProcessos(data.processos, 'Processos Encontrados');
+                }
+            } catch (error) {
+                showError('Erro ao verificar processos: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        async function fecharProcessos() {
+            const caminhoPasta = document.getElementById('caminho_pasta').value;
+            
+            if (!caminhoPasta.trim()) {
+                showError('Por favor, informe o caminho da pasta.');
+                return;
+            }
+
+            if (!confirm('Tem certeza que deseja fechar todos os processos que estão utilizando esta pasta? Isso pode causar perda de dados não salvos.')) {
+                return;
+            }
+
+            showLoading();
+            
+            try {
+                const response = await fetch('/fechar', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: `caminho_pasta=${encodeURIComponent(caminhoPasta)}`
+                });
+
+                const data = await response.json();
+                
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showProcessos(data.processos_encerrados, 'Processos Encerrados');
+                }
+            } catch (error) {
+                showError('Erro ao fechar processos: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function showProcessos(processos, titulo) {
+            const container = document.getElementById('processos-container');
+            const title = document.getElementById('processos-title');
+            const list = document.getElementById('processos-list');
+
+            hideError();
+            
+            title.textContent = `${titulo} (${processos.length})`;
+            
+            if (processos.length === 0) {
+                list.innerHTML = '<div class="no-processes">Nenhum processo encontrado utilizando esta pasta.</div>';
+            } else {
+                list.innerHTML = processos.map(processo => `
+                    <div class="processo-item">
+                        <div class="processo-info">
+                            <strong>📋 ${processo.name}</strong>
+                            <span class="pid">PID: ${processo.pid}</span>
+                        </div>
+                        <div class="processo-path">
+                            📄 ${processo.path}
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            container.classList.remove('hidden');
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+            hideError();
+            hideProcessos();
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            hideProcessos();
+        }
+
+        function hideError() {
+            document.getElementById('error-message').classList.add('hidden');
+        }
+
+        function hideProcessos() {
+            document.getElementById('processos-container').classList.add('hidden');
+        }
+
+        // Auto-focus no campo de entrada
+        document.getElementById('caminho_pasta').focus();
+    </script>
+</body>
+</html>

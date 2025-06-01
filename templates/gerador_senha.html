@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Senha</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='gerador_senha.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔐 Gerador de Senha</h1>
+            <p>Crie senhas seguras e personalizadas facilmente</p>
+        </header>
+
+        <main>
+            <div class="generator-form">
+                <div class="options-section">
+                    <h3>📋 Opções de Caracteres</h3>
+                    <div class="checkbox-group">
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="use_lowercase" checked>
+                            <span class="checkmark"></span>
+                            <span class="label-text">🔤 Letras minúsculas (a-z)</span>
+                        </label>
+                        
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="use_uppercase" checked>
+                            <span class="checkmark"></span>
+                            <span class="label-text">🔠 Letras maiúsculas (A-Z)</span>
+                        </label>
+                        
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="use_numbers" checked>
+                            <span class="checkmark"></span>
+                            <span class="label-text">🔢 Números (0-9)</span>
+                        </label>
+                        
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="use_special">
+                            <span class="checkmark"></span>
+                            <span class="label-text">🔣 Caracteres especiais (!@#$%^&*)</span>
+                        </label>
+                        
+                        <label class="checkbox-item">
+                            <input type="checkbox" id="use_unique">
+                            <span class="checkmark"></span>
+                            <span class="label-text">✨ Caracteres únicos (sem repetição)</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="length-section">
+                    <h3>📏 Comprimento da Senha</h3>
+                    <div class="length-control">
+                        <input type="range" id="password_length" min="4" max="30" value="12" class="length-slider">
+                        <div class="length-display">
+                            <span id="length_value">12</span> caracteres
+                        </div>
+                    </div>
+                </div>
+
+                <div class="generate-section">
+                    <button onclick="generatePassword()" class="btn btn-generate">
+                        🎲 Gerar Senha
+                    </button>
+                </div>
+
+                <div class="result-section">
+                    <div id="loading" class="loading hidden">
+                        <div class="spinner"></div>
+                        <p>Gerando senha...</p>
+                    </div>
+
+                    <div id="error-message" class="error-message hidden"></div>
+
+                    <div id="password-result" class="password-result hidden">
+                        <label for="generated-password">🔑 Sua Nova Senha:</label>
+                        <div class="password-container">
+                            <input type="text" id="generated-password" readonly>
+                            <button onclick="copyPassword()" class="btn btn-copy" title="Copiar senha">
+                                📋
+                            </button>
+                        </div>
+                        <div class="password-strength">
+                            <span id="strength-indicator"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>💡 <strong>Dica:</strong> Use senhas longas com diferentes tipos de caracteres para maior segurança!</p>
+        </footer>
+    </div>
+
+    <script>
+        // Atualizar valor do slider em tempo real
+        const lengthSlider = document.getElementById('password_length');
+        const lengthValue = document.getElementById('length_value');
+        
+        lengthSlider.addEventListener('input', function() {
+            lengthValue.textContent = this.value;
+        });
+
+        async function generatePassword() {
+            const length = parseInt(document.getElementById('password_length').value);
+            const useLowercase = document.getElementById('use_lowercase').checked;
+            const useUppercase = document.getElementById('use_uppercase').checked;
+            const useNumbers = document.getElementById('use_numbers').checked;
+            const useSpecial = document.getElementById('use_special').checked;
+            const useUnique = document.getElementById('use_unique').checked;
+
+            // Validação básica
+            if (!useLowercase && !useUppercase && !useNumbers && !useSpecial) {
+                showError('Selecione pelo menos uma opção de caracteres.');
+                return;
+            }
+
+            showLoading();
+
+            try {
+                const response = await fetch('/gerar_senha', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        length: length,
+                        use_lowercase: useLowercase,
+                        use_uppercase: useUppercase,
+                        use_numbers: useNumbers,
+                        use_special: useSpecial,
+                        use_unique: useUnique
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showPassword(data.password);
+                }
+            } catch (error) {
+                showError('Erro ao gerar senha: ' + error.message);
+            } finally {
+                hideLoading();
+            }
+        }
+
+        function showPassword(password) {
+            hideError();
+            
+            const passwordInput = document.getElementById('generated-password');
+            const resultDiv = document.getElementById('password-result');
+            const strengthIndicator = document.getElementById('strength-indicator');
+            
+            passwordInput.value = password;
+            resultDiv.classList.remove('hidden');
+            
+            // Avaliar força da senha
+            const strength = evaluatePasswordStrength(password);
+            strengthIndicator.textContent = `Força: ${strength.text}`;
+            strengthIndicator.className = `strength-${strength.level}`;
+        }
+
+        function evaluatePasswordStrength(password) {
+            let score = 0;
+            
+            if (password.length >= 8) score += 1;
+            if (password.length >= 12) score += 1;
+            if (/[a-z]/.test(password)) score += 1;
+            if (/[A-Z]/.test(password)) score += 1;
+            if (/[0-9]/.test(password)) score += 1;
+            if (/[^A-Za-z0-9]/.test(password)) score += 1;
+            
+            if (score <= 2) return { level: 'weak', text: 'Fraca 😰' };
+            if (score <= 4) return { level: 'medium', text: 'Média 😐' };
+            return { level: 'strong', text: 'Forte 😎' };
+        }
+
+        async function copyPassword() {
+            const passwordInput = document.getElementById('generated-password');
+            
+            try {
+                await navigator.clipboard.writeText(passwordInput.value);
+                
+                // Feedback visual
+                const copyBtn = document.querySelector('.btn-copy');
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = '✅';
+                copyBtn.style.background = '#48bb78';
+                
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                    copyBtn.style.background = '';
+                }, 1000);
+                
+            } catch (error) {
+                // Fallback para navegadores mais antigos
+                passwordInput.select();
+                document.execCommand('copy');
+                alert('Senha copiada para a área de transferência!');
+            }
+        }
+
+        function showLoading() {
+            document.getElementById('loading').classList.remove('hidden');
+            hideError();
+            hidePassword();
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').classList.add('hidden');
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            hidePassword();
+        }
+
+        function hideError() {
+            document.getElementById('error-message').classList.add('hidden');
+        }
+
+        function hidePassword() {
+            document.getElementById('password-result').classList.add('hidden');
+        }
+
+        // Gerar senha inicial
+        window.addEventListener('load', generatePassword);
+    </script>
+</body>
+</html>
