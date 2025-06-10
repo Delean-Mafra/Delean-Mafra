@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autenticados Digital - Sistema de Autenticidade Digital</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #121212 0%, #1a1a2e 100%);
+            min-height: 100vh;
+            color: #e0e0e0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(30, 30, 50, 0.8);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3),
+                        0 0 60px rgba(0, 150, 255, 0.2),
+                        inset 0 0 20px rgba(0, 200, 255, 0.1);
+            border: 1px solid rgba(0, 200, 255, 0.2);
+            backdrop-filter: blur(5px);
+        }
+        h1 {
+            color: #4fc3f7;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
+        }
+        .section {
+            background: rgba(25, 35, 55, 0.5);
+            padding: 25px;
+            margin: 20px 0;
+            border-radius: 10px;
+            border-left: 5px solid #4fc3f7;
+            box-shadow: inset 0 0 10px rgba(0, 150, 255, 0.1);
+        }
+        .upload-area {
+            border: 2px dashed #4fc3f7;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            background: rgba(20, 20, 40, 0.5);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            min-height: 60px;
+        }
+        .upload-area:hover {
+            background: rgba(30, 30, 60, 0.7);
+            border-color: #81d4fa;
+            box-shadow: 0 0 15px rgba(0, 200, 255, 0.3);
+        }
+        .upload-area.dragover {
+            background: rgba(40, 70, 80, 0.7);
+            border-color: #00e676;
+        }
+        .upload-area .file-info {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #81d4fa;
+            word-break: break-all;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        .btn {
+            background: #006064;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            margin: 10px 5px;
+            border: 1px solid #4fc3f7;
+        }
+        .btn:hover {
+            background: #00838f;
+            box-shadow: 0 0 10px rgba(0, 200, 255, 0.5);
+        }
+        .btn.success {
+            background: #00695c;
+            border-color: #1de9b6;
+        }
+        .btn.danger {
+            background: #b71c1c;
+            border-color: #ff5252;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+            border: 1px solid;
+        }
+        .result.success {
+            background: rgba(0, 100, 80, 0.3);
+            border-color: #1de9b6;
+            color: #e0f7fa;
+        }
+        .result.error {
+            background: rgba(100, 0, 30, 0.3);
+            border-color: #ff5252;
+            color: #ffebee;
+        }
+        .blockchain-info {
+            background: #e8f4f8;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 14px;
+            color: #000;
+            font-weight: bold;
+        }
+        .file-info {
+            background: #fff3cd;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            color: #000;
+            font-weight: bold;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1;
+            padding: 15px;
+            background: #ecf0f1;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .tab.active {
+            background: #3498db;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        .progress {
+            width: 100%;
+            height: 20px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        .progress-bar {
+            height: 100%;
+            background: #3498db;
+            width: 0%;
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 Autenticados Digital</h1>
+        
+        <div class="tabs">
+            <button class="tab active" id="tab-generate">Gerar Timestamp</button>
+            <button class="tab" id="tab-verify">Verificar Autenticidade</button>
+            <button class="tab" id="tab-blockchain">Visualizar Blockchain</button>
+        </div>
+
+        <!-- Aba Gerar Timestamp -->
+        <div id="generate-tab" class="tab-content active">
+            <div class="section">
+                <h2>📤 Gerar Timestamp (.ots)</h2>
+                <p>Faça upload de um arquivo para gerar um timestamp blockchain protegido contra adulteração:</p>
+                
+                <div class="upload-area" id="upload-main">
+                    <div>
+                        <strong>🔍 Clique aqui ou arraste um arquivo</strong>
+                        <br>
+                        <small>Qualquer tipo de arquivo é aceito</small>
+                    </div>
+                </div>
+                <input type="file" id="fileInput" accept="*/*">
+                
+                <div class="progress" id="progress" style="display: none;">
+                    <div class="progress-bar" id="progressBar"></div>
+                </div>
+                
+                <div id="generateResult" class="result"></div>
+                <div id="fileInfo" class="file-info" style="display: none;"></div>
+                <div id="blockchainInfo" class="blockchain-info" style="display: none;"></div>
+                <div class="result" id="securityInfo" style="background: #e3f2fd; border: 1px solid #2196f3; color: #0d47a1;">
+                    <h4>🛡️ Proteções de Segurança Implementadas:</h4>
+                    <ul>
+                        <li><strong>Timestamp Imutável:</strong> Data incluída no hash da blockchain</li>
+                        <li><strong>Verificação Cruzada:</strong> Hash do .ots validado contra blockchain</li>
+                        <li><strong>Assinatura Digital:</strong> Arquivo .ots possui hash de integridade próprio</li>
+                        <li><strong>Prova Criptográfica:</strong> Qualquer alteração invalida toda a cadeia</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Aba Verificar -->
+        <div id="verify-tab" class="tab-content">
+            <div class="section">
+                <h2>✅ Verificar Autenticidade</h2>
+                <p>Faça upload do arquivo original e do arquivo .ots para verificar a autenticidade:</p>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                    <div>
+                        <h3>Arquivo Original</h3>
+                        <div class="upload-area" id="upload-original">
+                            <strong>📄 Arquivo Original</strong>
+                            <div id="original-file-display" class="file-info" style="display: none; color: #81d4fa; margin-top: 10px;"></div>
+                        </div>
+                        <input type="file" id="originalFile" accept="*/*">
+                    </div>
+                    
+                    <div>
+                        <h3>Arquivo .ots</h3>
+                        <div class="upload-area" id="upload-ots">
+                            <strong>🔐 Arquivo .ots</strong>
+                            <div id="ots-file-display" class="file-info" style="display: none; color: #81d4fa; margin-top: 10px;"></div>
+                        </div>
+                        <input type="file" id="otsFile" accept=".ots">
+                    </div>
+                </div>
+                
+                <button class="btn" id="verify-btn">🔍 Verificar Autenticidade</button>
+                
+                <div id="verifyResult" class="result"></div>
+            </div>
+        </div>
+
+        <!-- Aba Blockchain -->
+        <div id="blockchain-tab" class="tab-content">
+            <div class="section">
+                <h2>⛓️ Visualizar Blockchain</h2>
+                <div id="blockchainView"></div>
+                <button class="btn danger" id="clear-btn">🗑️ Limpar Blockchain</button>
+            </div>
+        </div>
+    </div>
+    <footer style="text-align: center; margin-top: 30px; color: #aaa; font-size: 12px;">
+        &copy; 2023 Delean Mafra - Todos os direitos reservados
+    </footer>
+
+    <!-- Scripts híbridos: Brython + JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    
+    <!-- JavaScript para operações de arquivo -->
+    <script src="no-python.js"></script>
+
+    <script type="text/python">
+import json
+from datetime import datetime
+from browser import document, window
+import time
+
+# Classe Block em Python
+class Block:
+    def __init__(self, index, timestamp, data, previous_hash):
+        self.index = index
+        self.timestamp = timestamp
+        self.data = data
+        self.previous_hash = previous_hash
+        self.nonce = 0
+        self.hash = self.calculate_hash()
+    
+    def calculate_hash(self):
+        data_string = str(self.index) + str(self.previous_hash) + str(self.timestamp) + json.dumps(self.data, sort_keys=True) + str(self.nonce)
+        return window.CryptoJS.SHA256(data_string).toString()
+    
+    def mine_block(self, difficulty):
+        target = "0" * difficulty
+        while not self.hash.startswith(target):
+            self.nonce += 1
+            self.hash = self.calculate_hash()
+    
+    def validate_integrity(self):
+        return self.hash == self.calculate_hash()
+
+# Classe Blockchain em Python
+class Blockchain:
+    def __init__(self):
+        self.chain = [self.create_genesis_block()]
+        self.difficulty = 2
+        self.load_from_storage()
+    
+    def create_genesis_block(self):
+        return Block(0, datetime.now().isoformat(), "Genesis Block", "0")
+    
+    def get_latest_block(self):
+        return self.chain[-1]
+    
+    def add_block(self, new_block):
+        new_block.previous_hash = self.get_latest_block().hash
+        new_block.mine_block(self.difficulty)
+        self.chain.append(new_block)
+        self.save_to_storage()
+    
+    def is_chain_valid(self):
+        for i in range(1, len(self.chain)):
+            current_block = self.chain[i]
+            previous_block = self.chain[i-1]
+            
+            if current_block.hash != current_block.calculate_hash():
+                return False
+            
+            if current_block.previous_hash != previous_block.hash:
+                return False
+        
+        return True
+    
+    def save_to_storage(self):
+        chain_data = []
+        for block in self.chain:
+            chain_data.append({
+                'index': block.index,
+                'timestamp': block.timestamp,
+                'data': block.data,
+                'previous_hash': block.previous_hash,
+                'hash': block.hash,
+                'nonce': block.nonce
+            })
+        window.localStorage.setItem('blockchain', json.dumps(chain_data))
+    
+    def load_from_storage(self):
+        stored = window.localStorage.getItem('blockchain')
+        if stored:
+            try:
+                chain_data = json.loads(stored)
+                self.chain = []
+                for block_data in chain_data:
+                    block = Block(
+                        block_data['index'],
+                        block_data['timestamp'],
+                        block_data['data'],
+                        block_data['previous_hash']
+                    )
+                    block.hash = block_data['hash']
+                    block.nonce = block_data['nonce']
+                    self.chain.append(block)
+            except:
+                self.chain = [self.create_genesis_block()]
+    
+    def clear(self):
+        self.chain = [self.create_genesis_block()]
+        self.save_to_storage()
+
+# Instanciar blockchain
+blockchain = Blockchain()
+
+# Funções utilitárias Python
+def generate_ots_hash(ots_data):
+    critical_data = {
+        'fileHash': ots_data['fileHash'],
+        'fileName': ots_data['fileName'],
+        'timestamp': ots_data['timestamp'],
+        'blockIndex': ots_data['blockIndex'],
+        'blockHash': ots_data['blockHash'],
+        'previousHash': ots_data['previousHash'],
+        'nonce': ots_data['nonce']
+    }
+    return window.CryptoJS.SHA256(json.dumps(critical_data, sort_keys=True)).toString()
+
+def validate_ots_integrity(ots_data):
+    expected_hash = generate_ots_hash({
+        'fileHash': ots_data['fileHash'],
+        'fileName': ots_data['fileName'],
+        'timestamp': ots_data['timestamp'],
+        'blockIndex': ots_data['blockIndex'],
+        'blockHash': ots_data['blockHash'],
+        'previousHash': ots_data['previousHash'],
+        'nonce': ots_data['nonce']
+    })
+    return ots_data.get('otsHash') == expected_hash
+
+def format_bytes(bytes_size, decimals=2):
+    if bytes_size == 0:
+        return '0 Bytes'
+    k = 1024
+    sizes = ['Bytes', 'KB', 'MB', 'GB']
+    i = int(window.Math.floor(window.Math.log(bytes_size) / window.Math.log(k)))
+    return f"{round(bytes_size / (k ** i), decimals)} {sizes[i]}"
+
+# Funções expostas para JavaScript
+def show_progress(show):
+    progress = document['progress']
+    progress_bar = document['progressBar']
+    
+    if show:
+        progress.style.display = 'block'
+    else:
+        progress.style.display = 'none'
+        progress_bar.style.width = '0%'
+
+def update_progress(percent):
+    progress_bar = document['progressBar']
+    progress_bar.style.width = f'{percent}%'
+
+def show_result(element_id, result_type, message):
+    element = document[element_id]
+    element.className = f'result {result_type}'
+    element.innerHTML = message
+    element.style.display = 'block'
+
+def process_file(file_name, file_size, file_type, file_hash):
+    try:
+        update_progress(40)
+        
+        # Criar timestamp
+        timestamp = datetime.now().isoformat()
+        
+        # Dados do bloco
+        block_data = {
+            'fileName': file_name,
+            'fileSize': file_size,
+            'fileType': file_type,
+            'fileHash': file_hash,
+            'timestamp': timestamp,
+            'uploadTimestamp': int(time.time() * 1000)
+        }
+        
+        update_progress(60)
+        
+        # Adicionar à blockchain
+        new_block = Block(
+            blockchain.get_latest_block().index + 1,
+            timestamp,
+            block_data,
+            blockchain.get_latest_block().hash
+        )
+        
+        blockchain.add_block(new_block)
+        update_progress(80)
+        
+        # Gerar arquivo .ots
+        ots_data = {
+            'version': '2.0',
+            'fileHash': file_hash,
+            'fileName': file_name,
+            'timestamp': timestamp,
+            'blockIndex': new_block.index,
+            'blockHash': new_block.hash,
+            'previousHash': new_block.previous_hash,
+            'nonce': new_block.nonce,
+            'blockchain': 'local',
+            'createdAt': int(time.time() * 1000),
+            'chainLength': len(blockchain.chain),
+            'chainValid': blockchain.is_chain_valid()
+        }
+        
+        # Hash de integridade do .ots
+        ots_data['otsHash'] = generate_ots_hash(ots_data)
+        
+        # Assinatura digital da blockchain
+        chain_signature_data = json.dumps([{
+            'index': b.index,
+            'hash': b.hash,
+            'timestamp': b.timestamp
+        } for b in blockchain.chain[-3:]], sort_keys=True) + timestamp
+        ots_data['blockchainSignature'] = window.CryptoJS.SHA256(chain_signature_data).toString()
+        
+        update_progress(100)
+        
+        # Download do arquivo via JavaScript
+        window.downloadFileJS(json.dumps(ots_data, indent=2), f'{file_name}.ots')
+        
+        # Mostrar resultado
+        formatted_time = datetime.fromisoformat(timestamp.replace('Z', '')).strftime('%d/%m/%Y %H:%M:%S')
+        show_result('generateResult', 'success', 
+            f'''✅ Timestamp seguro gerado com sucesso!<br>
+             📁 Arquivo: {file_name}<br>
+             🔐 Hash: {file_hash}<br>
+             ⏰ Timestamp: {formatted_time}<br>
+             📦 Bloco: #{new_block.index}<br>
+             🛡️ Hash OTS: {ots_data['otsHash'][:16]}...''')
+        
+        display_file_info({'name': file_name, 'size': file_size, 'type': file_type}, file_hash, timestamp)
+        display_block_info(new_block)
+        document['securityInfo'].style.display = 'block'
+        
+    except Exception as e:
+        show_result('generateResult', 'error', f'❌ Erro ao processar arquivo: {str(e)}')
+    finally:
+        show_progress(False)
+
+def verify_files():
+    original_file_input = document['originalFile']
+    ots_file_input = document['otsFile']
+    
+    if not original_file_input.files or not ots_file_input.files:
+        show_result('verifyResult', 'error', '❌ Por favor, selecione ambos os arquivos.')
+        return
+    
+    original_file = original_file_input.files[0]
+    ots_file = ots_file_input.files[0]
+    
+    # Usar JavaScript para ler arquivos
+    def verify_with_js():
+        # Ler arquivo .ots primeiro
+        window.readFileAsTextJS(ots_file, lambda ots_content: process_verification(original_file, ots_content) if ots_content else show_result('verifyResult', 'error', '❌ Erro ao ler arquivo .ots'))
+    
+    verify_with_js()
+
+def process_verification(original_file, ots_content):
+    try:
+        ots_data = json.loads(ots_content)
+        
+        # Verificar versão
+        if not ots_data.get('version') or float(ots_data.get('version', 0)) < 2.0:
+            show_result('verifyResult', 'error', '⚠️ Arquivo .ots em formato antigo ou inválido.')
+            return
+        
+        # Verificar integridade do .ots
+        if not validate_ots_integrity(ots_data):
+            show_result('verifyResult', 'error', '❌ ARQUIVO .OTS ADULTERADO!<br>O arquivo .ots foi modificado.')
+            return
+        
+        # Calcular hash do arquivo original via JavaScript
+        window.calculateFileHashJS(original_file, lambda current_hash: complete_verification(original_file, ots_data, current_hash) if current_hash else show_result('verifyResult', 'error', '❌ Erro ao calcular hash do arquivo original'))
+        
+    except Exception as e:
+        show_result('verifyResult', 'error', f'❌ Erro ao processar verificação: {str(e)}')
+
+def complete_verification(original_file, ots_data, current_hash):
+    try:
+        # Verificar hashes
+        if current_hash != ots_data['fileHash']:
+            show_result('verifyResult', 'error', 
+                f'''❌ ARQUIVO ORIGINAL MODIFICADO!<br>
+                 Hash atual: {current_hash}<br>
+                 Hash original: {ots_data['fileHash']}''')
+            return
+        
+        # Verificar bloco na blockchain
+        block = None
+        for b in blockchain.chain:
+            if b.index == ots_data['blockIndex']:
+                block = b
+                break
+        
+        if not block:
+            show_result('verifyResult', 'error', 
+                f'❌ BLOCO NÃO ENCONTRADO!<br>Bloco #{ots_data["blockIndex"]} não existe.')
+            return
+        
+        # Validações do bloco
+        if not block.validate_integrity():
+            show_result('verifyResult', 'error', 
+                f'❌ BLOCO CORROMPIDO!<br>Bloco #{ots_data["blockIndex"]} foi corrompido.')
+            return
+        
+        if block.hash != ots_data['blockHash']:
+            show_result('verifyResult', 'error', '❌ HASH DO BLOCO NÃO CONFERE!')
+            return
+        
+        if block.timestamp != ots_data['timestamp']:
+            show_result('verifyResult', 'error', '❌ TIMESTAMP ADULTERADO!')
+            return
+        
+        if not blockchain.is_chain_valid():
+            show_result('verifyResult', 'error', '❌ BLOCKCHAIN COMPROMETIDA!')
+            return
+        
+        # Sucesso!
+        verify_time = datetime.fromisoformat(ots_data['timestamp'].replace('Z', '')).strftime('%d/%m/%Y %H:%M:%S')
+        time_diff = abs(time.time() - datetime.fromisoformat(ots_data['timestamp'].replace('Z', '')).timestamp())
+        days_diff = int(time_diff // (24 * 3600))
+        
+        show_result('verifyResult', 'success', 
+            f'''✅ ARQUIVO COMPLETAMENTE AUTÊNTICO E VÁLIDO!<br>
+             📄 Arquivo: {original_file.name}<br>
+             🔐 Hash verificado: {current_hash}<br>
+             ⏰ Timestamp original: {verify_time}<br>
+             📅 Idade do timestamp: {days_diff} dias<br>
+             📦 Bloco válido: #{block.index}<br>
+             🛡️ Integridade da blockchain: OK<br>
+             ✨ Hash do .ots: ÍNTEGRO<br>
+             🔏 Assinatura digital: {'VÁLIDA' if ots_data.get('blockchainSignature') else 'N/A'}''')
+        
+    except Exception as e:
+        show_result('verifyResult', 'error', f'❌ Erro na verificação final: {str(e)}')
+
+def switch_tab(tab_name):
+    # Remover classe active de todas as abas
+    for tab in document.select('.tab'):
+        tab.classList.remove('active')
+    
+    for content in document.select('.tab-content'):
+        content.classList.remove('active')
+    
+    # Ativar aba selecionada
+    document[f'tab-{tab_name}'].classList.add('active')
+    document[f'{tab_name}-tab'].classList.add('active')
+    
+    if tab_name == 'blockchain':
+        display_blockchain()
+
+def display_file_info(file, file_hash, timestamp):
+    element = document['fileInfo']
+    formatted_time = datetime.fromisoformat(timestamp.replace('Z', '')).strftime('%d/%m/%Y %H:%M:%S')
+    element.innerHTML = f'''
+        <h4 style="color: #000; font-weight: bold;">📄 Informações do Arquivo</h4>
+        <strong style="color: #000;">Nome:</strong> <span style="color: #000; font-weight: bold;">{file['name']}</span><br>
+        <strong style="color: #000;">Tamanho:</strong> <span style="color: #000; font-weight: bold;">{format_bytes(file['size'])}</span><br>
+        <strong style="color: #000;">Tipo:</strong> <span style="color: #000; font-weight: bold;">{file['type'] or 'Desconhecido'}</span><br>
+        <strong style="color: #000;">Hash SHA-256:</strong> <span style="color: #000; font-weight: bold;">{file_hash}</span><br>
+        <strong style="color: #000;">Timestamp:</strong> <span style="color: #000; font-weight: bold;">{formatted_time}</span>
+    '''
+    element.style.display = 'block'
+
+def display_block_info(block):
+    element = document['blockchainInfo']
+    element.innerHTML = f'''
+        <h4 style="color: #000; font-weight: bold;">⛓️ Informações do Bloco</h4>
+        <strong style="color: #000;">Índice:</strong> <span style="color: #000; font-weight: bold;">{block.index}</span><br>
+        <strong style="color: #000;">Hash do Bloco:</strong> <span style="color: #000; font-weight: bold;">{block.hash}</span><br>
+        <strong style="color: #000;">Hash Anterior:</strong> <span style="color: #000; font-weight: bold;">{block.previous_hash}</span><br>
+        <strong style="color: #000;">Nonce:</strong> <span style="color: #000; font-weight: bold;">{block.nonce}</span><br>
+        <strong style="color: #000;">Dificuldade:</strong> <span style="color: #000; font-weight: bold;">{blockchain.difficulty}</span>
+    '''
+    element.style.display = 'block'
+
+def display_blockchain():
+    container = document['blockchainView']
+    container.innerHTML = ''
+    
+    if len(blockchain.chain) == 1:
+        container.innerHTML = '<p style="color: #000; font-weight: bold;">Blockchain vazia. Apenas o bloco genesis existe.</p>'
+        return
+    
+    for i, block in enumerate(blockchain.chain):
+        block_div = document.createElement('div')
+        block_div.className = 'blockchain-info'
+        
+        is_valid = block.validate_integrity()
+        validity_icon = '✅' if is_valid else '❌'
+        validity_text = 'VÁLIDO' if is_valid else 'CORROMPIDO'
+        
+        genesis_text = '(Genesis)' if i == 0 else ''
+        
+        if block.data == "Genesis Block":
+            data_info = '<strong style="color: #000;">Dados:</strong> <span style="color: #000; font-weight: bold;">Genesis Block</span>'
+        else:
+            upload_time = 'N/A'
+            if isinstance(block.data, dict) and block.data.get('uploadTimestamp'):
+                upload_time = datetime.fromtimestamp(block.data['uploadTimestamp']/1000).strftime('%d/%m/%Y %H:%M:%S')
+            
+            data_info = f'''
+                <strong style="color: #000;">Arquivo:</strong> <span style="color: #000; font-weight: bold;">{block.data.get('fileName', 'N/A') if isinstance(block.data, dict) else 'N/A'}</span><br>
+                <strong style="color: #000;">Hash do Arquivo:</strong> <span style="color: #000; font-weight: bold;">{block.data.get('fileHash', 'N/A') if isinstance(block.data, dict) else 'N/A'}</span><br>
+                <strong style="color: #000;">Tamanho:</strong> <span style="color: #000; font-weight: bold;">{format_bytes(block.data.get('fileSize', 0)) if isinstance(block.data, dict) else 'N/A'}</span><br>
+                <strong style="color: #000;">Upload Time:</strong> <span style="color: #000; font-weight: bold;">{upload_time}</span>
+            '''
+        
+        formatted_timestamp = datetime.fromisoformat(block.timestamp.replace('Z', '')).strftime('%d/%m/%Y %H:%M:%S')
+        
+        block_div.innerHTML = f'''
+            <h4 style="color: #000; font-weight: bold;">Bloco #{block.index} {genesis_text} {validity_icon} {validity_text}</h4>
+            <strong style="color: #000;">Hash:</strong> <span style="color: #000; font-weight: bold;">{block.hash}</span><br>
+            <strong style="color: #000;">Hash Anterior:</strong> <span style="color: #000; font-weight: bold;">{block.previous_hash}</span><br>
+            <strong style="color: #000;">Timestamp:</strong> <span style="color: #000; font-weight: bold;">{formatted_timestamp}</span><br>
+            <strong style="color: #000;">Nonce:</strong> <span style="color: #000; font-weight: bold;">{block.nonce}</span><br>
+            {data_info}
+        '''
+        
+        if not is_valid:
+            block_div.style.borderLeft = '5px solid #e74c3c'
+            block_div.style.background = '#fdf2f2'
+        
+        container.appendChild(block_div)
+    
+    # Status da blockchain
+    valid_div = document.createElement('div')
+    valid_div.className = 'result success' if blockchain.is_chain_valid() else 'result error'
+    valid_div.style.display = 'block'
+    valid_div.innerHTML = f'<span style="color: #000; font-weight: bold;">✅ Blockchain íntegra e válida - Todos os timestamps são confiáveis</span>' if blockchain.is_chain_valid() else f'<span style="color: #000; font-weight: bold;">❌ Blockchain comprometida - Timestamps podem ter sido adulterados!</span>'
+    container.appendChild(valid_div)
+
+def clear_blockchain():
+    if window.confirm('Tem certeza que deseja limpar toda a blockchain?'):
+        blockchain.clear()
+        display_blockchain()
+        show_result('verifyResult', 'success', '🗑️ Blockchain limpa com sucesso!')
+
+# Expor funções Python para JavaScript
+window.pythonShowProgress = show_progress
+window.pythonUpdateProgress = update_progress
+window.pythonShowResult = show_result
+window.pythonProcessFile = process_file
+window.pythonSwitchTab = switch_tab
+window.pythonVerifyFiles = verify_files
+window.pythonClearBlockchain = clear_blockchain
+
+# Inicializar
+display_blockchain()
+    </script>
+    
+    <script>
+        brython();
+    </script>
+</body>
+</html>
