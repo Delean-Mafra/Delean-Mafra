@@ -254,17 +254,14 @@
         </div>
     </div>
     <footer style="text-align: center; margin-top: 30px; color: #aaa; font-size: 12px;">
-        &copy; Copyright © 2025 Delean Mafra - Todos os direitos reservados
+        &copy; 2025 Delean Mafra - Todos os direitos reservados
     </footer>
 
     <!-- Scripts híbridos: Brython + JavaScript -->
     <script src="https://cdn.jsdelivr.net/npm/brython@3/brython.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/brython@3/brython_stdlib.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script> 
     
-    <!-- JavaScript para operações de arquivo -->
-    <script src="no-python.js"></script>
-
     <script type="text/python">
 import json
 from datetime import datetime
@@ -476,10 +473,16 @@ def process_file(file_name, file_size, file_type, file_hash):
         } for b in blockchain.chain[-3:]], sort_keys=True) + timestamp
         ots_data['blockchainSignature'] = window.CryptoJS.SHA256(chain_signature_data).toString()
         
+        # Gerar CRC16 usando formatação consistente
+        # Usar a mesma formatação que será usada na validação
+        ots_json_string = json.dumps(ots_data, indent=2, sort_keys=True)
+        crc16_value = window.calculateCRC16JS(ots_json_string)
+        ots_data['crc16'] = crc16_value
+        
         update_progress(100)
         
-        # Download do arquivo via JavaScript
-        window.downloadFileJS(json.dumps(ots_data, indent=2), f'{file_name}.ots')
+        # Download do arquivo via JavaScript (mantém a mesma formatação)
+        window.downloadFileJS(json.dumps(ots_data, indent=2, sort_keys=True), f'{file_name}.ots')
         
         # Mostrar resultado
         formatted_time = datetime.fromisoformat(timestamp.replace('Z', '')).strftime('%d/%m/%Y %H:%M:%S')
@@ -489,7 +492,8 @@ def process_file(file_name, file_size, file_type, file_hash):
              🔐 Hash: {file_hash}<br>
              ⏰ Timestamp: {formatted_time}<br>
              📦 Bloco: #{new_block.index}<br>
-             🛡️ Hash OTS: {ots_data['otsHash'][:16]}...''')
+             🛡️ Hash OTS: {ots_data['otsHash'][:16]}...<br>
+             🔒 CRC16: Integrado''')
         
         display_file_info({'name': file_name, 'size': file_size, 'type': file_type}, file_hash, timestamp)
         display_block_info(new_block)
@@ -525,6 +529,14 @@ def process_verification(original_file, ots_content):
         # Verificar versão
         if not ots_data.get('version') or float(ots_data.get('version', 0)) < 2.0:
             show_result('verifyResult', 'error', '⚠️ Arquivo .ots em formato antigo ou inválido.')
+            return
+        
+        # Verificar CRC16 primeiro (validação de redundância)
+        if not window.validateCRC16JS(ots_data):
+            show_result('verifyResult', 'error', 
+                '''❌ ARQUIVO .OTS CORROMPIDO!<br>
+                 🔒 Falha na validação CRC16<br>
+                 ⚠️ O arquivo foi adulterado ou corrompido''')
             return
         
         # Verificar integridade do .ots
@@ -583,6 +595,8 @@ def complete_verification(original_file, ots_data, current_hash):
         time_diff = abs(time.time() - datetime.fromisoformat(ots_data['timestamp'].replace('Z', '')).timestamp())
         days_diff = int(time_diff // (24 * 3600))
         
+        crc16_status = '✅ VÁLIDO' if ots_data.get('crc16') else '⚠️ Não aplicável (arquivo antigo)'
+        
         show_result('verifyResult', 'success', 
             f'''✅ ARQUIVO COMPLETAMENTE AUTÊNTICO E VÁLIDO!<br>
              📄 Arquivo: {original_file.name}<br>
@@ -592,6 +606,7 @@ def complete_verification(original_file, ots_data, current_hash):
              📦 Bloco válido: #{block.index}<br>
              🛡️ Integridade da blockchain: OK<br>
              ✨ Hash do .ots: ÍNTEGRO<br>
+             🔒 CRC16: {crc16_status}<br>
              🔏 Assinatura digital: {'VÁLIDA' if ots_data.get('blockchainSignature') else 'N/A'}''')
         
     except Exception as e:
