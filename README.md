@@ -1,6 +1,6 @@
 # Delean Mafra
 
-👋 Olá! Sou Delean Mafra, um profissional apaixonado por tecnologia e inovação com mais de dez anos de experiência na área de tecnologia. Atualmente, estou cursando Ciência de Dados e atuo como Customer Owner na TOTVS, onde sou referência na análise e resolução de incidentes de média e alta complexidade. Minha atuação é focada na automação de processos e na implementação de soluções inovadoras utilizando inteligência artificial.
+👋 Olá! Sou Delean Mafra, um profissional apaixonado por tecnologia e inovação com mais de dez anos de experiência na área de tecnologia. Atualmente, estou cursando Ciência de Dados e atuo como Agile Master na TOTVS, onde sou referência na análise e resolução de incidentes de média e alta complexidade. Minha atuação é focada na automação de processos e na implementação de soluções inovadoras utilizando inteligência artificial.
 Treine seus codigos comigo no [codewars](http://www.codewars.com/r/DnrkrQ/).
 
 ## Sobre Mim
