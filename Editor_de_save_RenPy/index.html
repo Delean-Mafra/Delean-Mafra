@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8" />
+    <meta name="description" content="Editor de Save RenPy: Edite seus arquivos de save de jogos com esta poderosa ferramenta online. Suporta RPGMaker, Renpy, Unity, UnrealEngine e mais.">
+    <meta property="og:description" content="Editor de Save RenPy: Edite seus arquivos de save de jogos com esta poderosa ferramenta online. Suporta RPGMaker, Renpy, Unity, UnrealEngine e mais." />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de Save RenPy</title>
+    <meta property="og:url" content="https://www.gamesavemanager.com/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Editor de Save RenPy" />
+    <meta property="og:image" content="https://www.gamesavemanager.com/Content/img/save_icon.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="256" />
+    <meta property="og:image:height" content="256" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.22.0/css/jquery.fileupload.min.css" rel="stylesheet">
+
+    <link href="Scripts/modal-fix.css" rel="stylesheet">
+
+    <style>
+        :root {
+            --renpy-bg-dark: #1a1a1a;
+            --renpy-bg-light: #2c2c2c;
+            --renpy-text: #e0e0e0;
+            --renpy-accent: #9a4c4c;
+            --renpy-border: #505050;
+            --renpy-button-bg: #4a4a4a;
+            --renpy-button-hover: #6a6a6a;
+            --renpy-shadow: rgba(0, 0, 0, 0.4);
+            --renpy-panel-header: #3a3a3a;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--renpy-bg-dark);
+            color: var(--renpy-text);
+            line-height: 1.6;
+            padding-top: 70px;
+            background-image: url('https://www.gamesavemanager.com/Content/img/renpy_bg.png'); /* Exemplo de imagem de fundo */
+            background-size: cover;
+            background-attachment: fixed;
+            background-position: center;
+        }
+
+        .navbar {
+            background-color: var(--renpy-bg-light);
+            border: none;
+            box-shadow: 0 2px 15px var(--renpy-shadow);
+        }
+
+        .navbar-brand, .navbar-nav li a {
+            color: var(--renpy-text) !important;
+            text-shadow: 1px 1px 2px var(--renpy-shadow);
+        }
+
+        .navbar-nav li a:hover {
+            color: var(--renpy-accent) !important;
+        }
+
+        .jumbotron {
+            background: rgba(44, 44, 44, 0.9); /* Fundo semi-transparente para o jumbotron */
+            color: var(--renpy-text);
+            border-radius: 10px;
+            box-shadow: 0 5px 25px var(--renpy-shadow);
+            margin-top: 20px;
+            padding: 30px;
+            border: 2px solid var(--renpy-border);
+            font-family: 'Press Start 2P', cursive;
+            text-shadow: 2px 2px 4px var(--renpy-shadow);
+            animation: fadeIn 1s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .jumbotron h1 {
+            color: var(--renpy-accent);
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .jumbotron small {
+            color: var(--renpy-text);
+            font-size: 0.8em;
+            display: block;
+            margin-bottom: 20px;
+        }
+
+        .jumbotron p.lead {
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.2em;
+            color: var(--renpy-text);
+            text-shadow: none;
+        }
+
+        .jumbotron ul {
+            list-style: none;
+            padding-left: 0;
+            margin-top: 20px;
+        }
+
+        .jumbotron ul li {
+            margin-bottom: 8px;
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.1em;
+            color: var(--renpy-text);
+        }
+
+        .jumbotron ul li b {
+            color: var(--renpy-accent);
+        }
+
+        .panel {
+            border: 1px solid var(--renpy-border);
+            border-radius: 8px;
+            box-shadow: 0 2px 15px var(--renpy-shadow);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+            background-color: var(--renpy-bg-light);
+        }
+
+        .panel:hover {
+            transform: translateY(-5px);
+        }
+
+        .panel-heading {
+            background-color: var(--renpy-panel-header);
+            color: var(--renpy-text);
+            border-radius: 8px 8px 0 0 !important;
+            border-bottom: 1px solid var(--renpy-border);
+            padding: 15px;
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.2em;
+        }
+
+        .panel-title {
+            font-weight: 500;
+            font-size: 18px;
+        }
+
+        .btn-success {
+            background-color: var(--renpy-accent);
+            border: 2px solid #803b3b;
+            padding: 12px 24px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-family: 'Press Start 2P', cursive;
+            color: white;
+            text-shadow: 1px 1px 2px var(--renpy-shadow);
+        }
+
+        .btn-success:hover {
+            background-color: #b05a5a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--renpy-shadow);
+            border-color: #904545;
+        }
+
+        .progress {
+            height: 15px;
+            border-radius: 8px;
+            background-color: var(--renpy-border);
+            margin-top: 15px;
+            box-shadow: inset 0 1px 3px var(--renpy-shadow);
+        }
+
+        .progress-bar {
+            background-color: var(--renpy-accent);
+            border-radius: 8px;
+            transition: width 0.5s ease-in-out;
+        }
+
+        .hint42 {
+            color: var(--renpy-text);
+            font-style: italic;
+            margin: 10px 0 20px;
+            font-family: 'Roboto', sans-serif;
+            text-shadow: 1px 1px 2px var(--renpy-shadow);
+        }
+
+        .qnavi {
+            position: fixed;
+            right: 20px;
+            bottom: 20px;
+            z-index: 150;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .qnavi:hover {
+            opacity: 1;
+        }
+
+        .qnavi .btn {
+            background-color: var(--renpy-accent);
+            color: white;
+            border: 2px solid #803b3b;
+            margin-bottom: 5px;
+            border-radius: 50%;
+            width: 55px;
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 10px var(--renpy-shadow);
+            transition: all 0.2s ease;
+        }
+
+        .qnavi .btn:hover {
+            background-color: #b05a5a;
+            transform: scale(1.1);
+        }
+
+        footer {
+            margin-top: 40px;
+            padding: 20px 0;
+            color: var(--renpy-text);
+            text-align: center;
+            background-color: rgba(44, 44, 44, 0.9);
+            border-top: 2px solid var(--renpy-border);
+            box-shadow: 0 -2px 15px var(--renpy-shadow);
+            border-radius: 10px 10px 0 0;
+        }
+
+        .media-object {
+            max-width: 64px;
+            border-radius: 8px;
+            border: 1px solid var(--renpy-border);
+        }
+
+        .time {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .line12 li {
+            margin-bottom: 8px;
+        }
+
+        .media {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+            border-bottom: 1px dashed var(--renpy-border);
+        }
+        .media:last-child {
+            border-bottom: none;
+        }
+
+        .media-left {
+            padding-right: 20px;
+        }
+
+        .media-body {
+            flex: 1;
+        }
+
+        .panel-footer {
+            background-color: var(--renpy-bg-dark);
+            border-radius: 0 0 8px 8px;
+            padding: 10px 15px;
+            color: var(--renpy-text);
+            border-top: 1px solid var(--renpy-border);
+        }
+
+        .fileinput-button {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            margin-top: 20px;
+        }
+
+        .fileinput-button input {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 0;
+            opacity: 0;
+            font-size: 200px;
+            direction: ltr;
+            cursor: pointer;
+        }
+
+        .footer-hint {
+            margin-bottom: 15px;
+        }
+
+        .container.body-content {
+            padding-bottom: 50px;
+        }
+
+        /* Melhorias para o RenPy */
+        .alert {
+            border: 2px solid;
+            border-radius: 5px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-family: 'Roboto', sans-serif;
+        }
+        .alert-info {
+            background-color: #3e738c;
+            border-color: #2a5367;
+            color: white;
+        }
+        .alert-danger {
+            background-color: #8c3e3e;
+            border-color: #672a2a;
+            color: white;
+        }
+        .glyphicon-spin {
+            animation: spin 1s infinite linear;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+    <div class="container body-content">
+        <div class="jumbotron" itemscope itemtype="http://schema.org/Organization">
+            <h1 itemprop="name">Editor de Save RenPy</h1>
+            <small style="color: var(--renpy-text);">Edição RenPy Aprimorada por Delean Mafra</small>
+            <link itemprop="url" href="https://www.gamesavemanager.com/" />
+            <p class="lead" itemprop="description">
+                Esta ferramenta online ajuda você a modificar arquivos de save de jogos para ajustar valores como moeda, itens e estatísticas.<br />
+                Suporta várias engines de jogo, incluindo RPG Maker, Ren'Py, Unity, Unreal Engine e mais.</p>
+
+            <ul class="line12">
+                <li>Clique em <b>ENVIAR ARQUIVO</b> e selecione seu arquivo de save. Aguarde o upload ser concluído.</li>
+                <li>Edite os valores que deseja alterar e clique em <b>Baixar</b> para obter seu arquivo de save modificado.</li>
+            </ul>
+            <meta itemprop="logo" content="https://www.gamesavemanager.com/Content/img/save_icon.png" />
+        </div>
+
+        <span class="btn btn-success fileinput-button">
+            <i class="glyphicon glyphicon-upload"></i>
+            <span>ENVIAR ARQUIVO</span>
+            <input id="fileupload" type="file" name="file">
+        </span>
+        <div class="hint42"><i>Ou arraste e solte seu arquivo aqui</i></div>
+        <div id="progress" class="progress">
+            <div class="progress-bar progress-bar-success"></div>
+        </div>
+
+        <div id="editorForm">
+        </div>
+
+
+
+        <div class="btn-group-vertical qnavi" role="group" aria-label="Navegação rápida">
+            <button type="button" class="btn btn-default" onclick="$('html, body').animate({ scrollTop: 0 }, 100);"><i class="glyphicon glyphicon-arrow-up" aria-hidden="true"></i></button>
+            <button type="button" class="btn btn-default" onclick="$('html, body').animate({ scrollTop: $(document).height() }, 100);"><i class="glyphicon glyphicon-arrow-down" aria-hidden="true"></i></button>
+        </div>
+
+        <hr />
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.22.0/js/vendor/jquery.ui.widget.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.22.0/js/jquery.fileupload.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.22.0/js/jquery.fileupload-process.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-file-upload/9.22.0/js/jquery.iframe-transport.min.js"></script>
+
+    <script src="Scripts/renpy-tools.js"></script>
+
+    <script type="text/javascript">
+        function JSONGet(selector) {
+            return JSON.parse($(selector).val());
+        }
+
+        function JSONSet(selector, data) {
+            $(selector).val(JSON.stringify(data));
+        }
+
+        function Normalize(val, min, max) {
+            val = val.replace(/,/g, ".");
+            val = Number(val);
+            if (isNaN(val)) return min;
+            if (val < min) return min;
+            if (val > max) return max;
+            return val;
+        }
+
+        function NPrompt(msg, val, min, max) {
+            var ud = prompt(msg, val);
+            if (ud === null) {
+                return val;
+            }
+            return Normalize(ud, min, max);
+        }
+
+        function OnDownload() {
+            $('#editorForm').hide();
+            $('#news').show();
+            $('.hint42').show();
+            $('html, body').animate({ scrollTop: 0 }, 100);
+        }
+
+        var uploadSizeLimit = 26214400; // 25MB in bytes
+        $(function () {
+            $.ajaxSetup({
+                // Disable caching of AJAX responses
+                cache: false
+            });
+
+            // Always use local server when running on localhost
+            var url = '/UploadSave';
+
+            $('#fileupload').fileupload({
+                url: url,
+                dataType: 'json',
+                maxNumberOfFiles: 1,
+                maxFileSize: uploadSizeLimit,
+                singleFileUploads: true,
+                acceptFileTypes: /(\.|\/)(sav|save|dat|json|txt|rpgsave|pickle|pkl)$/i,
+                add: function (e, data) {
+                    // Validate file before upload
+                    var file = data.files[0];
+                    console.log('Arquivo selecionado:', file.name, 'Tamanho:', file.size, 'bytes');
+
+                    if (file.size > uploadSizeLimit) {
+                        alert('Arquivo muito grande. O tamanho máximo do arquivo é ' + Math.round(uploadSizeLimit/1048576) + 'MB. Seu arquivo é ' + Math.round(file.size/1048576) + 'MB.');
+                        return false;
+                    }
+
+                    if (data.files.length > 1) {
+                        alert('Por favor, envie apenas um arquivo de save por vez.');
+                        return false;
+                    }
+
+                    // Hide the editor form and news
+                    $('#editorForm').hide();
+                    $('#news').hide();
+                    $('.hint42').hide();
+
+                    // Start upload
+                    data.submit();
+                },
+                drop: function (e, data) {
+                    $('#editorForm').hide();
+                },
+                done: function (e, data) {
+                    try {
+                        console.log('Resposta do upload:', data.result);
+                        var result = typeof data.result === 'string' ? JSON.parse(data.result) : data.result;
+                        var id = result.id;
+
+                        if (!id) {
+                            throw new Error('Nenhum ID retornado do servidor');
+                        }
+
+                        var t = $('#editorForm');
+                        t.html("<div class='alert alert-info'><i class='glyphicon glyphicon-refresh glyphicon-spin'></i> Carregando editor...</div>");
+
+                        var editUrl = '/SaveEdit2/' + id;
+
+                        t.load(editUrl, function (response, status, xhr) {
+                            if (status == "error") {
+                                var msg = "Desculpe, mas houve um erro ao carregar o editor: ";
+                                t.html("<div class='alert alert-danger'>" + msg + xhr.status + " " + xhr.statusText + "</div>");
+                                console.error('Erro ao carregar editor:', xhr.status, xhr.statusText);
+                            } else {
+                                console.log('Editor carregado com sucesso');
+                            }
+                        });
+
+                        $('#editorForm').show();
+                        $('#progress .progress-bar').css('width', '0%');
+                    } catch (error) {
+                        console.error('Erro ao processar resposta do upload:', error);
+                        alert('Erro ao processar resposta do servidor: ' + error.message);
+                    }
+                },
+                fail: function (e, data) {
+                    console.error('Upload falhou:', e, data);
+                    var errorMsg = 'Upload falhou. ';
+
+                    if (data.jqXHR) {
+                        if (data.jqXHR.status === 413) {
+                            errorMsg += 'Arquivo muito grande (limite de 25MB).';
+                        } else if (data.jqXHR.status === 415) {
+                            errorMsg += 'Tipo de arquivo não suportado.';
+                        } else if (data.jqXHR.status === 0) {
+                            errorMsg += 'O servidor não está em execução. Por favor, inicie o servidor local primeiro.';
+                        } else {
+                            errorMsg += 'Erro do servidor: ' + data.jqXHR.status;
+                            if (data.jqXHR.responseJSON && data.jqXHR.responseJSON.error) {
+                                errorMsg += ' - ' + data.jqXHR.responseJSON.error;
+                            }
+                        }
+                    } else {
+                        errorMsg += 'Por favor, verifique se o servidor local está em execução e tente novamente.';
+                    }
+
+                    alert(errorMsg);
+                    $('#progress .progress-bar').css('width', '0%');
+
+                    // Show the upload area again
+                    $('.hint42').show();
+                },
+                progressall: function (e, data) {
+                    var progress = parseInt(data.loaded / data.total * 100, 10);
+                    $('#progress .progress-bar').css('width', progress + '%');
+                    console.log('Progresso do upload:', progress + '%');
+                },
+                always: function (e, data) {
+                    // Reset progress bar after a delay
+                    setTimeout(function() {
+                        $('#progress .progress-bar').css('width', '0%');
+                    }, 2000);
+                }
+            });
+        });
+    </script>
+    </body>
+</html>
