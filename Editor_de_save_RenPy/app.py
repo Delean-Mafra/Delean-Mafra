@@ -27,6 +27,16 @@ app.config['MAX_CONTENT_LENGTH'] = 25 * 1024 * 1024  # 25MB max file size
 UPLOAD_FOLDER = tempfile.gettempdir()
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+def safe_join(base, *paths):
+    """
+    Safer join using os.path.normpath and abspath, ensures no path traversal.
+    Raises ValueError if the path would escape the base directory.
+    """
+    final_path = os.path.abspath(os.path.normpath(os.path.join(base, *paths)))
+    if not final_path.startswith(os.path.abspath(base) + os.sep):
+        raise ValueError("Attempted Path Traversal")
+    return final_path
+
 @app.route('/')
 def index():
     """Serve the main index.html page"""
@@ -53,17 +63,15 @@ def upload_save():
         
         # Save file temporarily
         safe_name = secure_filename(file.filename)
-
         filename = f"{file_id}_{safe_name}"
-
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        filepath = safe_join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
         
         # Analyze the file
         file_info = analyze_save_file(filepath)
         
         # Store file info for later retrieval
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        info_path = safe_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
         with open(info_path, 'w') as f:
             json.dump({
                 'id': file_id,
@@ -84,7 +92,7 @@ def save_edit(file_id):
     """Generate editor interface for uploaded save file"""
     try:
         # Load file info
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        info_path = safe_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
         if not os.path.exists(info_path):
             return "Arquivo não encontrado ou expirado", 404
         
@@ -107,7 +115,7 @@ def download_file(file_id):
     """Download the modified save file"""
     try:
         # Load file info
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        info_path = safe_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
         if not os.path.exists(info_path):
             return "Arquivo não encontrado ou expirado", 404
         
@@ -117,12 +125,15 @@ def download_file(file_id):
         original_name = file_data['original_name']
         filepath = file_data['filepath']
         
-        if not os.path.exists(filepath):
+        # Ensure the filepath is within the allowed directory
+        abs_filepath = safe_join(app.config['UPLOAD_FOLDER'], os.path.basename(filepath))
+        
+        if not os.path.exists(abs_filepath):
             return "Arquivo original não encontrado", 404
         
         return send_from_directory(
-            os.path.dirname(filepath), 
-            os.path.basename(filepath),
+            os.path.dirname(abs_filepath), 
+            os.path.basename(abs_filepath),
             as_attachment=True,
             download_name=f"modified_{original_name}"
         )
@@ -135,7 +146,7 @@ def download_file(file_id):
 def get_file_info(file_id):
     """Get detailed file information as JSON"""
     try:
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        info_path = safe_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
         if not os.path.exists(info_path):
             return jsonify({'error': 'Arquivo não encontrado'}), 404
         
@@ -152,7 +163,7 @@ def extract_files(file_id):
     """Extract individual files from ZIP save"""
     try:
         # Load file info
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        info_path = safe_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
         if not os.path.exists(info_path):
             return jsonify({'error': 'File not found'}), 404
         
@@ -160,9 +171,11 @@ def extract_files(file_id):
             file_data = json.load(f)
         
         filepath = file_data['filepath']
+        # Ensure the filepath is within the allowed directory
+        abs_filepath = safe_join(app.config['UPLOAD_FOLDER'], os.path.basename(filepath))
         
         # Extract files from ZIP
-        with open(filepath, 'rb') as f:
+        with open(abs_filepath, 'rb') as f:
             file_content = f.read()
         
         extracted_files = {}
@@ -178,7 +191,6 @@ def extract_files(file_id):
                             extracted_files[filename] = {'type': 'text', 'content': content}
                         else:
                             # Store as base64 for binary files
-                            import base64
                             content = base64.b64encode(file_data_content).decode('ascii')
                             extracted_files[filename] = {'type': 'binary', 'content': content, 'size': len(file_data_content)}
                     except:
@@ -199,7 +211,7 @@ def get_screenshot(file_id):
     """Get screenshot from RenPy save"""
     try:
         # Load file info
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        info_path = safe_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
         if not os.path.exists(info_path):
             return jsonify({'error': 'File not found'}), 404
         
@@ -207,16 +219,17 @@ def get_screenshot(file_id):
             file_data = json.load(f)
         
         filepath = file_data['filepath']
+        # Ensure the filepath is within the allowed directory
+        abs_filepath = safe_join(app.config['UPLOAD_FOLDER'], os.path.basename(filepath))
         
         # Extract screenshot from ZIP
-        with open(filepath, 'rb') as f:
+        with open(abs_filepath, 'rb') as f:
             file_content = f.read()
         
         with zipfile.ZipFile(io.BytesIO(file_content), 'r') as zip_file:
             for filename in zip_file.namelist():
                 if 'screenshot' in filename.lower() and filename.lower().endswith(('.png', '.jpg', '.jpeg')):
                     screenshot_data = zip_file.read(filename)
-                    import base64
                     screenshot_b64 = base64.b64encode(screenshot_data).decode('ascii')
                     
                     # Determine MIME type
@@ -234,10 +247,7 @@ def get_screenshot(file_id):
                         'size': len(screenshot_data)
                     })
         
-        app.logger.error(f"Error in get_screenshot: {str(e)}", exc_info=True)
-
-        return jsonify({'error': 'Internal server error'}), 500
-
+        return jsonify({'error': 'Screenshot não encontrada'}), 404
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -247,12 +257,7 @@ def get_save_data(file_id):
     """Get detailed save data from RenPy save"""
     try:
         # Load file info
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
-        # Normalize and validate the path to prevent directory traversal
-        info_path = os.path.normpath(info_path)
-        upload_folder = os.path.abspath(app.config['UPLOAD_FOLDER'])
-        if not info_path.startswith(upload_folder):
-            return jsonify({'error': 'Invalid file path'}), 400
+        info_path = safe_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
         if not os.path.exists(info_path):
             return jsonify({'error': 'File not found'}), 404
         
@@ -275,48 +280,24 @@ def get_save_data(file_id):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/decode-renpy-file/<file_id>/<filename>')
+@app.route('/api/decode-renpy-file/<file_id>/<path:filename>')
 def decode_renpy_file(file_id, filename):
     """Decode a specific RenPy file from the save archive"""
     try:
         # Load file info
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
-        # Validate that the info_path is within the upload folder
-
-        base_path = os.path.abspath(app.config['UPLOAD_FOLDER'])
-
-        normalized_info_path = os.path.abspath(os.path.normpath(info_path))
-
-        if not normalized_info_path.startswith(base_path + os.sep):
-
-            return jsonify({'error': 'Invalid file path'}), 400
-
-        if not os.path.exists(normalized_info_path):
-
+        info_path = safe_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        if not os.path.exists(info_path):
             return jsonify({'error': 'File not found'}), 404
         
-        with open(normalized_info_path, 'r') as f:
-
+        with open(info_path, 'r') as f:
             file_data = json.load(f)
-
-
-        # Validate that the filepath is within the upload folder
-
-        base_path = os.path.abspath(app.config['UPLOAD_FOLDER'])
-
-        normalized_path = os.path.abspath(os.path.normpath(filepath))
-
-        if not normalized_path.startswith(base_path + os.sep):
-
-            return jsonify({'error': 'Invalid file path'}), 400
-
-
-
+        
         filepath = file_data['filepath']
-        with open(normalized_path, 'rb') as f:
-
+        # Ensure the filepath is within the allowed directory
+        abs_filepath = safe_join(app.config['UPLOAD_FOLDER'], os.path.basename(filepath))
+        
         # Extract the specific file from ZIP
-        with open(filepath, 'rb') as f:
+        with open(abs_filepath, 'rb') as f:
             file_content = f.read()
         
         with zipfile.ZipFile(io.BytesIO(file_content), 'r') as zip_file:
@@ -333,7 +314,7 @@ def decode_renpy_file(file_id, filename):
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/api/save-renpy-changes/<file_id>/<filename>', methods=['POST'])
+@app.route('/api/save-renpy-changes/<file_id>/<path:filename>', methods=['POST'])
 def save_renpy_changes(file_id, filename):
     """Save changes back to RenPy file (Note: This is complex and may not work for all saves)"""
     try:
@@ -1128,6 +1109,4 @@ if __name__ == '__main__':
     print("Abra seu navegador em: http://localhost:5000")
     print("Pressione Ctrl+C para parar o servidor")
     debug_mode = os.environ.get("FLASK_DEBUG", "0") == "1"
-
     app.run(debug=debug_mode, host='0.0.0.0', port=5000)
-
