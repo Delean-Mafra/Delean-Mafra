@@ -7,7 +7,8 @@ Simple Flask server for Editor de Save RenPy local development
 """
 
 from flask import Flask, request, jsonify, render_template_string, send_from_directory
-from werkzeug.utils import secure_filename
+from werkzeug.utils import secure_filename
+
 import os
 import json
 import pickle
@@ -51,8 +52,10 @@ def upload_save():
         file_id = str(uuid.uuid4())
         
         # Save file temporarily
-        safe_name = secure_filename(file.filename)
-        filename = f"{file_id}_{safe_name}"
+        safe_name = secure_filename(file.filename)
+
+        filename = f"{file_id}_{safe_name}"
+
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
         
@@ -231,7 +234,8 @@ def get_screenshot(file_id):
                         'size': len(screenshot_data)
                     })
         
-        return jsonify({'error': 'Nenhuma screenshot encontrada'}), 404
+        app.logger.error(f"Error in get_screenshot: {str(e)}", exc_info=True)
+        return jsonify({'error': 'Internal server error'}), 500
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
