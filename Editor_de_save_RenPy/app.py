@@ -1088,4 +1088,5 @@ if __name__ == '__main__':
     print("Iniciando servidor local do Editor de Save RenPy...")
     print("Abra seu navegador em: http://localhost:5000")
     print("Pressione Ctrl+C para parar o servidor")
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    debug_mode = os.environ.get("FLASK_DEBUG", "0") == "1"
+    app.run(debug=debug_mode, host='0.0.0.0', port=5000)
