@@ -248,6 +248,11 @@ def get_save_data(file_id):
     try:
         # Load file info
         info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        # Normalize and validate the path to prevent directory traversal
+        info_path = os.path.normpath(info_path)
+        upload_folder = os.path.abspath(app.config['UPLOAD_FOLDER'])
+        if not info_path.startswith(upload_folder):
+            return jsonify({'error': 'Invalid file path'}), 400
         if not os.path.exists(info_path):
             return jsonify({'error': 'File not found'}), 404
         
@@ -276,15 +281,22 @@ def decode_renpy_file(file_id, filename):
     try:
         # Load file info
         info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
-        # Validate that the info_path is within the upload folder
-        base_path = os.path.abspath(app.config['UPLOAD_FOLDER'])
-        normalized_info_path = os.path.abspath(os.path.normpath(info_path))
-        if not normalized_info_path.startswith(base_path + os.sep):
-            return jsonify({'error': 'Invalid file path'}), 400
-        if not os.path.exists(normalized_info_path):
+        # Validate that the info_path is within the upload folder
+
+        base_path = os.path.abspath(app.config['UPLOAD_FOLDER'])
+
+        normalized_info_path = os.path.abspath(os.path.normpath(info_path))
+
+        if not normalized_info_path.startswith(base_path + os.sep):
+
+            return jsonify({'error': 'Invalid file path'}), 400
+
+        if not os.path.exists(normalized_info_path):
+
             return jsonify({'error': 'File not found'}), 404
         
-        with open(normalized_info_path, 'r') as f:
+        with open(normalized_info_path, 'r') as f:
+
             file_data = json.load(f)
 
 
