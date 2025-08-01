@@ -282,7 +282,8 @@ def get_save_data(file_id):
         })
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logging.exception("Exception in get_save_data:")
+        return jsonify({'error': 'An internal error has occurred.'}), 500
 
 @app.route('/api/decode-renpy-file/<file_id>/<path:filename>')
 def decode_renpy_file(file_id, filename):
@@ -316,8 +317,10 @@ def decode_renpy_file(file_id, filename):
             return jsonify(decoded_data)
         
     except Exception as e:
-        logging.exception("Exception in decode_renpy_file:")
-        return jsonify({'error': 'An internal error has occurred.'}), 500
+        logging.exception("Exception in decode_renpy_file:")
+
+        return jsonify({'error': 'An internal error has occurred.'}), 500
+
 
 @app.route('/api/save-renpy-changes/<file_id>/<path:filename>', methods=['POST'])
 def save_renpy_changes(file_id, filename):
