@@ -234,8 +234,10 @@ def get_screenshot(file_id):
                         'size': len(screenshot_data)
                     })
         
-        app.logger.error(f"Error in get_screenshot: {str(e)}", exc_info=True)
-        return jsonify({'error': 'Internal server error'}), 500
+        app.logger.error(f"Error in get_screenshot: {str(e)}", exc_info=True)
+
+        return jsonify({'error': 'Internal server error'}), 500
+
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
@@ -279,9 +281,15 @@ def decode_renpy_file(file_id, filename):
         
         with open(info_path, 'r') as f:
             file_data = json.load(f)
-        
+
+        # Validate that the filepath is within the upload folder
+        base_path = os.path.abspath(app.config['UPLOAD_FOLDER'])
+        normalized_path = os.path.abspath(os.path.normpath(filepath))
+        if not normalized_path.startswith(base_path + os.sep):
+            return jsonify({'error': 'Invalid file path'}), 400
+
         filepath = file_data['filepath']
-        
+        with open(normalized_path, 'rb') as f:
         # Extract the specific file from ZIP
         with open(filepath, 'rb') as f:
             file_content = f.read()
