@@ -8,6 +8,7 @@ Simple Flask server for Editor de Save RenPy local development
 
 from flask import Flask, request, jsonify, render_template_string, send_from_directory
 from werkzeug.utils import secure_filename
+from markupsafe import escape
 
 import os
 import json
@@ -18,6 +19,8 @@ import zipfile
 import io
 import sys
 import base64
+import re
+import logging
 from datetime import datetime
 
 app = Flask(__name__)
@@ -26,6 +29,58 @@ app.config['MAX_CONTENT_LENGTH'] = 25 * 1024 * 1024  # 25MB max file size
 # Directory to store uploaded files temporarily
 UPLOAD_FOLDER = tempfile.gettempdir()
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Configure secure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Security helper functions
+def validate_uuid(file_id):
+    """Validate that file_id is a proper UUID format"""
+    if not file_id:
+        return False
+    try:
+        uuid.UUID(file_id)
+        return True
+    except ValueError:
+        return False
+
+def secure_path_join(base_dir, *paths):
+    """Safely join paths and ensure result is within base directory"""
+    # Normalize the base directory
+    base_dir = os.path.abspath(base_dir)
+    
+    # Join and normalize the path
+    full_path = os.path.abspath(os.path.join(base_dir, *paths))
+    
+    # Ensure the result is within the base directory
+    if not full_path.startswith(base_dir + os.sep) and full_path != base_dir:
+        raise ValueError("Invalid file path")
+    
+    return full_path
+
+def validate_filename(filename):
+    """Validate filename to prevent path traversal"""
+    if not filename:
+        return False
+    # Check for path traversal attempts
+    if '..' in filename or '/' in filename or '\\' in filename:
+        return False
+    # Additional checks for suspicious characters
+    if any(char in filename for char in ['<', '>', '|', ':', '*', '?', '"']):
+        return False
+    return True
+
+def log_and_return_error(error_msg, status_code=500, log_details=None):
+    """Log detailed error internally and return generic error to user"""
+    # Log detailed error for debugging
+    if log_details:
+        logger.error(f"Internal error: {log_details}")
+    else:
+        logger.error(f"Internal error: {error_msg}")
+    
+    # Return generic error to user
+    return jsonify({'error': 'Internal server error'}), status_code
 
 @app.route('/')
 def index():
@@ -56,14 +111,14 @@ def upload_save():
 
         filename = f"{file_id}_{safe_name}"
 
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        filepath = secure_path_join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
         
         # Analyze the file
         file_info = analyze_save_file(filepath)
         
         # Store file info for later retrieval
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        info_path = secure_path_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
         with open(info_path, 'w') as f:
             json.dump({
                 'id': file_id,
@@ -76,15 +131,18 @@ def upload_save():
         return jsonify({'id': file_id, 'status': 'success'})
         
     except Exception as e:
-        app.logger.error(f"Upload error: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return log_and_return_error("Upload failed", 500, str(e))
 
 @app.route('/SaveEdit2/<file_id>')
 def save_edit(file_id):
     """Generate editor interface for uploaded save file"""
     try:
+        # Validate UUID format
+        if not validate_uuid(file_id):
+            return "Invalid file ID", 400
+        
         # Load file info
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        info_path = secure_path_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
         if not os.path.exists(info_path):
             return "Arquivo não encontrado ou expirado", 404
         
@@ -99,15 +157,18 @@ def save_edit(file_id):
         return editor_html
         
     except Exception as e:
-        app.logger.error(f"Editor error: {str(e)}")
-        return f"Erro carregando editor: {str(e)}", 500
+        return log_and_return_error("Editor failed", 500, str(e))
 
 @app.route('/download/<file_id>')
 def download_file(file_id):
     """Download the modified save file"""
     try:
+        # Validate UUID format
+        if not validate_uuid(file_id):
+            return "Invalid file ID", 400
+        
         # Load file info
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        info_path = secure_path_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
         if not os.path.exists(info_path):
             return "Arquivo não encontrado ou expirado", 404
         
@@ -117,25 +178,31 @@ def download_file(file_id):
         original_name = file_data['original_name']
         filepath = file_data['filepath']
         
-        if not os.path.exists(filepath):
+        # Validate the stored filepath is still within upload folder
+        secure_filepath = secure_path_join(app.config['UPLOAD_FOLDER'], os.path.basename(filepath))
+        
+        if not os.path.exists(secure_filepath):
             return "Arquivo original não encontrado", 404
         
         return send_from_directory(
-            os.path.dirname(filepath), 
-            os.path.basename(filepath),
+            os.path.dirname(secure_filepath), 
+            os.path.basename(secure_filepath),
             as_attachment=True,
-            download_name=f"modified_{original_name}"
+            download_name=f"modified_{secure_filename(original_name)}"
         )
         
     except Exception as e:
-        app.logger.error(f"Download error: {str(e)}")
-        return f"Erro baixando arquivo: {str(e)}", 500
+        return log_and_return_error("Download failed", 500, str(e))
 
 @app.route('/api/file-info/<file_id>')
 def get_file_info(file_id):
     """Get detailed file information as JSON"""
     try:
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        # Validate UUID format
+        if not validate_uuid(file_id):
+            return jsonify({'error': 'Invalid file ID'}), 400
+        
+        info_path = secure_path_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
         if not os.path.exists(info_path):
             return jsonify({'error': 'Arquivo não encontrado'}), 404
         
@@ -145,14 +212,18 @@ def get_file_info(file_id):
         return jsonify(file_data)
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return log_and_return_error("File info retrieval failed", 500, str(e))
 
 @app.route('/api/extract-files/<file_id>')
 def extract_files(file_id):
     """Extract individual files from ZIP save"""
     try:
+        # Validate UUID format
+        if not validate_uuid(file_id):
+            return jsonify({'error': 'Invalid file ID'}), 400
+        
         # Load file info
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        info_path = secure_path_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
         if not os.path.exists(info_path):
             return jsonify({'error': 'File not found'}), 404
         
@@ -161,8 +232,11 @@ def extract_files(file_id):
         
         filepath = file_data['filepath']
         
+        # Validate the stored filepath is within upload folder
+        secure_filepath = secure_path_join(app.config['UPLOAD_FOLDER'], os.path.basename(filepath))
+        
         # Extract files from ZIP
-        with open(filepath, 'rb') as f:
+        with open(secure_filepath, 'rb') as f:
             file_content = f.read()
         
         extracted_files = {}
@@ -187,19 +261,23 @@ def extract_files(file_id):
                         extracted_files[filename] = {'type': 'hex', 'content': content, 'size': len(file_data_content)}
                         
                 except Exception as e:
-                    extracted_files[filename] = {'type': 'error', 'error': str(e)}
+                    extracted_files[filename] = {'type': 'error', 'error': 'Unable to extract file'}
         
         return jsonify({'files': extracted_files})
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return log_and_return_error("File extraction failed", 500, str(e))
 
 @app.route('/api/screenshot/<file_id>')
 def get_screenshot(file_id):
     """Get screenshot from RenPy save"""
     try:
+        # Validate UUID format
+        if not validate_uuid(file_id):
+            return jsonify({'error': 'Invalid file ID'}), 400
+        
         # Load file info
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        info_path = secure_path_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
         if not os.path.exists(info_path):
             return jsonify({'error': 'File not found'}), 404
         
@@ -208,8 +286,11 @@ def get_screenshot(file_id):
         
         filepath = file_data['filepath']
         
+        # Validate the stored filepath is within upload folder
+        secure_filepath = secure_path_join(app.config['UPLOAD_FOLDER'], os.path.basename(filepath))
+        
         # Extract screenshot from ZIP
-        with open(filepath, 'rb') as f:
+        with open(secure_filepath, 'rb') as f:
             file_content = f.read()
         
         with zipfile.ZipFile(io.BytesIO(file_content), 'r') as zip_file:
@@ -234,25 +315,23 @@ def get_screenshot(file_id):
                         'size': len(screenshot_data)
                     })
         
-        app.logger.error(f"Error in get_screenshot: {str(e)}", exc_info=True)
-
-        return jsonify({'error': 'Internal server error'}), 500
-
+        return jsonify({'error': 'No screenshot found'}), 404
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return log_and_return_error("Screenshot extraction failed", 500, str(e))
 
 @app.route('/api/save-data/<file_id>')
 def get_save_data(file_id):
     """Get detailed save data from RenPy save"""
     try:
+        # Validate UUID format
+        if not validate_uuid(file_id):
+            return jsonify({'error': 'Invalid file ID'}), 400
+        
         # Load file info
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
-        # Normalize and validate the path to prevent directory traversal
-        info_path = os.path.normpath(info_path)
-        upload_folder = os.path.abspath(app.config['UPLOAD_FOLDER'])
-        if not info_path.startswith(upload_folder):
-            return jsonify({'error': 'Invalid file path'}), 400
+        info_path = secure_path_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        if not os.path.exists(info_path):
+            return jsonify({'error': 'File not found'}), 404
         if not os.path.exists(info_path):
             return jsonify({'error': 'File not found'}), 404
         
@@ -273,55 +352,39 @@ def get_save_data(file_id):
         })
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return log_and_return_error("Save data retrieval failed", 500, str(e))
 
 @app.route('/api/decode-renpy-file/<file_id>/<filename>')
 def decode_renpy_file(file_id, filename):
     """Decode a specific RenPy file from the save archive"""
     try:
+        # Validate inputs
+        if not validate_uuid(file_id):
+            return jsonify({'error': 'Invalid file ID'}), 400
+        
+        if not validate_filename(filename):
+            return jsonify({'error': 'Invalid filename'}), 400
+        
         # Load file info
-        info_path = os.path.join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
-        # Validate that the info_path is within the upload folder
-
-        base_path = os.path.abspath(app.config['UPLOAD_FOLDER'])
-
-        normalized_info_path = os.path.abspath(os.path.normpath(info_path))
-
-        if not normalized_info_path.startswith(base_path + os.sep):
-
-            return jsonify({'error': 'Invalid file path'}), 400
-
-        if not os.path.exists(normalized_info_path):
-
+        info_path = secure_path_join(app.config['UPLOAD_FOLDER'], f"{file_id}_info.json")
+        if not os.path.exists(info_path):
             return jsonify({'error': 'File not found'}), 404
         
-        with open(normalized_info_path, 'r') as f:
-
+        with open(info_path, 'r') as f:
             file_data = json.load(f)
-
-
-        # Validate that the filepath is within the upload folder
-
-        base_path = os.path.abspath(app.config['UPLOAD_FOLDER'])
-
-        normalized_path = os.path.abspath(os.path.normpath(filepath))
-
-        if not normalized_path.startswith(base_path + os.sep):
-
-            return jsonify({'error': 'Invalid file path'}), 400
-
-
-
+        
         filepath = file_data['filepath']
-        with open(normalized_path, 'rb') as f:
-
+        
+        # Validate the stored filepath is within upload folder
+        secure_filepath = secure_path_join(app.config['UPLOAD_FOLDER'], os.path.basename(filepath))
+        
         # Extract the specific file from ZIP
-        with open(filepath, 'rb') as f:
+        with open(secure_filepath, 'rb') as f:
             file_content = f.read()
         
         with zipfile.ZipFile(io.BytesIO(file_content), 'r') as zip_file:
             if filename not in zip_file.namelist():
-                return jsonify({'error': f'Arquivo {filename} não encontrado no arquivo'}), 404
+                return jsonify({'error': 'File not found in archive'}), 404
             
             file_data_content = zip_file.read(filename)
             
@@ -331,12 +394,19 @@ def decode_renpy_file(file_id, filename):
             return jsonify(decoded_data)
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return log_and_return_error("RenPy file decode failed", 500, str(e))
 
 @app.route('/api/save-renpy-changes/<file_id>/<filename>', methods=['POST'])
 def save_renpy_changes(file_id, filename):
     """Save changes back to RenPy file (Note: This is complex and may not work for all saves)"""
     try:
+        # Validate inputs
+        if not validate_uuid(file_id):
+            return jsonify({'error': 'Invalid file ID'}), 400
+        
+        if not validate_filename(filename):
+            return jsonify({'error': 'Invalid filename'}), 400
+        
         changes = request.json
         
         # For now, we'll just return the changes as confirmation
@@ -345,11 +415,11 @@ def save_renpy_changes(file_id, filename):
             'success': True, 
             'message': 'Alterações recebidas com sucesso',
             'note': 'Modificação real do save não implementada ainda por razões de segurança',
-            'changes_count': len(changes)
+            'changes_count': len(changes) if changes else 0
         })
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return log_and_return_error("Save changes failed", 500, str(e))
 
 @app.errorhandler(413)
 def too_large(e):
@@ -694,18 +764,23 @@ def serialize_pickle_data(data, max_depth=3, current_depth=0):
 
 def generate_editor_html(file_id, filename, file_info):
     """Generate HTML editor interface"""
+    # Escape user data to prevent XSS
+    safe_filename = escape(filename)
+    safe_file_type = escape(file_info.get('type', 'desconhecido'))
+    safe_file_id = escape(file_id)
+    
     return f"""
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">
-                <i class="glyphicon glyphicon-edit"></i> Editando: {filename}
-                <span class="badge pull-right">{file_info.get('type', 'desconhecido')}</span>
+                <i class="glyphicon glyphicon-edit"></i> Editando: {safe_filename}
+                <span class="badge pull-right">{safe_file_type}</span>
             </h3>
         </div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-6">
-                    <p><strong>Tipo de Arquivo:</strong> <span class="label label-info">{file_info.get('type', 'desconhecido')}</span></p>
+                    <p><strong>Tipo de Arquivo:</strong> <span class="label label-info">{safe_file_type}</span></p>
                 </div>
                 <div class="col-md-6">
                     <p><strong>Tamanho:</strong> {file_info.get('size', 0):,} bytes</p>
@@ -717,10 +792,10 @@ def generate_editor_html(file_id, filename, file_info):
             <hr>
             <div class="text-center">
                 <div class="btn-group" role="group">
-                    <button class="btn btn-success" onclick="downloadOriginalFile('{file_id}')">
+                    <button class="btn btn-success" onclick="downloadOriginalFile('{safe_file_id}')">
                         <i class="glyphicon glyphicon-download"></i> Baixar Original
                     </button>
-                    <button class="btn btn-info" onclick="getFileInfo('{file_id}')">
+                    <button class="btn btn-info" onclick="getFileInfo('{safe_file_id}')">
                         <i class="glyphicon glyphicon-info-sign"></i> Info do Arquivo
                     </button>
                     <button class="btn btn-default" onclick="OnDownload()">
@@ -733,11 +808,11 @@ def generate_editor_html(file_id, filename, file_info):
     
     <script>
     function downloadOriginalFile(fileId) {{
-        window.location.href = '/download/' + fileId;
+        window.location.href = '/download/' + encodeURIComponent(fileId);
     }}
     
     function getFileInfo(fileId) {{
-        fetch('/api/file-info/' + fileId)
+        fetch('/api/file-info/' + encodeURIComponent(fileId))
             .then(response => response.json())
             .then(data => {{
                 var info = 'Informações do Arquivo:\\n\\n';
@@ -760,9 +835,11 @@ def generate_editor_html(file_id, filename, file_info):
 def generate_data_editor(data, file_type):
     """Generate editor interface based on data type"""
     if file_type == 'json':
+        # Escape JSON data to prevent XSS
+        safe_json = escape(json.dumps(data, indent=2))
         return f"""
         <h4>Editor de Dados JSON</h4>
-        <textarea class="form-control" rows="20" id="jsonData">{json.dumps(data, indent=2)}</textarea>
+        <textarea class="form-control" rows="20" id="jsonData">{safe_json}</textarea>
         <div class="mt-2">
             <button class="btn btn-success" onclick="validateJSON()">Validar JSON</button>
         </div>
@@ -784,7 +861,7 @@ def generate_data_editor(data, file_type):
                         
                         <h6 class="mt-2">Arquivos:</h6>
                         <ul class="list-unstyled" style="max-height: 200px; overflow-y: auto;">
-                            {"".join(f"<li><code>{f}</code></li>" for f in data.get('files', []))}
+                            {"".join(f"<li><code>{escape(f)}</code></li>" for f in data.get('files', []))}
                         </ul>
                     </div>
                 </div>
@@ -794,16 +871,16 @@ def generate_data_editor(data, file_type):
                 {f'''<div class="panel panel-success">
                     <div class="panel-heading">📸 Informações da Screenshot</div>
                     <div class="panel-body">
-                        <strong>Arquivo:</strong> {data['screenshot']['filename']}<br>
+                        <strong>Arquivo:</strong> {escape(data['screenshot']['filename'])}<br>
                         <strong>Tamanho:</strong> {data['screenshot']['size']:,} bytes<br>
-                        <strong>Formato:</strong> {data['screenshot']['format']}
+                        <strong>Formato:</strong> {escape(data['screenshot']['format'])}
                     </div>
                 </div>''' if data.get('screenshot') else '<div class="alert alert-info">Nenhuma screenshot encontrada no arquivo de save.</div>'}
             </div>
         </div>
         
         {f'''<div class="panel panel-primary">
-            <div class="panel-heading">💾 Dados do Save ({data.get('save_file', 'desconhecido')})</div>
+            <div class="panel-heading">💾 Dados do Save ({escape(data.get('save_file', 'desconhecido'))})</div>
             <div class="panel-body">
                 <div class="panel-group" id="saveDataAccordion">
                     <div class="panel panel-default">
@@ -816,7 +893,7 @@ def generate_data_editor(data, file_type):
                         </div>
                         <div id="saveDataContent" class="panel-collapse collapse">
                             <div class="panel-body">
-                                <pre style="max-height: 400px; overflow-y: auto; font-size: 11px;">{json.dumps(data.get('save_data', {}), indent=2)}</pre>
+                                <pre style="max-height: 400px; overflow-y: auto; font-size: 11px;">{escape(json.dumps(data.get('save_data', {}), indent=2))}</pre>
                             </div>
                         </div>
                     </div>
@@ -827,7 +904,7 @@ def generate_data_editor(data, file_type):
         {f'''<div class="alert alert-warning">
             <h6>Dados Brutos do Save (Binário)</h6>
             <p>Os dados do save não puderam ser totalmente decodificados. Aqui estão os dados binários brutos:</p>
-            <code style="word-break: break-all;">{data.get('save_data_raw', '')}</code>
+            <code style="word-break: break-all;">{escape(data.get('save_data_raw', ''))}</code>
         </div>''' if data.get('save_data_raw') and not data.get('save_data') else ''}
         
         {generate_renpy_zip_tools(data)}
@@ -851,7 +928,7 @@ def generate_data_editor(data, file_type):
                 </div>
                 <div id="dataStructure" class="panel-collapse collapse">
                     <div class="panel-body">
-                        <pre style="max-height: 400px; overflow-y: auto; font-size: 12px;">{json.dumps(data, indent=2)}</pre>
+                        <pre style="max-height: 400px; overflow-y: auto; font-size: 12px;">{escape(json.dumps(data, indent=2))}</pre>
                     </div>
                 </div>
             </div>
@@ -889,7 +966,7 @@ def generate_data_editor(data, file_type):
         {f'''<div class="mt-3">
             <h5>Strings Legíveis Encontradas:</h5>
             <ul>
-                {"".join(f"<li><code>{string}</code></li>" for string in data.get('readable_strings', [])[:10])}
+                {"".join(f"<li><code>{escape(string)}</code></li>" for string in data.get('readable_strings', [])[:10])}
             </ul>
         </div>''' if data.get('readable_strings') else ''}
         
@@ -905,9 +982,9 @@ def generate_data_editor(data, file_type):
         return f"""
         <h4>Editor de Arquivo de Texto</h4>
         <div class="alert alert-info">
-            <strong>Codificação:</strong> {encoding}
+            <strong>Codificação:</strong> {escape(encoding)}
         </div>
-        <textarea class="form-control" rows="20" id="textData">{content}</textarea>
+        <textarea class="form-control" rows="20" id="textData">{escape(content)}</textarea>
         <div class="mt-2">
             <button class="btn btn-info" onclick="countLines()">Contar Linhas</button>
             <button class="btn btn-info" onclick="countWords()">Contar Palavras</button>
@@ -918,7 +995,7 @@ def generate_data_editor(data, file_type):
         return f"""
         <div class="alert alert-warning">
             <h4>Tipo de Arquivo Não Suportado</h4>
-            <p>Este tipo de arquivo ({file_type}) não é atualmente suportado para edição.</p>
+            <p>Este tipo de arquivo ({escape(file_type)}) não é atualmente suportado para edição.</p>
             <p><strong>Formatos suportados:</strong></p>
             <ul>
                 <li>✅ Arquivos JSON (.json)</li>
