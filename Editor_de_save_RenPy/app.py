@@ -686,6 +686,9 @@ def serialize_pickle_data(data, max_depth=3, current_depth=0):
             result.append(f"... ({len(data) - 20} more items)")
         return result
     else:
+        # For complex objects, return string representation
+        return str(data)[:100]  # Limit length
+
 def generate_editor_html(file_id, filename, file_info):
     """Generate HTML editor interface"""
     # Escape user-controlled values
@@ -756,7 +759,7 @@ def generate_editor_html(file_id, filename, file_info):
     }}
     </script>
     """
-
+
 def generate_data_editor(data, file_type):
     """Generate editor interface based on data type"""
     if file_type == 'json':
@@ -769,15 +772,67 @@ def generate_data_editor(data, file_type):
             <button class="btn btn-success" onclick="validateJSON()">Validar JSON</button>
         </div>
         """
-        </div>
-        """
     elif file_type == 'renpy_zip_save':
+        # Prepare screenshot HTML
+        if data.get('screenshot'):
+            screenshot_html = (
+                f'<div class="panel panel-success">'
+                f'  <div class="panel-heading">📸 Informações da Screenshot</div>'
+                f'  <div class="panel-body">'
+                f'    <strong>Arquivo:</strong> {data["screenshot"]["filename"]}<br>'
+                f'    <strong>Tamanho:</strong> {data["screenshot"]["size"]:,} bytes<br>'
+                f'    <strong>Formato:</strong> {data["screenshot"]["format"]}'
+                f'  </div>'
+                f'</div>'
+            )
+        else:
+            screenshot_html = '<div class="alert alert-info">Nenhuma screenshot encontrada no arquivo de save.</div>'
+
+        # Prepare save data HTML
+        if data.get('save_data'):
+            save_data_html = (
+                f'<div class="panel panel-primary">'
+                f'  <div class="panel-heading">💾 Dados do Save ({data.get("save_file", "desconhecido")})</div>'
+                f'  <div class="panel-body">'
+                f'    <div class="panel-group" id="saveDataAccordion">'
+                f'      <div class="panel panel-default">'
+                f'        <div class="panel-heading">'
+                f'          <h4 class="panel-title">'
+                f'            <a data-toggle="collapse" data-parent="#saveDataAccordion" href="#saveDataContent">'
+                f'              📋 Ver Estrutura dos Dados do Save (Clique para expandir)'
+                f'            </a>'
+                f'          </h4>'
+                f'        </div>'
+                f'        <div id="saveDataContent" class="panel-collapse collapse">'
+                f'          <div class="panel-body">'
+                f'            <pre style="max-height: 400px; overflow-y: auto; font-size: 11px;">{json.dumps(data.get("save_data", {}), indent=2)}</pre>'
+                f'          </div>'
+                f'        </div>'
+                f'      </div>'
+                f'    </div>'
+                f'  </div>'
+                f'</div>'
+            )
+        else:
+            save_data_html = ''
+
+        # Prepare raw data HTML
+        if data.get('save_data_raw') and not data.get('save_data'):
+            raw_data_html = (
+                '<div class="alert alert-warning">'
+                '<h6>Dados Brutos do Save (Binário)</h6>'
+                '<p>Os dados do save não puderam ser totalmente decodificados. Aqui estão os dados binários brutos:</p>'
+                f'<code style="word-break: break-all;">{data.get("save_data_raw", "")}</code>'
+                '</div>'
+            )
+        else:
+            raw_data_html = ''
+
         return f"""
         <h4>🎮 Arquivo de Save ZIP RenPy</h4>
         <div class="alert alert-success">
             <strong>✅ Save ZIP RenPy Detectado!</strong> Este é um arquivo de save RenPy moderno armazenado como arquivo ZIP.
         </div>
-        
         <div class="row">
             <div class="col-md-6">
                 <div class="panel panel-info">
@@ -785,7 +840,6 @@ def generate_data_editor(data, file_type):
                     <div class="panel-body">
                         <strong>Arquivos no pacote:</strong> {data.get('file_count', 0)}<br>
                         <strong>É Save RenPy:</strong> {'✅ Sim' if data.get('is_renpy') else '❓ Desconhecido'}<br>
-                        
                         <h6 class="mt-2">Arquivos:</h6>
                         <ul class="list-unstyled" style="max-height: 200px; overflow-y: auto;">
                             {"".join(f"<li><code>{f}</code></li>" for f in data.get('files', []))}
@@ -793,47 +847,12 @@ def generate_data_editor(data, file_type):
                     </div>
                 </div>
             </div>
-            
             <div class="col-md-6">
-                {f'''<div class="panel panel-success">
-                    <div class="panel-heading">📸 Informações da Screenshot</div>
-                    <div class="panel-body">
-                        <strong>Arquivo:</strong> {data['screenshot']['filename']}<br>
-                        <strong>Tamanho:</strong> {data['screenshot']['size']:,} bytes<br>
-                        <strong>Formato:</strong> {data['screenshot']['format']}
-                    </div>
-                </div>''' if data.get('screenshot') else '<div class="alert alert-info">Nenhuma screenshot encontrada no arquivo de save.</div>'}
+                {screenshot_html}
             </div>
         </div>
-        
-        {f'''<div class="panel panel-primary">
-            <div class="panel-heading">💾 Dados do Save ({data.get('save_file', 'desconhecido')})</div>
-            <div class="panel-body">
-                <div class="panel-group" id="saveDataAccordion">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#saveDataAccordion" href="#saveDataContent">
-                                    📋 Ver Estrutura dos Dados do Save (Clique para expandir)
-                                </a>
-                            </h4>
-                        </div>
-                        <div id="saveDataContent" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                <pre style="max-height: 400px; overflow-y: auto; font-size: 11px;">{json.dumps(data.get('save_data', {}), indent=2)}</pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>''' if data.get('save_data') else ''}
-        
-        {f'''<div class="alert alert-warning">
-            <h6>Dados Brutos do Save (Binário)</h6>
-            <p>Os dados do save não puderam ser totalmente decodificados. Aqui estão os dados binários brutos:</p>
-            <code style="word-break: break-all;">{data.get('save_data_raw', '')}</code>
-        </div>''' if data.get('save_data_raw') and not data.get('save_data') else ''}
-        
+        {save_data_html}
+        {raw_data_html}
         {generate_renpy_zip_tools(data)}
         """
     elif file_type in ['pickle', 'renpy_save']:
