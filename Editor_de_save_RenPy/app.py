@@ -8,6 +8,7 @@ Simple Flask server for Editor de Save RenPy local development
 
 from flask import Flask, request, jsonify, render_template_string, send_from_directory
 from werkzeug.utils import secure_filename
+from markupsafe import escape
 
 import os
 import json
@@ -20,6 +21,7 @@ import sys
 import base64
 from datetime import datetime
 import logging
+import re
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -40,6 +42,47 @@ def safe_join(base, *paths):
     if not final_path.startswith(os.path.abspath(base) + os.sep):
         raise ValueError("Attempted Path Traversal")
     return final_path
+
+def sanitize_filename(filename):
+    """
+    Sanitize filename to prevent XSS and other security issues.
+    Removes potentially dangerous characters while preserving readability.
+    """
+    if not filename:
+        return "unknown_file"
+    
+    # Remove any HTML/XML tags
+    filename = re.sub(r'<[^>]*>', '', filename)
+    
+    # Remove potentially dangerous characters
+    # Allow only alphanumeric, spaces, dots, hyphens, underscores, and parentheses
+    filename = re.sub(r'[^\w\s\.\-_\(\)]', '_', filename)
+    
+    # Limit length to prevent overly long filenames
+    if len(filename) > 100:
+        name, ext = os.path.splitext(filename)
+        filename = name[:90] + ext[:10]
+    
+    # Ensure it's not empty after sanitization
+    if not filename.strip():
+        return "sanitized_file"
+        
+    return filename.strip()
+
+def validate_user_input(input_str, max_length=1000):
+    """
+    Validate and sanitize user input to prevent XSS attacks.
+    Returns escaped string safe for HTML output.
+    """
+    if not input_str:
+        return ""
+    
+    # Limit input length
+    if len(input_str) > max_length:
+        input_str = input_str[:max_length]
+    
+    # HTML escape the input
+    return escape(input_str)
 
 @app.route('/')
 def index():
@@ -62,11 +105,14 @@ def upload_save():
         if file.filename == '':
             return jsonify({'error': 'Nenhum arquivo selecionado'}), 400
         
+        # Sanitize the filename to prevent XSS
+        sanitized_original_name = sanitize_filename(file.filename)
+        
         # Generate unique ID for this upload
         file_id = str(uuid.uuid4())
         
         # Save file temporarily
-        safe_name = secure_filename(file.filename)
+        safe_name = secure_filename(sanitized_original_name)
         filename = f"{file_id}_{safe_name}"
         filepath = safe_join(app.config['UPLOAD_FOLDER'], filename)
         file.save(filepath)
@@ -79,7 +125,7 @@ def upload_save():
         with open(info_path, 'w') as f:
             json.dump({
                 'id': file_id,
-                'original_name': file.filename,
+                'original_name': sanitized_original_name,  # Store sanitized filename
                 'filepath': filepath,
                 'file_info': file_info,
                 'upload_time': datetime.now().isoformat()
@@ -683,21 +729,31 @@ def serialize_pickle_data(data, max_depth=3, current_depth=0):
 
 def generate_editor_html(file_id, filename, file_info):
     """Generate HTML editor interface"""
+    # Sanitize and validate all user inputs
+    safe_file_id = validate_user_input(file_id, 100)
+    safe_filename = validate_user_input(filename, 200)
+    safe_file_type = validate_user_input(file_info.get('type', 'desconhecido'), 50)
+    safe_file_size = file_info.get('size', 0)
+    
+    # Ensure file_size is numeric to prevent injection
+    if not isinstance(safe_file_size, (int, float)):
+        safe_file_size = 0
+    
     return f"""
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">
-                <i class="glyphicon glyphicon-edit"></i> Editando: {filename}
-                <span class="badge pull-right">{file_info.get('type', 'desconhecido')}</span>
+                <i class="glyphicon glyphicon-edit"></i> Editando: {safe_filename}
+                <span class="badge pull-right">{safe_file_type}</span>
             </h3>
         </div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-6">
-                    <p><strong>Tipo de Arquivo:</strong> <span class="label label-info">{file_info.get('type', 'desconhecido')}</span></p>
+                    <p><strong>Tipo de Arquivo:</strong> <span class="label label-info">{safe_file_type}</span></p>
                 </div>
                 <div class="col-md-6">
-                    <p><strong>Tamanho:</strong> {file_info.get('size', 0):,} bytes</p>
+                    <p><strong>Tamanho:</strong> {safe_file_size:,} bytes</p>
                 </div>
             </div>
             
@@ -706,10 +762,10 @@ def generate_editor_html(file_id, filename, file_info):
             <hr>
             <div class="text-center">
                 <div class="btn-group" role="group">
-                    <button class="btn btn-success" onclick="downloadOriginalFile('{file_id}')">
+                    <button class="btn btn-success" onclick="downloadOriginalFile('{safe_file_id}')">
                         <i class="glyphicon glyphicon-download"></i> Baixar Original
                     </button>
-                    <button class="btn btn-info" onclick="getFileInfo('{file_id}')">
+                    <button class="btn btn-info" onclick="getFileInfo('{safe_file_id}')">
                         <i class="glyphicon glyphicon-info-sign"></i> Info do Arquivo
                     </button>
                     <button class="btn btn-default" onclick="OnDownload()">
@@ -748,15 +804,89 @@ def generate_editor_html(file_id, filename, file_info):
 
 def generate_data_editor(data, file_type):
     """Generate editor interface based on data type"""
-    if file_type == 'json':
+    # Sanitize file_type
+    safe_file_type = validate_user_input(file_type, 50)
+    
+    if safe_file_type == 'json':
+        # JSON data should be safely encoded
+        safe_json_data = escape(json.dumps(data, indent=2))
         return f"""
         <h4>Editor de Dados JSON</h4>
-        <textarea class="form-control" rows="20" id="jsonData">{json.dumps(data, indent=2)}</textarea>
+        <textarea class="form-control" rows="20" id="jsonData">{safe_json_data}</textarea>
         <div class="mt-2">
             <button class="btn btn-success" onclick="validateJSON()">Validar JSON</button>
         </div>
         """
-    elif file_type == 'renpy_zip_save':
+    elif safe_file_type == 'renpy_zip_save':
+        # Sanitize all data that will be displayed
+        safe_file_count = int(data.get('file_count', 0)) if isinstance(data.get('file_count'), (int, str)) else 0
+        safe_is_renpy = bool(data.get('is_renpy', False))
+        
+        # Sanitize file list
+        safe_files = []
+        for f in data.get('files', []):
+            safe_files.append(validate_user_input(str(f), 200))
+        
+        files_html = "".join(f"<li><code>{f}</code></li>" for f in safe_files[:50])  # Limit to 50 files
+        
+        # Sanitize screenshot info if present
+        screenshot_html = ""
+        if data.get('screenshot'):
+            screenshot_data = data['screenshot']
+            safe_screenshot_filename = validate_user_input(str(screenshot_data.get('filename', 'unknown')), 200)
+            safe_screenshot_size = int(screenshot_data.get('size', 0)) if isinstance(screenshot_data.get('size'), (int, str)) else 0
+            safe_screenshot_format = validate_user_input(str(screenshot_data.get('format', 'unknown')), 10)
+            
+            screenshot_html = f'''<div class="panel panel-success">
+                <div class="panel-heading">📸 Informações da Screenshot</div>
+                <div class="panel-body">
+                    <strong>Arquivo:</strong> {safe_screenshot_filename}<br>
+                    <strong>Tamanho:</strong> {safe_screenshot_size:,} bytes<br>
+                    <strong>Formato:</strong> {safe_screenshot_format}
+                </div>
+            </div>'''
+        else:
+            screenshot_html = '<div class="alert alert-info">Nenhuma screenshot encontrada no arquivo de save.</div>'
+        
+        # Sanitize save data info
+        save_data_html = ""
+        if data.get('save_data'):
+            safe_save_file = validate_user_input(str(data.get('save_file', 'desconhecido')), 100)
+            # JSON encode the save data safely
+            safe_save_data_json = escape(json.dumps(data.get('save_data', {}), indent=2))
+            
+            save_data_html = f'''<div class="panel panel-primary">
+                <div class="panel-heading">💾 Dados do Save ({safe_save_file})</div>
+                <div class="panel-body">
+                    <div class="panel-group" id="saveDataAccordion">
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a data-toggle="collapse" data-parent="#saveDataAccordion" href="#saveDataContent">
+                                        📋 Ver Estrutura dos Dados do Save (Clique para expandir)
+                                    </a>
+                                </h4>
+                            </div>
+                            <div id="saveDataContent" class="panel-collapse collapse">
+                                <div class="panel-body">
+                                    <pre style="max-height: 400px; overflow-y: auto; font-size: 11px;">{safe_save_data_json}</pre>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>'''
+        
+        # Handle raw save data if present
+        raw_data_html = ""
+        if data.get('save_data_raw') and not data.get('save_data'):
+            safe_raw_data = validate_user_input(str(data.get('save_data_raw', '')), 1000)
+            raw_data_html = f'''<div class="alert alert-warning">
+                <h6>Dados Brutos do Save (Binário)</h6>
+                <p>Os dados do save não puderam ser totalmente decodificados. Aqui estão os dados binários brutos:</p>
+                <code style="word-break: break-all;">{safe_raw_data}</code>
+            </div>'''
+        
         return f"""
         <h4>🎮 Arquivo de Save ZIP RenPy</h4>
         <div class="alert alert-success">
@@ -768,60 +898,32 @@ def generate_data_editor(data, file_type):
                 <div class="panel panel-info">
                     <div class="panel-heading">📁 Conteúdo do Arquivo</div>
                     <div class="panel-body">
-                        <strong>Arquivos no pacote:</strong> {data.get('file_count', 0)}<br>
-                        <strong>É Save RenPy:</strong> {'✅ Sim' if data.get('is_renpy') else '❓ Desconhecido'}<br>
+                        <strong>Arquivos no pacote:</strong> {safe_file_count}<br>
+                        <strong>É Save RenPy:</strong> {'✅ Sim' if safe_is_renpy else '❓ Desconhecido'}<br>
                         
                         <h6 class="mt-2">Arquivos:</h6>
                         <ul class="list-unstyled" style="max-height: 200px; overflow-y: auto;">
-                            {"".join(f"<li><code>{f}</code></li>" for f in data.get('files', []))}
+                            {files_html}
                         </ul>
                     </div>
                 </div>
             </div>
             
             <div class="col-md-6">
-                {f'''<div class="panel panel-success">
-                    <div class="panel-heading">📸 Informações da Screenshot</div>
-                    <div class="panel-body">
-                        <strong>Arquivo:</strong> {data['screenshot']['filename']}<br>
-                        <strong>Tamanho:</strong> {data['screenshot']['size']:,} bytes<br>
-                        <strong>Formato:</strong> {data['screenshot']['format']}
-                    </div>
-                </div>''' if data.get('screenshot') else '<div class="alert alert-info">Nenhuma screenshot encontrada no arquivo de save.</div>'}
+                {screenshot_html}
             </div>
         </div>
         
-        {f'''<div class="panel panel-primary">
-            <div class="panel-heading">💾 Dados do Save ({data.get('save_file', 'desconhecido')})</div>
-            <div class="panel-body">
-                <div class="panel-group" id="saveDataAccordion">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h4 class="panel-title">
-                                <a data-toggle="collapse" data-parent="#saveDataAccordion" href="#saveDataContent">
-                                    📋 Ver Estrutura dos Dados do Save (Clique para expandir)
-                                </a>
-                            </h4>
-                        </div>
-                        <div id="saveDataContent" class="panel-collapse collapse">
-                            <div class="panel-body">
-                                <pre style="max-height: 400px; overflow-y: auto; font-size: 11px;">{json.dumps(data.get('save_data', {}), indent=2)}</pre>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>''' if data.get('save_data') else ''}
+        {save_data_html}
         
-        {f'''<div class="alert alert-warning">
-            <h6>Dados Brutos do Save (Binário)</h6>
-            <p>Os dados do save não puderam ser totalmente decodificados. Aqui estão os dados binários brutos:</p>
-            <code style="word-break: break-all;">{data.get('save_data_raw', '')}</code>
-        </div>''' if data.get('save_data_raw') and not data.get('save_data') else ''}
+        {raw_data_html}
         
         {generate_renpy_zip_tools(data)}
         """
-    elif file_type in ['pickle', 'renpy_save']:
+    elif safe_file_type in ['pickle', 'renpy_save']:
+        # Safely encode the data for display
+        safe_data_json = escape(json.dumps(data, indent=2))
+        
         return f"""
         <h4>Visualizador de Arquivo de Save RenPy</h4>
         <div class="alert alert-info">
@@ -840,7 +942,7 @@ def generate_data_editor(data, file_type):
                 </div>
                 <div id="dataStructure" class="panel-collapse collapse">
                     <div class="panel-body">
-                        <pre style="max-height: 400px; overflow-y: auto; font-size: 12px;">{json.dumps(data, indent=2)}</pre>
+                        <pre style="max-height: 400px; overflow-y: auto; font-size: 12px;">{safe_data_json}</pre>
                     </div>
                 </div>
             </div>
@@ -853,7 +955,26 @@ def generate_data_editor(data, file_type):
         
         {generate_renpy_editor_tools(data)}
         """
-    elif file_type == 'renpy_binary':
+    elif safe_file_type == 'renpy_binary':
+        # Sanitize binary data display
+        safe_size = int(data.get('size', 0)) if isinstance(data.get('size'), (int, str)) else 0
+        safe_is_compressed = bool(data.get('is_compressed', False))
+        safe_has_pickle = bool(data.get('has_pickle', False))
+        safe_header = validate_user_input(str(data.get('header', 'N/A')), 100)
+        
+        # Sanitize readable strings
+        safe_strings = []
+        for string in data.get('readable_strings', [])[:10]:
+            safe_strings.append(validate_user_input(str(string), 200))
+        
+        strings_html = "".join(f"<li><code>{s}</code></li>" for s in safe_strings)
+        strings_section = f'''<div class="mt-3">
+            <h5>Strings Legíveis Encontradas:</h5>
+            <ul>
+                {strings_html}
+            </ul>
+        </div>''' if safe_strings else ''
+        
         return f"""
         <h4>Arquivo de Save Binário RenPy</h4>
         <div class="alert alert-info">
@@ -864,39 +985,38 @@ def generate_data_editor(data, file_type):
             <div class="col-md-6">
                 <h5>Análise do Arquivo:</h5>
                 <ul class="list-unstyled">
-                    <li><strong>Tamanho:</strong> {data.get('size', 0):,} bytes</li>
-                    <li><strong>Comprimido:</strong> {'Sim' if data.get('is_compressed') else 'Não'}</li>
-                    <li><strong>Tem Dados Pickle:</strong> {'Sim' if data.get('has_pickle') else 'Não'}</li>
+                    <li><strong>Tamanho:</strong> {safe_size:,} bytes</li>
+                    <li><strong>Comprimido:</strong> {'Sim' if safe_is_compressed else 'Não'}</li>
+                    <li><strong>Tem Dados Pickle:</strong> {'Sim' if safe_has_pickle else 'Não'}</li>
                 </ul>
             </div>
             <div class="col-md-6">
                 <h5>Cabeçalho (primeiros 20 bytes):</h5>
-                <code>{data.get('header', 'N/A')}</code>
+                <code>{safe_header}</code>
             </div>
         </div>
         
-        {f'''<div class="mt-3">
-            <h5>Strings Legíveis Encontradas:</h5>
-            <ul>
-                {"".join(f"<li><code>{string}</code></li>" for string in data.get('readable_strings', [])[:10])}
-            </ul>
-        </div>''' if data.get('readable_strings') else ''}
+        {strings_section}
         
         <div class="alert alert-warning">
             <strong>Usuários Avançados:</strong> Este arquivo binário pode exigir ferramentas especializadas ou 
             edição manual hexadecimal. Considere usar um editor hexadecimal para análise detalhada.
         </div>
         """
-    elif file_type == 'text':
+    elif safe_file_type == 'text':
         encoding = data.get('encoding', 'utf-8') if isinstance(data, dict) else 'utf-8'
         content = data.get('content', str(data)) if isinstance(data, dict) else str(data)
+        
+        # Sanitize encoding and content
+        safe_encoding = validate_user_input(str(encoding), 20)
+        safe_content = escape(str(content))
         
         return f"""
         <h4>Editor de Arquivo de Texto</h4>
         <div class="alert alert-info">
-            <strong>Codificação:</strong> {encoding}
+            <strong>Codificação:</strong> {safe_encoding}
         </div>
-        <textarea class="form-control" rows="20" id="textData">{content}</textarea>
+        <textarea class="form-control" rows="20" id="textData">{safe_content}</textarea>
         <div class="mt-2">
             <button class="btn btn-info" onclick="countLines()">Contar Linhas</button>
             <button class="btn btn-info" onclick="countWords()">Contar Palavras</button>
@@ -907,7 +1027,7 @@ def generate_data_editor(data, file_type):
         return f"""
         <div class="alert alert-warning">
             <h4>Tipo de Arquivo Não Suportado</h4>
-            <p>Este tipo de arquivo ({file_type}) não é atualmente suportado para edição.</p>
+            <p>Este tipo de arquivo ({safe_file_type}) não é atualmente suportado para edição.</p>
             <p><strong>Formatos suportados:</strong></p>
             <ul>
                 <li>✅ Arquivos JSON (.json)</li>
