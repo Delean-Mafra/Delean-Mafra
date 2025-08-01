@@ -7,6 +7,7 @@ Simple Flask server for Editor de Save RenPy local development
 """
 
 from flask import Flask, request, jsonify, render_template_string, send_from_directory
+import html
 from werkzeug.utils import secure_filename
 
 import os
@@ -285,8 +286,10 @@ def get_save_data(file_id):
         })
         
     except Exception as e:
-        logging.exception("Exception in get_save_data:")
-        return jsonify({'error': 'An internal error has occurred.'}), 500
+        logging.exception("Exception in get_save_data:")
+
+        return jsonify({'error': 'An internal error has occurred.'}), 500
+
 
 @app.route('/api/decode-renpy-file/<file_id>/<path:filename>')
 def decode_renpy_file(file_id, filename):
@@ -683,25 +686,29 @@ def serialize_pickle_data(data, max_depth=3, current_depth=0):
             result.append(f"... ({len(data) - 20} more items)")
         return result
     else:
-        return f"<{type(data).__name__}: {str(data)[:100]}>"
-
 def generate_editor_html(file_id, filename, file_info):
     """Generate HTML editor interface"""
+    # Escape user-controlled values
+    safe_file_id = html.escape(str(file_id))
+    safe_filename = html.escape(str(filename))
+    safe_type = html.escape(str(file_info.get('type', 'desconhecido')))
+    safe_size = html.escape(f"{file_info.get('size', 0):,}")
+    # For generate_data_editor, pass file_info.get('data', {}) and safe_type
     return f"""
     <div class="panel panel-default">
         <div class="panel-heading">
             <h3 class="panel-title">
-                <i class="glyphicon glyphicon-edit"></i> Editando: {filename}
-                <span class="badge pull-right">{file_info.get('type', 'desconhecido')}</span>
+                <i class="glyphicon glyphicon-edit"></i> Editando: {safe_filename}
+                <span class="badge pull-right">{safe_type}</span>
             </h3>
         </div>
         <div class="panel-body">
             <div class="row">
                 <div class="col-md-6">
-                    <p><strong>Tipo de Arquivo:</strong> <span class="label label-info">{file_info.get('type', 'desconhecido')}</span></p>
+                    <p><strong>Tipo de Arquivo:</strong> <span class="label label-info">{safe_type}</span></p>
                 </div>
                 <div class="col-md-6">
-                    <p><strong>Tamanho:</strong> {file_info.get('size', 0):,} bytes</p>
+                    <p><strong>Tamanho:</strong> {safe_size} bytes</p>
                 </div>
             </div>
             
@@ -710,10 +717,10 @@ def generate_editor_html(file_id, filename, file_info):
             <hr>
             <div class="text-center">
                 <div class="btn-group" role="group">
-                    <button class="btn btn-success" onclick="downloadOriginalFile('{file_id}')">
+                    <button class="btn btn-success" onclick="downloadOriginalFile('{safe_file_id}')">
                         <i class="glyphicon glyphicon-download"></i> Baixar Original
                     </button>
-                    <button class="btn btn-info" onclick="getFileInfo('{file_id}')">
+                    <button class="btn btn-info" onclick="getFileInfo('{safe_file_id}')">
                         <i class="glyphicon glyphicon-info-sign"></i> Info do Arquivo
                     </button>
                     <button class="btn btn-default" onclick="OnDownload()">
@@ -749,15 +756,19 @@ def generate_editor_html(file_id, filename, file_info):
     }}
     </script>
     """
-
+
 def generate_data_editor(data, file_type):
     """Generate editor interface based on data type"""
     if file_type == 'json':
+        # Escape JSON string for safe HTML rendering
+        safe_json = html.escape(json.dumps(data, indent=2))
         return f"""
         <h4>Editor de Dados JSON</h4>
-        <textarea class="form-control" rows="20" id="jsonData">{json.dumps(data, indent=2)}</textarea>
+        <textarea class="form-control" rows="20" id="jsonData">{safe_json}</textarea>
         <div class="mt-2">
             <button class="btn btn-success" onclick="validateJSON()">Validar JSON</button>
+        </div>
+        """
         </div>
         """
     elif file_type == 'renpy_zip_save':
