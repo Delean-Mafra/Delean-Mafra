@@ -60,15 +60,30 @@ def secure_path_join(base_dir, *paths):
     return full_path
 
 def validate_filename(filename):
-    """Validate filename to prevent path traversal"""
+    """Validate filename to prevent path traversal and other attacks"""
     if not filename:
         return False
+    
     # Check for path traversal attempts
     if '..' in filename or '/' in filename or '\\' in filename:
         return False
+    
+    # Check for null bytes
+    if '\x00' in filename:
+        return False
+        
+    # Check length (reasonable file name length limit)
+    if len(filename) > 255:
+        return False
+    
     # Additional checks for suspicious characters
     if any(char in filename for char in ['<', '>', '|', ':', '*', '?', '"']):
         return False
+        
+    # Check for command injection characters
+    if any(char in filename for char in [';', '&', '`', '$', '(', ')']):
+        return False
+        
     return True
 
 def log_and_return_error(error_msg, status_code=500, log_details=None):
