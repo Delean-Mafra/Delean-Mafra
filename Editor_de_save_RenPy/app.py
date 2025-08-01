@@ -19,6 +19,10 @@ import io
 import sys
 import base64
 from datetime import datetime
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.INFO)
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 25 * 1024 * 1024  # 25MB max file size
@@ -312,7 +316,8 @@ def decode_renpy_file(file_id, filename):
             return jsonify(decoded_data)
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        logging.exception("Exception in decode_renpy_file:")
+        return jsonify({'error': 'An internal error has occurred.'}), 500
 
 @app.route('/api/save-renpy-changes/<file_id>/<path:filename>', methods=['POST'])
 def save_renpy_changes(file_id, filename):
