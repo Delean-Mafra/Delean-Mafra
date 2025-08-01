@@ -89,7 +89,7 @@ def upload_save():
         
     except Exception as e:
         app.logger.error(f"Upload error: {str(e)}")
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Erro interno do servidor'}), 500
 
 @app.route('/SaveEdit2/<file_id>')
 def save_edit(file_id):
@@ -112,7 +112,7 @@ def save_edit(file_id):
         
     except Exception as e:
         app.logger.error(f"Editor error: {str(e)}")
-        return f"Erro carregando editor: {str(e)}", 500
+        return "Erro interno do servidor", 500
 
 @app.route('/download/<file_id>')
 def download_file(file_id):
@@ -144,7 +144,7 @@ def download_file(file_id):
         
     except Exception as e:
         app.logger.error(f"Download error: {str(e)}")
-        return f"Erro baixando arquivo: {str(e)}", 500
+        return "Erro interno do servidor", 500
 
 @app.route('/api/file-info/<file_id>')
 def get_file_info(file_id):
@@ -160,7 +160,8 @@ def get_file_info(file_id):
         return jsonify(file_data)
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        app.logger.error(f"File info error: {str(e)}")
+        return jsonify({'error': 'Erro interno do servidor'}), 500
 
 @app.route('/api/extract-files/<file_id>')
 def extract_files(file_id):
@@ -208,7 +209,8 @@ def extract_files(file_id):
         return jsonify({'files': extracted_files})
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        app.logger.error(f"Extract files error: {str(e)}")
+        return jsonify({'error': 'Erro interno do servidor'}), 500
 
 @app.route('/api/screenshot/<file_id>')
 def get_screenshot(file_id):
@@ -254,7 +256,8 @@ def get_screenshot(file_id):
         return jsonify({'error': 'Screenshot não encontrada'}), 404
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        app.logger.error(f"Screenshot error: {str(e)}")
+        return jsonify({'error': 'Erro interno do servidor'}), 500
 
 @app.route('/api/save-data/<file_id>')
 def get_save_data(file_id):
@@ -338,7 +341,8 @@ def save_renpy_changes(file_id, filename):
         })
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        app.logger.error(f"Save changes error: {str(e)}")
+        return jsonify({'error': 'Erro interno do servidor'}), 500
 
 @app.errorhandler(413)
 def too_large(e):
