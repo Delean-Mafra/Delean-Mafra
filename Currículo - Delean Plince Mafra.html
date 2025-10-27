@@ -1,0 +1,996 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currículo - Delean Plince Mafra</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --secondary: #10b981;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --gray: #64748b;
+            --light-gray: #e2e8f0;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            background-color: #f1f5f9;
+            color: var(--dark);
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 2.5rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+        
+        .subtitle {
+            font-size: 1.25rem;
+            font-weight: 500;
+            opacity: 0.9;
+            margin-bottom: 1.5rem;
+        }
+        
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            background-color: rgba(255,255,255,0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            transition: all 0.2s ease;
+        }
+        
+        .contact-item:hover {
+            background-color: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .contact-item a {
+            color: white;
+            text-decoration: none;
+        }
+        
+        section {
+            padding: 2rem;
+            border-bottom: 1px solid var(--light-gray);
+        }
+        
+        section:last-child {
+            border-bottom: none;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        h2 i {
+            font-size: 1.25rem;
+            color: var(--primary);
+        }
+        
+        .job, .education-item {
+            margin-bottom: 2rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .job::before, .education-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+        
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+        
+        .date-location, .education-item .date {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        ul {
+            list-style-type: disc;
+            padding-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+            color: var(--dark);
+        }
+        
+        .key-competencies {
+            font-size: 0.9rem;
+            color: var(--gray);
+            margin-top: 1rem;
+            font-style: italic;
+        }
+        
+        .certifications-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1rem;
+        }
+        
+        .cert-item {
+            background-color: var(--light);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            border-left: 3px solid var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            transition: all 0.2s ease;
+        }
+        
+        .cert-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .cert-item strong {
+            display: block;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 0.25rem;
+        }
+        
+        .issuer {
+            font-size: 0.85rem;
+            color: var(--gray);
+        }
+        
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .skill-category {
+            margin-bottom: 1.5rem;
+        }
+        
+        .skill-category h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .skill-item {
+            margin-bottom: 1rem;
+        }
+        
+        .skill-name {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.25rem;
+            font-size: 0.9rem;
+            color: var(--dark);
+        }
+        
+        .skill-bar {
+            height: 8px;
+            background-color: var(--light-gray);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .skill-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 1.5rem;
+            background-color: var(--light);
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            header {
+                padding: 1.5rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            section {
+                padding: 1.5rem;
+            }
+            
+            .skills-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        section {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        section:nth-child(2) { animation-delay: 0.1s; }
+        section:nth-child(3) { animation-delay: 0.2s; }
+        section:nth-child(4) { animation-delay: 0.3s; }
+        section:nth-child(5) { animation-delay: 0.4s; }
+        section:nth-child(6) { animation-delay: 0.5s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Delean Mafra</h1>
+            <p class="subtitle">Agile Master | Profissional de Dados</p>
+            <div class="contact-info">
+                <div class="contact-item">
+                    <i class="fas fa-envelope"></i>
+                    <a href="mailto:delean.mafra@gmail.com">delean.mafra@gmail.com</a>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-phone"></i>
+                    <span>(48) 98466-6987</span>
+                </div>
+                <div class="contact-item">
+                    <i class="fab fa-linkedin"></i>
+                    <a href="https://linkedin.com/in/delean-mafra" target="_blank">LinkedIn</a>
+                </div>
+                <div class="contact-item">
+                    <i class="fab fa-github"></i>
+                    <a href="https://github.com/delean-mafra" target="_blank">GitHub</a>
+                </div>
+                <div class="contact-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>Florianópolis, SC (Remoto)</span>
+                </div>
+            </div>
+        </header>
+
+        <section id="sobre">
+            <h2><i class="fas fa-user-tie"></i> Sobre Mim</h2>
+            <p class="mb-4">Com mais de uma década de experiência como analista de sistemas e suporte técnico, desenvolvi uma perspectiva única que une expertise técnica a decisões baseadas em dados. Minha jornada evoluiu da resolução de problemas técnicos imediatos para a descoberta de padrões e insights através da análise de dados.</p>
+            <p class="mb-4">Atualmente cursando Ciência de Dados, sou apaixonado por transformar dados brutos em inteligência acionável. Meu histórico em atendimento ao cliente e liderança técnica me proporciona uma abordagem centrada no usuário para soluções baseada em dados.</p>
+            <p class="mb-6">Sou especialista em gestão de bancos de dados SQL, visualização de BI (Power BI), e estou expandindo minhas capacidades em Python para análise e automação de dados. Meu perfil DISC destaca minha natureza analítica combinada com fortes habilidades de execução - uma combinação valiosa para profissionais de dados.</p>
+            
+            <h3 class="text-lg font-semibold mb-3 text-primary-dark">Valores Essenciais:</h3>
+            <ul class="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-primary"></i> Decisões Baseadas em Dados</li>
+                <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-primary"></i> Aprendizado Contínuo</li>
+                <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-primary"></i> Resolução de Problemas</li>
+                <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-primary"></i> Excelência Técnica</li>
+            </ul>
+        </section>
+
+        <section id="distintivos">
+            <h2><i class="fas fa-award"></i> Distintivos e Certificações</h2>
+            <p class="mb-6 text-gray-600">Certificações e conquistas em plataformas de aprendizado e desenvolvimento profissional.</p>
+            
+            <div class="flex flex-wrap justify-center gap-4">
+                <!-- Badges Cisco via Credly -->
+                <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="4660700c-0f08-4c52-9015-dd9d8d3b5718" data-share-badge-host="https://www.credly.com"></div>
+                <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="4fc185b8-a453-457c-aea8-75fe55099b2e" data-share-badge-host="https://www.credly.com"></div>
+                <div data-iframe-width="150" data-iframe-height="270" data-share-badge-id="a03a2621-4006-4687-bbd6-6a2ed5671e9f" data-share-badge-host="https://www.credly.com"></div>
+                
+                <!-- Badge Microsoft Learn 1 (Card Personalizado) -->
+                <div class="inline-block" style="width: 150px;">
+                    <a href="https://learn.microsoft.com/pt-br/users/deleanmafra/achievements/nma8t87f" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       class="block bg-white border-2 border-gray-200 rounded-lg hover:shadow-lg transition-all duration-300 overflow-hidden"
+                       style="height: 270px;">
+                        <div class="p-3 flex flex-col items-center justify-between h-full">
+                            <div class="flex-1 flex items-center justify-center">
+                                <img src="https://learn.microsoft.com/en-us/media/learn/certification/badges/microsoft-certified-fundamentals-badge.svg" 
+                                     alt="Microsoft Certified" 
+                                     class="w-20 h-20 object-contain">
+                            </div>
+                            <div class="text-center mt-2">
+                                <p class="text-xs font-semibold text-gray-800 mb-1">Microsoft Certified</p>
+                                <p class="text-xs text-blue-600 font-medium">Azure Fundamentals</p>
+                                <div class="mt-2 pt-2 border-t border-gray-200">
+                                    <span class="text-xs text-gray-500">Ver credencial →</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                
+                <!-- Badge Microsoft Learn 2 (Card Personalizado) -->
+                <div class="inline-block" style="width: 150px;">
+                    <a href="https://learn.microsoft.com/pt-br/users/deleanmafra/achievements/b954zuxd" 
+                       target="_blank" 
+                       rel="noopener noreferrer"
+                       class="block bg-white border-2 border-gray-200 rounded-lg hover:shadow-lg transition-all duration-300 overflow-hidden"
+                       style="height: 270px;">
+                        <div class="p-3 flex flex-col items-center justify-between h-full">
+                            <div class="flex-1 flex items-center justify-center">
+                                <img src="https://learn.microsoft.com/en-us/media/learn/certification/badges/microsoft-certified-fundamentals-badge.svg" 
+                                     alt="Microsoft Certified" 
+                                     class="w-20 h-20 object-contain">
+                            </div>
+                            <div class="text-center mt-2">
+                                <p class="text-xs font-semibold text-gray-800 mb-1">Microsoft Certified</p>
+                                <p class="text-xs text-blue-600 font-medium">Azure AI Fundamentals</p>
+                                <div class="mt-2 pt-2 border-t border-gray-200">
+                                    <span class="text-xs text-gray-500">Ver credencial →</span>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <div class="mt-6 text-center">
+                <a href="https://www.linkedin.com/in/delean-mafra/" 
+                   target="_blank" 
+                   class="inline-flex items-center px-6 py-3 bg-primary text-white rounded-lg hover:bg-primary-dark transition-colors duration-300">
+                    <i class="fab fa-linkedin mr-2"></i>
+                    Ver todas as certificações no LinkedIn
+                </a>
+            </div>
+        </section>
+
+        <section id="experiencia">
+            <h2><i class="fas fa-briefcase"></i> Experiência Profissional</h2>
+            
+            <article class="job">
+                <h3>Agile Master - TOTVS</h3>
+                <p class="date-location">
+                    <i class="far fa-calendar"></i>Desde Maio 2025 - Até o momento| 
+                    <i class="fas fa-location-arrow"></i> Remoto
+                </p>
+                <p class="mb-4">Ser agente de mudança, promovendo a cultura ágil, através da disseminação de valores, princípios e práticas ágeis, atuando como facilitador, impulsionando a excelência operacional e maximizando a entrega de valor das equipes ágeis no suporte.</p>
+                <ul class="mb-4">
+                    <li>Apoiar e esclarecer dúvidas do Support Team sobre processos, procedimentos e frameworks ágeis utilizados na(s) squad(s)/tribe.</li>
+                    <li>Monitorar e sugerir planos de ação junto a(s) squad(s), alinhado com a gestão da área e demais agilistas para melhoria contínua dos processos e KPI's.</li>
+                    <li>Garantir a atuação da(s) squad(s), em conformidade com os processos ágeis, alinhadas com as definições dos gestores da área e segmento, através de capacitações formais, mentorias que visem otimizar melhores práticas de agilidade.</li>
+                    <li>Propor ações de melhoria junto às squads e demais papéis com intuito de otimizar continuamente processos, fomentando eventos ágeis, analisando indicadores de performance e de maturidade.</li>
+                    <li>Realizar a troca de informações, experiências, boas práticas e conhecimentos com os outros agilistas.</li>
+                    <li>Blindar e auxiliar o Support Team em possíveis interrupções, removendo impedimentos e estimulando a análise da causa raiz.</li>
+                </ul>
+                <p class="key-competencies"><strong>Competências:</strong> Scrum, Design Thinking, Melhoria Contínua.</p>
+            </article>
+
+            <article class="job">
+                <h3>Customer Owner - TOTVS</h3>
+                <p class="date-location">
+                    <i class="far fa-calendar"></i> Dezembro 2024 - Maio 2025 (6 meses) | 
+                    <i class="fas fa-location-arrow"></i> Florianópolis, SC (Remoto)
+                </p>
+                <p class="mb-4"><strong>Missão:</strong> Garantir o cumprimento dentro dos prazos estabelecidos, facilitando e agilizando o atendimento e mitigando os riscos, além de fomentar ações colaborativas entre as áreas, a fim de potencializar o atendimento ágil para os clientes da TOTVS.</p>
+                <ul class="mb-4">
+                    <li>Responsável por endereçar e negociar internamente as escalações recebidas pelo cliente.</li>
+                    <li>Monitorar os indicadores de cliente, para acompanhar as classificações dos tickets e garantir o melhor atendimento dentro dos prazos.</li>
+                    <li>Centralizar e direcionar pedidos de prioridade, sugestões e reclamações nas áreas de Atendimento e Desenvolvimento.</li>
+                    <li>Apoiar no mapeamento e organização dos SLAs, de acordo com a priorização das demandas.</li>
+                    <li>Compartilhar informações dos clientes com os times e líderes, visando a melhoria dos atendimentos.</li>
+                </ul>
+                <p class="key-competencies"><strong>Competências:</strong> Metodologias Agile, Atendimento ao Cliente, Gestão de SLAs.</p>
+            </article>
+
+            <article class="job">
+                <h3>Líder Técnico</h3>
+                <p class="date-location">
+                    <i class="far fa-calendar"></i> Abril 2021 | 
+                    <i class="fas fa-location-arrow"></i> Florianópolis, SC (Híbrida)
+                </p>
+                <ul class="mb-4">
+                    <li>Extração de dados e apresentação de indicadores em relatórios Analytics, gráficos, Excel e Power BI.</li>
+                    <li>Garantia do cumprimento das normas ISO 9001 e ISO 27001 no setor de Customer Service Desk.</li>
+                    <li>Automação de processos.</li>
+                    <li>Apoio à equipe, colaboradores de outras áreas e clientes sobre software, LGPD e outras normas.</li>
+                </ul>
+                <p class="key-competencies"><strong>Competências:</strong> Metodologias Agile, Inteligência Artificial, Python, Power BI, ISO 9001, ISO 27001.</p>
+            </article>
+        </section>
+
+        <section id="formacao">
+            <h2><i class="fas fa-graduation-cap"></i> Formação Acadêmica</h2>
+            <article class="education-item">
+                <h3>Curso Superior de Tecnologia (CST), Ciência de Dados (Data Science) - Uniamérica</h3>
+                <p class="date">
+                    <i class="far fa-calendar"></i> inicio em Outubro 2024 - Cursando
+                </p>
+                <p class="mb-4"><strong>Foco do curso:</strong> Capacitar na aplicação de recursos tecnológicos, técnicas de IA e análise de dados para tomada de decisões.</p>
+                <p class="mb-2"><strong>Disciplinas e Atividades Relevantes:</strong></p>
+                <ul>
+                    <li>Arquitetura de Computadores, Probabilidade e Estatística, Coleta e Tratamento de Dados</li>
+                    <li>Desenvolvimento de Algoritmos, CyberSecurity, Ciência de Dados para Negócios</li>
+                    <li>Big Data, Redes Neurais e Deep Learning, Clusterização de Dados, Modelagem de Dados</li>
+                </ul>
+            </article>
+        </section>
+
+        <section id="certificacoes">
+            <h2><i class="fas fa-certificate"></i> Licenças e Certificados</h2>
+            
+            <h3 class="text-lg font-semibold mb-3 mt-4 text-primary-dark"><i class="fas fa-robot"></i> Inteligência Artificial & Dados</h3>
+            <div class="certifications-grid">
+                <div class="cert-item">
+                    <strong>Introdução aos conceitos de IA</strong>
+                    <span class="issuer">Microsoft</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Explore os principais conceitos de dados</strong>
+                    <span class="issuer">Microsoft</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Fundamentos de Dados e IA</strong>
+                    <span class="issuer">TOTVS</span>
+                </div>
+                <div class="cert-item">
+                    <strong>FERRAMENTAS E APLICAÇÕES DA INTELIGÊNCIA ARTIFICIAL</strong>
+                    <span class="issuer">Descomplica</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Inteligência artificial e sociedade: avanços e riscos</strong>
+                    <span class="issuer">SciELO</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Introdução à ciência de dados: Conceitos Básicos</strong>
+                    <span class="issuer">LinkedIn</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Fundamentos de Engenharia de Dados</strong>
+                    <span class="issuer">Data Science Academy</span>
+                </div>
+                <div class="cert-item">
+                    <strong>5 jeitos de fazer dinheiro com IA HOJE</strong>
+                    <span class="issuer">Descomplica Faculdade Digital</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Aprenda como universitários estão lucrando com IA</strong>
+                    <span class="issuer">Descomplica Faculdade Digital</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Crie o Prompt Perfeito!</strong>
+                    <span class="issuer">WORKALOVE</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Gemini no Google Workspace: Automatize Tarefas e Libere sua Criatividade</strong>
+                    <span class="issuer">TOTVS</span>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold mb-3 mt-6 text-primary-dark"><i class="fas fa-database"></i> Banco de Dados & SQL</h3>
+            <div class="certifications-grid">
+                <div class="cert-item">
+                    <strong>Estrutura de Dados & SQL</strong>
+                    <span class="issuer">TOTVS</span>
+                </div>
+                <div class="cert-item">
+                    <strong>ETL - Transformação e Carga de Dados</strong>
+                    <span class="issuer">TOTVS</span>
+                </div>
+                <div class="cert-item">
+                    <strong>SQL Completo</strong>
+                    <span class="issuer">Softblue</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Introdução ao banco de dados MySQL</strong>
+                    <span class="issuer">Alfahelix Academy</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Banco de Dados MySQL</strong>
+                    <span class="issuer">Learncafe</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Curso de MySQL</strong>
+                    <span class="issuer">Learncafe</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Mysql com Banco de Dados</strong>
+                    <span class="issuer">Learncafe</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Curso de TSQL - Banco de Dados SQL Server</strong>
+                    <span class="issuer">Learncafe</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Curso de Bancos de Dados</strong>
+                    <span class="issuer">GYN CURSOS</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Banco de dados IFBA e Banco de dados por IME</strong>
+                    <span class="issuer">MEDEIROS TECNOLOGIA LTDA</span>
+                </div>
+                <div class="cert-item">
+                    <strong>IMPLEMENTANDO BANCOS DE DADOS</strong>
+                    <span class="issuer">Fundação Bradesco</span>
+                </div>
+                <div class="cert-item">
+                    <strong>MODELAGEM DE DADOS</strong>
+                    <span class="issuer">Fundação Bradesco</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Modelling Data Developer</strong>
+                    <span class="issuer">Descomplica Faculdade Digital</span>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold mb-3 mt-6 text-primary-dark"><i class="fas fa-code"></i> Programação & Desenvolvimento</h3>
+            <div class="certifications-grid">
+                <div class="cert-item">
+                    <strong>Python</strong>
+                    <span class="issuer">Refatorando</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Semana do Python na prática</strong>
+                    <span class="issuer">EMPOWERDATA</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Lógica de Programação</strong>
+                    <span class="issuer">Softblue</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Introdução à programação de computadores</strong>
+                    <span class="issuer">Alfahelix Academy</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Programming and Communication</strong>
+                    <span class="issuer">Descomplica Faculdade Digital</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Developer Thinking</strong>
+                    <span class="issuer">Descomplica Faculdade Digital</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Arquitetura de Computadores do Século XXI</strong>
+                    <span class="issuer">Descomplica</span>
+                </div>
+                <div class="cert-item">
+                    <strong>MATH COMPUTING BASICS</strong>
+                    <span class="issuer">Descomplica Faculdade Digital</span>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold mb-3 mt-6 text-primary-dark"><i class="fas fa-shield-alt"></i> Segurança & Compliance</h3>
+            <div class="certifications-grid">
+                <div class="cert-item">
+                    <strong>Network Defense</strong>
+                    <span class="issuer">Cisco Networking Academy</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Network Technician Career Path</strong>
+                    <span class="issuer">Cisco</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Cibersegurança</strong>
+                    <span class="issuer">Hacker Rangers Brasil</span>
+                </div>
+                <div class="cert-item">
+                    <strong>ISO 27001: SIG e Política de Segurança da Informação - Síncrono</strong>
+                    <span class="issuer">TOTVS</span>
+                </div>
+                <div class="cert-item">
+                    <strong>LGPD - Lei Geral de Proteção de Dados</strong>
+                    <span class="issuer">TOTVS</span>
+                </div>
+                <div class="cert-item">
+                    <strong>LGPD - Lei Geral de Proteção de Dados | Versão 2024</strong>
+                    <span class="issuer">TOTVS</span>
+                </div>
+                <div class="cert-item">
+                    <strong>WORKSHOP LGPD EXPERIENCE 6a Edição</strong>
+                    <span class="issuer">LGPD EXPERIENCE - Professora Raquel Rinaldi</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Lei Brasileira de Proteção de Dados Pessoais</strong>
+                    <span class="issuer">Enap</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Curso de cidadania digital e segurança</strong>
+                    <span class="issuer">Google</span>
+                </div>
+                <div class="cert-item">
+                    <strong>cidadania digital e segurança</strong>
+                    <span class="issuer">Google</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Creating Strong Passwords - Security Awareness Training</strong>
+                    <span class="issuer">KnowBe4</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Clean Desk: First Steps</strong>
+                    <span class="issuer">KnowBe4</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Classic Danger Zone</strong>
+                    <span class="issuer">KnowBe4</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Restricted Intelligence Season 1 : Ep 1 - The Test (Passwords and Passes)</strong>
+                    <span class="issuer">KnowBe4</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Security Awareness Game Show Trivia Game</strong>
+                    <span class="issuer">KnowBe4</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Business Conduct Series: Acceptable Use Policy</strong>
+                    <span class="issuer">KnowBe4</span>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold mb-3 mt-6 text-primary-dark"><i class="fas fa-award"></i> Qualidade & Gestão</h3>
+            <div class="certifications-grid">
+                <div class="cert-item">
+                    <strong>Gestão de Qualidade</strong>
+                    <span class="issuer">TOTVS</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Gestão de Qualidade TOTVS (ISO) | 2025</strong>
+                    <span class="issuer">TOTVS</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Curso de Interpretação da Norma ISO 9001:2015</strong>
+                    <span class="issuer">Portal ISO</span>
+                </div>
+                <div class="cert-item">
+                    <strong>FORMAÇÃO DE AUDITORES INTERNOS DA QUALIDADE</strong>
+                    <span class="issuer">CETEG Consultoria Empresarial Ltda</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Fundamentos da Análise de Negócios</strong>
+                    <span class="issuer">LinkedIn</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Técnicas de Pensamento Analítico</strong>
+                    <span class="issuer">TOTVS</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Estatística Básica</strong>
+                    <span class="issuer">TOTVS</span>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold mb-3 mt-6 text-primary-dark"><i class="fas fa-users"></i> Atendimento & Customer Success</h3>
+            <div class="certifications-grid">
+                <div class="cert-item">
+                    <strong>Introdução ao Customer Success</strong>
+                    <span class="issuer">CS Academy</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Comunicação e Oratória</strong>
+                    <span class="issuer">Conquer Business School</span>
+                </div>
+                <div class="cert-item">
+                    <strong>A sociolinguística em sala de aula</strong>
+                    <span class="issuer">Learncafe</span>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold mb-3 mt-6 text-primary-dark"><i class="fas fa-laptop"></i> Microsoft Office & Ferramentas</h3>
+            <div class="certifications-grid">
+                <div class="cert-item">
+                    <strong>Microsoft Office – Word, Power Point, Excel e Access</strong>
+                    <span class="issuer">Unieducar</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Excel</strong>
+                    <span class="issuer">MEU BRASIL</span>
+                </div>
+                <div class="cert-item">
+                    <strong>office 2016 - Excel</strong>
+                    <span class="issuer">Cursa - Medeiros Tecnologia LTDA.</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Google Analytics para iniciantes</strong>
+                    <span class="issuer">Google</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Google Classroom: Como criar sua sala de aula online</strong>
+                    <span class="issuer">Associação Nova Escola</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Princípios básicos de marketing digital</strong>
+                    <span class="issuer">Google</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Uso da Tecnologia da Informação no Ambiente Organizacional e nos Negócios</strong>
+                    <span class="issuer">Unieducar</span>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold mb-3 mt-6 text-primary-dark"><i class="fas fa-building"></i> TOTVS & Cultura Organizacional</h3>
+            <div class="certifications-grid">
+                <div class="cert-item">
+                    <strong>CODEC - Código de Ética e Conduta TOTVS</strong>
+                    <span class="issuer">TOTVS</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Letramento em Diversidade e Inclusão</strong>
+                    <span class="issuer">TOTVS</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Comissão Interna de Prevenção de Acidentes e de Assédio para compor a CIPA</strong>
+                    <span class="issuer">CLASS SAUDE - MEDICINA OCUPACIONAL LTDA</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Cuidados com a postura</strong>
+                    <span class="issuer">WORKALOVE</span>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-semibold mb-3 mt-6 text-primary-dark"><i class="fas fa-graduation-cap"></i> Outros Cursos</h3>
+            <div class="certifications-grid">
+                <div class="cert-item">
+                    <strong>Festival de Inovação - Apresentações</strong>
+                    <span class="issuer">Descomplica Faculdade Digital</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Calourada - 25.1 | Coordenação</strong>
+                    <span class="issuer">Descomplica Faculdade Digital</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Oportunidades de negócio em emprego em 2025</strong>
+                    <span class="issuer">Descomplica Faculdade Digital</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Tesouro Direto</strong>
+                    <span class="issuer">Escola Nacional de Administração Pública - Enap</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Gestão de Finanças Pessoais</strong>
+                    <span class="issuer">Escola Nacional de Administração Pública - Enap</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Contabilidade Básica</strong>
+                    <span class="issuer">GYN Cursos</span>
+                </div>
+                <div class="cert-item">
+                    <strong>CONTRATO DE TRABALHO</strong>
+                    <span class="issuer">Sebrae</span>
+                </div>
+                <div class="cert-item">
+                    <strong>Descomplicando a Portaria 671</strong>
+                    <span class="issuer">WebTraining</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="competencias">
+            <h2><i class="fas fa-cogs"></i> Principais Competências</h2>
+            
+            <div class="skills-container">
+                <div class="skill-category">
+                    <h3><i class="fas fa-project-diagram"></i> Metodologias Ágeis</h3>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>Scrum</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>Kanban</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>Design Thinking</span>
+                            <span>80%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 80%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="skill-category">
+                    <h3><i class="fas fa-database"></i> Dados & Análise</h3>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>SQL</span>
+                            <span>95%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 95%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>Power BI</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>Python</span>
+                            <span>75%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 75%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="skill-category">
+                    <h3><i class="fas fa-users"></i> Gestão & Liderança</h3>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>Atendimento ao Cliente</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>Gestão de SLAs</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>Liderança Técnica</span>
+                            <span>80%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 80%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="skill-category">
+                    <h3><i class="fas fa-shield-alt"></i> Normas & Segurança</h3>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>ISO 9001</span>
+                            <span>85%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>ISO 27001</span>
+                            <span>80%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 80%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-item">
+                        <div class="skill-name">
+                            <span>LGPD</span>
+                            <span>90%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 90%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <p>© <span id="currentYear"></span> Delean Mafra. Todos os direitos reservados.</p>
+        </footer>
+    </div>
+
+    <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+        
+        // Animate skill bars on scroll
+        const skillBars = document.querySelectorAll('.skill-progress');
+        
+        const animateSkillBars = () => {
+            skillBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.transition = 'width 1.5s ease-out';
+                    bar.style.width = width;
+                }, 100);
+            });
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateSkillBars();
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+        
+        observer.observe(document.getElementById('competencias'));
+    </script>
+    
+    <!-- Script de Badges Credly -->
+    <script type="text/javascript" async src="//cdn.credly.com/assets/utilities/embed.js"></script>
+</body>
+</html>
