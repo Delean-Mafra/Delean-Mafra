@@ -7,7 +7,6 @@ Atualmente curso **Ciência de Dados** e atuo como **Agile Master na TOTVS**, se
 Minha atuação é focada em **automação de processos** e na implementação de soluções inovadoras utilizando **inteligência artificial**.
 
 [![Codewars Badge](https://www.codewars.com/users/Delean-Mafra/badges/large)](http://www.codewars.com/r/DnrkrQ/)  
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/delean-mafra/)
 
 ---
 
