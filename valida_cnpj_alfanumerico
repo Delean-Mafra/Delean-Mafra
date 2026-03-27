@@ -1,0 +1,50 @@
+/**
+ * Valida um CNPJ no formato Alfanumérico ou Numérico
+ * @param {string} cnpj - O CNPJ com ou sem máscara
+ * @returns {boolean} - True se for válido, False se for inválido
+ * © 2025 Desenvolvido por Delean Mafra - Todos os direitos reservados.
+ */
+function validarCNPJAlfanumerico(cnpj) {
+    // 1. Limpa o CNPJ removendo pontos, barras e traços
+    const cnpjLimpo = cnpj.toString().toUpperCase().replace(/[^\w]/g, '');
+
+    // 2. Verifica se tem 14 caracteres
+    if (cnpjLimpo.length !== 14) return false;
+
+    const base = cnpjLimpo.substring(0, 12);
+    const dvInformado = cnpjLimpo.substring(12, 14);
+
+    // pesos definidos pela Receita Federal
+    const pesosDV1 = [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+    const pesosDV2 = [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2];
+
+    /**
+     * Função interna para calcular cada dígito verificador
+     */
+    const calcularDigito = (sequencia, pesos) => {
+        let soma = 0;
+        for (let i = 0; i < sequencia.length; i++) {
+            // Regra da Receita: Valor do caractere = Código ASCII - 48
+            const valor = sequencia.charCodeAt(i) - 48;
+            soma += valor * pesos[i];
+        }
+        const resto = soma % 11;
+        const dv = 11 - resto;
+        return dv >= 10 ? 0 : dv;
+    };
+
+    // 3. Calcula o primeiro dígito
+    const dv1 = calcularDigito(base, pesosDV1);
+
+    // 4. Calcula o segundo dígito (usando a base + o primeiro dígito calculado)
+    const dv2 = calcularDigito(base + dv1, pesosDV2);
+
+    // 5. Compara os dígitos calculados com os informados
+    const dvCalculado = `${dv1}${dv2}`;
+    return dvInformado === dvCalculado;
+}
+
+// --- EXEMPLOS DE USO ---
+console.log(validarCNPJAlfanumerico("12.ABC.345/01DE-35")); // true (Exemplo do PDF)
+console.log(validarCNPJAlfanumerico("12345678000195"));    // true (CNPJ numérico antigo continua válido)
+console.log(validarCNPJAlfanumerico("AA.345.678/0001-14")); // true (Exemplo alfanumérico)
