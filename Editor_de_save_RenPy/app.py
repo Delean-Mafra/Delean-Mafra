@@ -320,7 +320,20 @@ def decode_renpy_file(file_id, filename):
             # Try to decode as RenPy pickle
             decoded_data = extract_renpy_variables(file_data_content)
             
-            return jsonify(decoded_data)
+            try:
+    # Tenta decodificar o save do RenPy
+    decoded_data = extract_renpy_variables(file_data_content)
+    
+    # Valida se os dados retornados contêm algum indício de erro antes de enviar
+    if isinstance(decoded_data, dict) and "error" in decoded_data:
+        logging.error("Erro interno capturado na decodificação.")
+        return jsonify({"success": False, "message": "Erro ao processar o arquivo de save."}), 400
+
+    return jsonify(decoded_data)
+
+except Exception as e:
+    logging.exception("Exception in decode_renpy_file:")
+    return jsonify({"success": False, "message": "Erro interno no servidor."}), 500
         
     except Exception as e:
         logging.exception("Exception in decode_renpy_file:")
