@@ -1065,9 +1065,9 @@ def extract_renpy_variables(file_content):
             result['error'] = "Nenhuma variável store encontrada nas strings legíveis"
             print("DEBUG: No store variables found")
             
-    except Exception:
-        logging.exception("Exception in extract_renpy_variables")
-        result['error'] = "Falha ao extrair dados."
+    except Exception as e:
+        print(f"DEBUG: Exception in extract_renpy_variables: {str(e)}")
+        result['error'] = f"Falha ao extrair dados: {str(e)}"
     
     print(f"DEBUG: Returning result with decoded={result['decoded']}, variables count: {len(result['variables'])}")
     return result
