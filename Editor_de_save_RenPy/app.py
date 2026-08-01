@@ -32,6 +32,38 @@ app.config['MAX_CONTENT_LENGTH'] = 25 * 1024 * 1024  # 25MB max file size
 UPLOAD_FOLDER = tempfile.gettempdir()
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+class RestrictedUnpickler(pickle.Unpickler):
+    """
+    Deserializador seguro que previne RCE (Remote Code Execution).
+    Classes não reconhecidas são substituídas por um mock inofensivo.
+    """
+    def find_class(self, module, name):
+        class FakeRenPyClass:
+            def __init__(self, *args, **kwargs):
+                self.args = args
+                self.kwargs = kwargs
+            
+            def __getattr__(self, attr):
+                return FakeRenPyClass()
+            
+            def __call__(self, *args, **kwargs):
+                return FakeRenPyClass()
+            
+            def __repr__(self):
+                return f"<FakeClass {module}.{name}>"
+            
+            def __getstate__(self):
+                return {'fake': True}
+            
+            def __setstate__(self, state):
+                pass
+
+        return FakeRenPyClass
+
+def safe_pickle_load(file_obj):
+    """Carrega dados usando o deserializador restrito."""
+    return RestrictedUnpickler(file_obj).load()
+
 def safe_join(base, *paths):
     """
     Safer join using os.path.normpath and abspath, ensures no path traversal.
@@ -287,9 +319,16 @@ def get_save_data(file_id):
         
     except Exception as e:
         logging.exception("Exception in get_save_data:")
-
         return jsonify({'error': 'An internal error has occurred.'}), 500
 
+def extract_renpy_variables(file_data_content):
+    """Descompacta variáveis RenPy de bytes brutos de forma segura."""
+    try:
+        f = io.BytesIO(file_data_content)
+        data = safe_pickle_load(f)
+        return serialize_pickle_data(data)
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.route('/api/decode-renpy-file/<file_id>/<path:filename>')
 def decode_renpy_file(file_id, filename):
@@ -317,28 +356,19 @@ def decode_renpy_file(file_id, filename):
             
             file_data_content = zip_file.read(filename)
             
-            # Try to decode as RenPy pickle
-            decoded_data = extract_renpy_variables(file_data_content)
-            
-            try:
-    # Tenta decodificar o save do RenPy
-    decoded_data = extract_renpy_variables(file_data_content)
-    
-    # Valida se os dados retornados contêm algum indício de erro antes de enviar
-    if isinstance(decoded_data, dict) and "error" in decoded_data:
-        logging.error("Erro interno capturado na decodificação.")
-        return jsonify({"success": False, "message": "Erro ao processar o arquivo de save."}), 400
-
-    return jsonify(decoded_data)
-
-except Exception as e:
-    logging.exception("Exception in decode_renpy_file:")
-    return jsonify({"success": False, "message": "Erro interno no servidor."}), 500
+        # Decodifica o save do RenPy de forma segura
+        decoded_data = extract_renpy_variables(file_data_content)
         
+        # Valida se os dados retornados contêm algum indício de erro antes de enviar
+        if isinstance(decoded_data, dict) and "error" in decoded_data:
+            logging.error("Erro interno capturado na decodificação.")
+            return jsonify({"success": False, "message": "Erro ao processar o arquivo de save."}), 400
+
+        return jsonify(decoded_data)
+
     except Exception as e:
         logging.exception("Exception in decode_renpy_file:")
-
-        return jsonify({'error': 'An internal error has occurred.'}), 500
+        return jsonify({"success": False, "message": "Erro interno no servidor."}), 500
 
 
 @app.route('/api/save-renpy-changes/<file_id>/<path:filename>', methods=['POST'])
@@ -377,7 +407,6 @@ def analyze_save_file(filepath):
     try:
         # Try to determine file type
         filename = os.path.basename(filepath)
-        file_ext = os.path.splitext(filename)[1].lower()
         
         with open(filepath, 'rb') as f:
             file_content = f.read()
@@ -397,7 +426,7 @@ def analyze_save_file(filepath):
         if header.startswith(b'PK'):
             return analyze_zip_save(filepath, file_content, file_info)
         
-        # Try direct pickle loading (original RenPy format)
+        # Try direct pickle loading safely (original RenPy format)
         try:
             data = load_renpy_pickle(filepath)
             if data:
@@ -460,10 +489,10 @@ def analyze_zip_save(filepath, file_content, file_info):
                 if filename.lower() in ['save', 'data', 'game_data'] or filename.endswith('.save'):
                     try:
                         save_data = zip_file.read(filename)
-                        # Try to unpickle the save data
+                        # Try to unpickle the save data safely
                         try:
-                            import pickle
-                            data = pickle.loads(save_data)
+                            f_save = io.BytesIO(save_data)
+                            data = safe_pickle_load(f_save)
                             zip_data['save_data'] = serialize_pickle_data(data)
                             zip_data['save_file'] = filename
                             break
@@ -503,57 +532,13 @@ def analyze_zip_save(filepath, file_content, file_info):
         return file_info
 
 def load_renpy_pickle(filepath):
-    """Load RenPy pickle with enhanced error handling"""
-    import sys
-    
-    # Create comprehensive fake modules for RenPy
-    fake_modules = {}
-    original_modules = {}
-    
-    class FakeRenPyClass:
-        def __init__(self, *args, **kwargs):
-            self.args = args
-            self.kwargs = kwargs
-        
-        def __getattr__(self, name):
-            return FakeRenPyClass()
-        
-        def __call__(self, *args, **kwargs):
-            return FakeRenPyClass()
-        
-        def __getstate__(self):
-            return {'fake': True}
-        
-        def __setstate__(self, state):
-            pass
-    
-    class FakeModule:
-        def __getattr__(self, name):
-            return FakeRenPyClass()
-    
+    """Load RenPy pickle with secure custom Unpickler"""
     try:
-        # Install fake modules
-        renpy_modules = ['renpy', 'store', 'game', '_renpy', 'renpy.display', 'renpy.character']
-        for module_name in renpy_modules:
-            if module_name in sys.modules:
-                original_modules[module_name] = sys.modules[module_name]
-            sys.modules[module_name] = FakeModule()
-            fake_modules[module_name] = FakeModule()
-        
-        # Try to load the pickle file
         with open(filepath, 'rb') as f:
-            return pickle.load(f)
-            
+            return safe_pickle_load(f)
     except Exception as e:
-        print(f"Enhanced pickle load failed: {e}")
+        print(f"Secure pickle load failed: {e}")
         return None
-    finally:
-        # Restore original modules
-        for module_name in renpy_modules:
-            if module_name in original_modules:
-                sys.modules[module_name] = original_modules[module_name]
-            elif module_name in sys.modules:
-                del sys.modules[module_name]
 
 def try_as_text(filepath):
     """Try to read file as text with multiple encodings"""
@@ -564,7 +549,7 @@ def try_as_text(filepath):
             with open(filepath, 'r', encoding=encoding) as f:
                 content = f.read()
             # Check if content looks like text (has reasonable ratio of printable chars)
-            printable_ratio = sum(1 for c in content[:1000] if c.isprintable() or c.isspace()) / min(1000, len(content))
+            printable_ratio = sum(1 for c in content[:1000] if c.isprintable() or c.isspace()) / min(1000, max(1, len(content)))
             if printable_ratio > 0.8:  # 80% printable characters
                 return {'content': content[:2000] + '...' if len(content) > 2000 else content, 'encoding': encoding}
         except:
@@ -594,46 +579,12 @@ def is_likely_renpy_save(content, filename):
     return False
 
 def load_renpy_save(filepath):
-    """Attempt to load RenPy save with custom handling"""
+    """Attempt to load RenPy save safely"""
     try:
-        import sys
-        
-        # Create fake RenPy modules to handle missing imports
-        class FakeRenPyModule:
-            def __getattr__(self, name):
-                return FakeRenPyObject()
-        
-        class FakeRenPyObject:
-            def __init__(self, *args, **kwargs):
-                pass
-            def __getattr__(self, name):
-                return FakeRenPyObject()
-            def __call__(self, *args, **kwargs):
-                return FakeRenPyObject()
-        
-        # Install fake modules
-        fake_modules = ['renpy', 'store', 'game']
-        original_modules = {}
-        
-        for module in fake_modules:
-            if module in sys.modules:
-                original_modules[module] = sys.modules[module]
-            sys.modules[module] = FakeRenPyModule()
-        
-        try:
-            with open(filepath, 'rb') as f:
-                data = pickle.load(f)
-            return data
-        finally:
-            # Restore original modules
-            for module in fake_modules:
-                if module in original_modules:
-                    sys.modules[module] = original_modules[module]
-                elif module in sys.modules:
-                    del sys.modules[module]
-                    
+        with open(filepath, 'rb') as f:
+            return safe_pickle_load(f)
     except Exception as e:
-        print(f"Custom RenPy load failed: {e}")
+        print(f"Secure RenPy load failed: {e}")
         return None
 
 def analyze_renpy_binary(content):
@@ -709,7 +660,7 @@ def generate_editor_html(file_id, filename, file_info):
     safe_filename = html.escape(str(filename))
     safe_type = html.escape(str(file_info.get('type', 'desconhecido')))
     safe_size = html.escape(f"{file_info.get('size', 0):,}")
-    # For generate_data_editor, pass file_info.get('data', {}) and safe_type
+    
     return f"""
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -770,13 +721,16 @@ def generate_editor_html(file_id, filename, file_info):
                 alert('Erro obtendo informações do arquivo: ' + error);
             }});
     }}
+
+    function OnDownload() {{
+        window.history.back();
+    }}
     </script>
     """
 
 def generate_data_editor(data, file_type):
     """Generate editor interface based on data type"""
     if file_type == 'json':
-        # Escape JSON string for safe HTML rendering
         safe_json = html.escape(json.dumps(data, indent=2))
         return f"""
         <h4>Editor de Dados JSON</h4>
@@ -784,28 +738,39 @@ def generate_data_editor(data, file_type):
         <div class="mt-2">
             <button class="btn btn-success" onclick="validateJSON()">Validar JSON</button>
         </div>
+        <script>
+        function validateJSON() {{
+            try {{
+                var val = document.getElementById('jsonData').value;
+                JSON.parse(val);
+                alert('JSON válido!');
+            }} catch (e) {{
+                alert('JSON Inválido: ' + e.message);
+            }}
+        }}
+        </script>
         """
     elif file_type == 'renpy_zip_save':
-        # Prepare screenshot HTML
         if data.get('screenshot'):
             screenshot_html = (
                 f'<div class="panel panel-success">'
                 f'  <div class="panel-heading">📸 Informações da Screenshot</div>'
                 f'  <div class="panel-body">'
-                f'    <strong>Arquivo:</strong> {data["screenshot"]["filename"]}<br>'
+                f'    <strong>Arquivo:</strong> {html.escape(str(data["screenshot"]["filename"]))}<br>'
                 f'    <strong>Tamanho:</strong> {data["screenshot"]["size"]:,} bytes<br>'
-                f'    <strong>Formato:</strong> {data["screenshot"]["format"]}'
+                f'    <strong>Formato:</strong> {html.escape(str(data["screenshot"]["format"]))}'
                 f'  </div>'
                 f'</div>'
             )
         else:
             screenshot_html = '<div class="alert alert-info">Nenhuma screenshot encontrada no arquivo de save.</div>'
 
-        # Prepare save data HTML
         if data.get('save_data'):
+            safe_save_file = html.escape(str(data.get("save_file", "desconhecido")))
+            safe_save_data = html.escape(json.dumps(data.get("save_data", {}), indent=2))
             save_data_html = (
                 f'<div class="panel panel-primary">'
-                f'  <div class="panel-heading">💾 Dados do Save ({data.get("save_file", "desconhecido")})</div>'
+                f'  <div class="panel-heading">💾 Dados do Save ({safe_save_file})</div>'
                 f'  <div class="panel-body">'
                 f'    <div class="panel-group" id="saveDataAccordion">'
                 f'      <div class="panel panel-default">'
@@ -818,7 +783,7 @@ def generate_data_editor(data, file_type):
                 f'        </div>'
                 f'        <div id="saveDataContent" class="panel-collapse collapse">'
                 f'          <div class="panel-body">'
-                f'            <pre style="max-height: 400px; overflow-y: auto; font-size: 11px;">{json.dumps(data.get("save_data", {}), indent=2)}</pre>'
+                f'            <pre style="max-height: 400px; overflow-y: auto; font-size: 11px;">{safe_save_data}</pre>'
                 f'          </div>'
                 f'        </div>'
                 f'      </div>'
@@ -827,341 +792,8 @@ def generate_data_editor(data, file_type):
                 f'</div>'
             )
         else:
-            save_data_html = ''
+            save_data_html = '<div class="alert alert-warning">Não foi possível decodificar os dados internos.</div>'
 
-        # Prepare raw data HTML
-        if data.get('save_data_raw') and not data.get('save_data'):
-            raw_data_html = (
-                '<div class="alert alert-warning">'
-                '<h6>Dados Brutos do Save (Binário)</h6>'
-                '<p>Os dados do save não puderam ser totalmente decodificados. Aqui estão os dados binários brutos:</p>'
-                f'<code style="word-break: break-all;">{data.get("save_data_raw", "")}</code>'
-                '</div>'
-            )
-        else:
-            raw_data_html = ''
-
-        return f"""
-        <h4>🎮 Arquivo de Save ZIP RenPy</h4>
-        <div class="alert alert-success">
-            <strong>✅ Save ZIP RenPy Detectado!</strong> Este é um arquivo de save RenPy moderno armazenado como arquivo ZIP.
-        </div>
-        <div class="row">
-            <div class="col-md-6">
-                <div class="panel panel-info">
-                    <div class="panel-heading">📁 Conteúdo do Arquivo</div>
-                    <div class="panel-body">
-                        <strong>Arquivos no pacote:</strong> {data.get('file_count', 0)}<br>
-                        <strong>É Save RenPy:</strong> {'✅ Sim' if data.get('is_renpy') else '❓ Desconhecido'}<br>
-                        <h6 class="mt-2">Arquivos:</h6>
-                        <ul class="list-unstyled" style="max-height: 200px; overflow-y: auto;">
-                            {"".join(f"<li><code>{f}</code></li>" for f in data.get('files', []))}
-                        </ul>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                {screenshot_html}
-            </div>
-        </div>
-        {save_data_html}
-        {raw_data_html}
-        {generate_renpy_zip_tools(data)}
-        """
-    elif file_type in ['pickle', 'renpy_save']:
-        return f"""
-        <h4>Visualizador de Arquivo de Save RenPy</h4>
-        <div class="alert alert-info">
-            <strong>Save RenPy Detectado!</strong> Este parece ser um arquivo de save RenPy. 
-            Abaixo está uma visualização simplificada da estrutura de dados.
-        </div>
-        
-        <div class="panel-group" id="accordion">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#dataStructure">
-                            📋 Estrutura de Dados (Clique para expandir)
-                        </a>
-                    </h4>
-                </div>
-                <div id="dataStructure" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        <pre style="max-height: 400px; overflow-y: auto; font-size: 12px;">{json.dumps(data, indent=2)}</pre>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="alert alert-warning">
-            <strong>Nota:</strong> Arquivos de save RenPy são formatos binários complexos. 
-            Edição direta pode corromper o arquivo de save. Considere fazer um backup antes de qualquer modificação.
-        </div>
-        
-        {generate_renpy_editor_tools(data)}
-        """
-    elif file_type == 'renpy_binary':
-        return f"""
-        <h4>Arquivo de Save Binário RenPy</h4>
-        <div class="alert alert-info">
-            <strong>Save Binário RenPy Detectado!</strong> Este arquivo contém dados binários que não puderam ser diretamente extraídos.
-        </div>
-        
-        <div class="row">
-            <div class="col-md-6">
-                <h5>Análise do Arquivo:</h5>
-                <ul class="list-unstyled">
-                    <li><strong>Tamanho:</strong> {data.get('size', 0):,} bytes</li>
-                    <li><strong>Comprimido:</strong> {'Sim' if data.get('is_compressed') else 'Não'}</li>
-                    <li><strong>Tem Dados Pickle:</strong> {'Sim' if data.get('has_pickle') else 'Não'}</li>
-                </ul>
-            </div>
-            <div class="col-md-6">
-                <h5>Cabeçalho (primeiros 20 bytes):</h5>
-                <code>{data.get('header', 'N/A')}</code>
-            </div>
-        </div>
-        
-        {f'''<div class="mt-3">
-            <h5>Strings Legíveis Encontradas:</h5>
-            <ul>
-                {"".join(f"<li><code>{string}</code></li>" for string in data.get('readable_strings', [])[:10])}
-            </ul>
-        </div>''' if data.get('readable_strings') else ''}
-        
-        <div class="alert alert-warning">
-            <strong>Usuários Avançados:</strong> Este arquivo binário pode exigir ferramentas especializadas ou 
-            edição manual hexadecimal. Considere usar um editor hexadecimal para análise detalhada.
-        </div>
-        """
-    elif file_type == 'text':
-        encoding = data.get('encoding', 'utf-8') if isinstance(data, dict) else 'utf-8'
-        content = data.get('content', str(data)) if isinstance(data, dict) else str(data)
-        
-        return f"""
-        <h4>Editor de Arquivo de Texto</h4>
-        <div class="alert alert-info">
-            <strong>Codificação:</strong> {encoding}
-        </div>
-        <textarea class="form-control" rows="20" id="textData">{content}</textarea>
-        <div class="mt-2">
-            <button class="btn btn-info" onclick="countLines()">Contar Linhas</button>
-            <button class="btn btn-info" onclick="countWords()">Contar Palavras</button>
-            <button class="btn btn-warning" onclick="searchText()">Buscar Texto</button>
-        </div>
-        """
-    else:
-        return f"""
-        <div class="alert alert-warning">
-            <h4>Tipo de Arquivo Não Suportado</h4>
-            <p>Este tipo de arquivo ({file_type}) não é atualmente suportado para edição.</p>
-            <p><strong>Formatos suportados:</strong></p>
-            <ul>
-                <li>✅ Arquivos JSON (.json)</li>
-                <li>✅ Arquivos de texto (.txt)</li>
-                <li>✅ Saves ZIP RenPy (.save, .sav) - Formato moderno</li>
-                <li>✅ Saves pickle RenPy - Formato legado</li>
-                <li>✅ Arquivos pickle genéricos (.pkl, .pickle)</li>
-            </ul>
-            
-            <div class="mt-3">
-                <h5>💡 Sugestões:</h5>
-                <ul>
-                    <li>Se este é um save RenPy, tente renomeá-lo com extensão .save</li>
-                    <li>Verifique se o arquivo está corrompido ou comprimido</li>
-                    <li>Use um editor hexadecimal para análise binária de baixo nível</li>
-                    <li>Tente abrir com um editor de save RenPy diferente</li>
-                </ul>
-            </div>
-        </div>
-        """
-
-def generate_renpy_zip_tools(data):
-    """Generate specialized tools for RenPy ZIP save editing"""
-    tools_html = """
-    <div class="mt-3">
-        <h5>🛠️ Ferramentas de Save ZIP RenPy</h5>
-        <div class="btn-group" role="group">
-            <button class="btn btn-info btn-sm" onclick="extractFiles()">
-                📤 Extrair Arquivos
-            </button>
-            <button class="btn btn-warning btn-sm" onclick="viewScreenshot()">
-                🖼️ Ver Screenshot
-            </button>
-            <button class="btn btn-primary btn-sm" onclick="exportSaveData()">
-                💾 Exportar Dados do Save
-            </button>
-            <button class="btn btn-success btn-sm" onclick="saveInfo()">
-                ℹ️ Informações do Save
-            </button>
-        </div>
-    </div>
-    """
-    return tools_html
-
-def generate_renpy_editor_tools(data):
-    """Generate specialized tools for RenPy save editing"""
-    tools_html = """
-    <div class="mt-3">
-        <h5>🛠️ Ferramentas de Save RenPy</h5>
-        <div class="btn-group" role="group">
-            <button class="btn btn-info btn-sm" onclick="searchInSave()">
-                🔍 Buscar Dados
-            </button>
-            <button class="btn btn-warning btn-sm" onclick="showSaveInfo()">
-                ℹ️ Info do Save
-            </button>
-            <button class="btn btn-primary btn-sm" onclick="exportAsJSON()">
-                📤 Exportar como JSON
-            </button>
-        </div>
-    </div>
-    """
-    return tools_html
-
-def extract_renpy_variables(file_content):
-    """Extract RenPy variables from save data - Implementation by Delean Mafra"""
-    print(f"DEBUG: extract_renpy_variables called with {len(file_content)} bytes")
+        return screenshot_html + save_data_html
     
-    result = {
-        'variables': {},
-        'metadata': {},
-        'raw_preview': '',
-        'decoded': False
-    }
-    
-    try:
-        # Extract readable strings from the binary data
-        print("DEBUG: Starting string extraction")
-        preview_text = ""
-        current_string = b''
-        readable_strings = []
-        
-        for byte in file_content:
-            if 32 <= byte <= 126:  # Printable ASCII
-                current_string += bytes([byte])
-            else:
-                if len(current_string) > 5:  # Only strings longer than 5 chars
-                    string_val = current_string.decode('ascii')
-                    readable_strings.append(string_val)
-                    if len(preview_text) < 2000:
-                        preview_text += string_val + ' '
-                current_string = b''
-        
-        # Add final string if exists
-        if len(current_string) > 5:
-            string_val = current_string.decode('ascii')
-            readable_strings.append(string_val)
-        
-        result['raw_preview'] = preview_text[:2000]
-        print(f"DEBUG: Found {len(readable_strings)} readable strings")
-        
-        # Try to find store variables from readable strings
-        store_vars = {}
-        for string in readable_strings:
-            if string.startswith('store.') and len(string) > 6:
-                var_name = string.replace('store.', '')
-                # Clean up variable name
-                var_name = var_name.split()[0] if ' ' in var_name else var_name
-                if var_name and var_name not in store_vars:
-                    store_vars[var_name] = f"Variable found in save data"
-        
-        print(f"DEBUG: Found {len(store_vars)} store variables")
-        
-        result['variables'] = store_vars
-        result['decoded'] = True if store_vars else False
-        
-        if store_vars:
-            result['message'] = f"Encontradas {len(store_vars)} variáveis store nos dados do save"
-            print(f"DEBUG: Successfully extracted variables: {list(store_vars.keys())[:10]}")
-        else:
-            result['error'] = "Nenhuma variável store encontrada nas strings legíveis"
-            print("DEBUG: No store variables found")
-            
-    except Exception as e:
-        print(f"DEBUG: Exception in extract_renpy_variables: {str(e)}")
-        result['error'] = f"Falha ao extrair dados: {str(e)}"
-    
-    print(f"DEBUG: Returning result with decoded={result['decoded']}, variables count: {len(result['variables'])}")
-    return result
-
-def decode_renpy_save_data(file_content):
-    """Decode RenPy save data from binary content - Created by Delean Mafra"""
-    print(f"DEBUG: decode_renpy_save_data called with {len(file_content)} bytes")
-    
-    result = {
-        'variables': {},
-        'metadata': {},
-        'raw_preview': '',
-        'decoded': False
-    }
-    
-    # For now, let's skip the complex pickle decoding and focus on extracting readable data
-    try:
-        # Extract readable strings from the binary data
-        preview_text = ""
-        current_string = b''
-        readable_strings = []
-        
-        for byte in file_content:
-            if 32 <= byte <= 126:  # Printable ASCII
-                current_string += bytes([byte])
-            else:
-                if len(current_string) > 5:  # Only strings longer than 5 chars
-                    string_val = current_string.decode('ascii')
-                    readable_strings.append(string_val)
-                    if len(preview_text) < 2000:
-                        preview_text += string_val + ' '
-                current_string = b''
-        
-        result['raw_preview'] = preview_text[:2000]
-        
-        # Try to find store variables from readable strings
-        store_vars = {}
-        for string in readable_strings:
-            if string.startswith('store.') and len(string) > 6:
-                var_name = string.replace('store.', '')
-                if var_name not in store_vars:
-                    store_vars[var_name] = f"Found in save data: {string}"
-        
-        result['variables'] = store_vars
-        result['decoded'] = True if store_vars else False
-        
-        if store_vars:
-            result['message'] = f"Encontradas {len(store_vars)} variáveis store nos dados do save"
-        else:
-            result['error'] = "Nenhuma variável store encontrada nas strings legíveis"
-            
-    except Exception as e:
-        result['error'] = f"Falha ao extrair dados: {str(e)}"
-    
-    print(f"DEBUG: Returning result with decoded={result['decoded']}, variables count: {len(result['variables'])}")
-    return result
-
-def serialize_for_edit(value):
-    """Convert values to editable format"""
-    try:
-        if isinstance(value, (str, int, float, bool)) or value is None:
-            return value
-        elif isinstance(value, (list, tuple)):
-            if len(value) < 10:  # Only for small lists
-                return [serialize_for_edit(item) for item in value]
-            else:
-                return f"<list with {len(value)} items>"
-        elif isinstance(value, dict):
-            if len(value) < 10:  # Only for small dicts
-                return {str(k): serialize_for_edit(v) for k, v in value.items()}
-            else:
-                return f"<dict with {len(value)} items>"
-        else:
-            # For complex objects, return string representation
-            return str(value)[:100]  # Limit length
-    except:
-        return "<unable to serialize>"
-
-if __name__ == '__main__':
-    print("Iniciando servidor local do Editor de Save RenPy...")
-    print("Abra seu navegador em: http://localhost:5000")
-    print("Pressione Ctrl+C para parar o servidor")
-    debug_mode = os.environ.get("FLASK_DEBUG", "0") == "1"
-    app.run(debug=debug_mode, host='0.0.0.0', port=5000)
+    return '<div class="alert alert-warning">Formato de arquivo não suportado para edição visual ainda.</div>'
