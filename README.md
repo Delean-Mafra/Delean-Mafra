@@ -2,65 +2,71 @@
 
 [![wakatime](https://wakatime.com/badge/user/7c3f7631-38f2-4400-89a5-83a5e56071ce.svg)](https://wakatime.com/@7c3f7631-38f2-4400-89a5-83a5e56071ce)
 
-👋 Olá! Sou **Delean Mafra**, apaixonado por tecnologia e inovação, com mais de 10 anos de experiência na área de TI.  
-Atualmente curso **Ciência de Dados** e atuo como **Agile Master na TOTVS**, sendo referência na análise e resolução de incidentes de média e alta complexidade.  
-Minha atuação é focada em **automação de processos** e na implementação de soluções inovadoras utilizando **inteligência artificial**.
+Profissional de TI com mais de 10 anos de experiência e estudante de **Ciência de Dados**, atualmente atuando como Agile Master.
 
-[![Codewars Badge](https://www.codewars.com/users/Delean-Mafra/badges/large)](http://www.codewars.com/r/DnrkrQ/)  
+Tenho interesse principalmente em **Python, dados, SQL, automação, inteligência artificial e desenvolvimento de software**. Gosto de transformar problemas do dia a dia em soluções práticas, automatizando processos e utilizando dados para melhorar decisões e resultados.
 
----
+## Tecnologias e interesses
 
-## 🚀 Sobre Mim
+* Python e automação
+* SQL e bancos de dados
+* Análise e visualização de dados
+* Inteligência Artificial
+* Desenvolvimento de software
+* Cybersecurity
+* Agilidade e melhoria de processos
 
-Sou entusiasta de novas tecnologias e metodologias inovadoras, sempre buscando aprimorar processos e melhorar a eficiência operacional por meio da **automação** e da **análise de dados**.  
-Meu trabalho envolve:
-- Otimização de bancos de dados SQL  
-- Automação de tarefas com Python  
-- Criação de dashboards e relatórios analíticos com Power BI, Excel e Metabase  
+## Onde me encontrar
 
----
+* 💼 [LinkedIn](https://www.linkedin.com/in/delean-mafra/)
+* 💻 [HackerRank](https://www.hackerrank.com/profile/delean_mafra)
+* ✍️ [DEV Community](https://dev.to/deleanmafra)
+* 🎓 [Perfil Acadêmico](https://descomplica.worka.love/perfil/delean-mafra-1164-f2f8)
+* 🛡️ [KC7 Cyber](https://kc7cyber.com/profile/513ecb01)
+* ⚔️ [Codewars](http://www.codewars.com/r/DnrkrQ/)
+* ⏱️ [WakaTime](https://wakatime.com/@7c3f7631-38f2-4400-89a5-83a5e56071ce)
 
-## 🛠️ Principais Habilidades
+## Projetos em destaque
 
-- 🤖 Automação de processos com **Python**  
-- 🗄️ Manutenção e otimização de bancos de dados **SQL (MySQL e similares)**  
-- 📊 Monitoramento e análise de indicadores de performance (**Power BI, Excel, Metabase**)  
-- 🧠 Implementação de soluções em **Inteligência Artificial**  
-- 📝 Desenvolvimento de scripts e algoritmos para análise de dados  
-- 🔒 Conhecimento em **LGPD, segurança da informação e legislação trabalhista**  
-- 🎟️ Gestão e categorização de tickets (**Hubspot, Movidesk, Sankhya, Jira, Trello**)  
-
----
-
-## 🎓 Formação Acadêmica
-
-**Descomplica**  
-Curso Superior de Tecnologia (CST) em **Ciência de Dados**  
-📅 Outubro de 2024 – presente  
-
-- Arquitetura de computadores, Probabilidade e Estatística  
-- Coleta e Tratamento de Dados, CyberSecurity  
-- Big Data, Redes Neurais e Deep Learning  
-- Clusterização e Modelagem de Dados  
+Confira meus repositórios fixados para conhecer alguns dos projetos que venho desenvolvendo.
 
 ---
 
-## 📜 Certificações Relevantes
+Sempre aprendendo, desenvolvendo e explorando novas tecnologias.
 
-- Fundamentos de Dados e IA – TOTVS  
-- ETL - Transformação e Carga de Dados – TOTVS  
-- Estrutura de Dados & SQL – TOTVS  
-- Semana do Python na prática – Empowerdata  
-- Cibersegurança – Hacker Rangers Brasil  
-- Ferramentas e Aplicações da Inteligência Artificial – Descomplica  
+
+# Delean Mafra
+
+[![wakatime](https://wakatime.com/badge/user/7c3f7631-38f2-4400-89a5-83a5e56071ce.svg)](https://wakatime.com/@7c3f7631-38f2-4400-89a5-83a5e56071ce)
+
+Data Science student and IT professional with 10+ years of experience, currently working as an Agile Master.
+
+My main interests are **Python, data, SQL, automation, AI and software development**. I enjoy building practical solutions that automate processes, improve efficiency and turn data into useful information.
+
+## Tech & Interests
+
+* Python and automation
+* SQL and databases
+* Data analysis and visualization
+* Artificial Intelligence
+* Software development
+* Cybersecurity
+* Agile and process improvement
+
+## Find Me Elsewhere
+
+* 💼 [LinkedIn](https://www.linkedin.com/in/delean-mafra/)
+* 💻 [HackerRank](https://www.hackerrank.com/profile/delean_mafra)
+* ✍️ [DEV Community](https://dev.to/deleanmafra)
+* 🎓 [Academic Profile](https://descomplica.worka.love/perfil/delean-mafra-1164-f2f8)
+* 🛡️ [KC7 Cyber](https://kc7cyber.com/profile/513ecb01)
+* ⚔️ [Codewars](http://www.codewars.com/r/DnrkrQ/)
+* ⏱️ [WakaTime](https://wakatime.com/@7c3f7631-38f2-4400-89a5-83a5e56071ce)
+
+## Featured Projects
+
+Take a look at my pinned repositories to see some of the projects I've been working on.
 
 ---
 
-## 🌐 Conecte-se Comigo
-
-📩 Aberto a novas conexões e oportunidades de colaboração!  
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-blue?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/delean-mafra/)
-
----
-
-❤️ Amo Python e Banco de Dados SQL. Sou movido por desafios e inovação, sempre em busca de novas tecnologias e metodologias para aprimorar processos e oferecer a melhor experiência para os clientes. 🚀
+Always learning, building and exploring new technologies.
