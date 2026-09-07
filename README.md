@@ -26,9 +26,9 @@ Tenho interesse principalmente em **Python, dados, SQL, automação, inteligênc
   
 * 🛡️ [KC7 Cyber](https://kc7cyber.com/profile/513ecb01)
   
-* ⚔️ [![CodeWars](https://www.codewars.com/users/Delean-Mafra/badges/small)](http://www.codewars.com/r/DnrkrQ/)
-  
 * ⏱️ [WakaTime](https://wakatime.com/@7c3f7631-38f2-4400-89a5-83a5e56071ce)
+  
+* ⚔️ [![CodeWars](https://www.codewars.com/users/Delean-Mafra/badges/small)](http://www.codewars.com/r/DnrkrQ/)
 
 ## Projetos em destaque
 
@@ -60,11 +60,16 @@ My main interests are **Python, data, SQL, automation, AI and software developme
 ## Find Me Elsewhere
 
 * 💼 [LinkedIn](https://www.linkedin.com/in/delean-mafra/)
+  
 * 💻 [HackerRank](https://www.hackerrank.com/profile/delean_mafra)
+  
 * ✍️ [DEV Community](https://dev.to/deleanmafra)
+  
 * 🛡️ [KC7 Cyber](https://kc7cyber.com/profile/513ecb01)
-* ⚔️ [Codewars](http://www.codewars.com/r/DnrkrQ/)
+  
 * ⏱️ [WakaTime](https://wakatime.com/@7c3f7631-38f2-4400-89a5-83a5e56071ce)
+  
+* ⚔️ [![CodeWars](https://www.codewars.com/users/Delean-Mafra/badges/small)](http://www.codewars.com/r/DnrkrQ/)
 
 ## Featured Projects
 
