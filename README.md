@@ -28,7 +28,9 @@ Tenho interesse principalmente em **Python, dados, SQL, automação, inteligênc
   
 * ⏱️ [WakaTime](https://wakatime.com/@7c3f7631-38f2-4400-89a5-83a5e56071ce)
   
-* ⚔️ [![CodeWars](https://www.codewars.com/users/Delean-Mafra/badges/small)](http://www.codewars.com/r/DnrkrQ/)
+* ⚔️  [CodeWars](http://www.codewars.com/r/DnrkrQ/)
+  
+* 🎮 [codingame](https://www.codingame.com/servlet/urlinvite?u=7572007)
 
 ## Projetos em destaque
 
@@ -69,7 +71,9 @@ My main interests are **Python, data, SQL, automation, AI and software developme
   
 * ⏱️ [WakaTime](https://wakatime.com/@7c3f7631-38f2-4400-89a5-83a5e56071ce)
   
-* ⚔️ [![CodeWars](https://www.codewars.com/users/Delean-Mafra/badges/small)](http://www.codewars.com/r/DnrkrQ/)
+* ⚔️  [CodeWars](http://www.codewars.com/r/DnrkrQ/)
+  
+* 🎮 [codingame](https://www.codingame.com/servlet/urlinvite?u=7572007)
 
 ## Featured Projects
 
