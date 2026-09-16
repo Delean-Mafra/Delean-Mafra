@@ -2,6 +2,8 @@
 
 [![wakatime](https://wakatime.com/badge/user/7c3f7631-38f2-4400-89a5-83a5e56071ce.svg)](https://wakatime.com/@7c3f7631-38f2-4400-89a5-83a5e56071ce)
 
+[![CodeWars](https://www.codewars.com/users/Delean-Mafra/badges/small)](http://www.codewars.com/r/DnrkrQ/)
+
 Profissional de TI com mais de 10 anos de experiência e estudante de **Ciência de Dados**, atualmente atuando como Agile Master.
 
 Tenho interesse principalmente em **Python, dados, SQL, automação, inteligência artificial e desenvolvimento de software**. Gosto de transformar problemas do dia a dia em soluções práticas, automatizando processos e utilizando dados para melhorar decisões e resultados.
@@ -44,6 +46,9 @@ Sempre aprendendo, desenvolvendo e explorando novas tecnologias.
 # Delean Mafra
 
 [![wakatime](https://wakatime.com/badge/user/7c3f7631-38f2-4400-89a5-83a5e56071ce.svg)](https://wakatime.com/@7c3f7631-38f2-4400-89a5-83a5e56071ce)
+
+[![CodeWars](https://www.codewars.com/users/Delean-Mafra/badges/small)](http://www.codewars.com/r/DnrkrQ/)
+
 
 Data Science student and IT professional with 10+ years of experience, currently working as an Agile Master.
 
